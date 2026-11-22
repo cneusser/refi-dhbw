@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Prozesskosten-Challenge Nordstil</title>
+<link rel="stylesheet" href="assets/site.css">
+<style>
+.tabs{display:flex;gap:4px;flex-wrap:wrap;border-bottom:1px solid var(--line);margin-top:8px}
+.tabs button{background:#fff;color:var(--ink);border:none;border-bottom:3px solid transparent;padding:10px 14px}
+.tabs button.on{border-bottom-color:var(--red)}
+.codebig{font-size:64px;font-weight:700;letter-spacing:6px;color:var(--red);line-height:1}
+.qr{background:#fff;padding:10px;display:inline-block;border:1px solid var(--line)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--line);padding:3px 8px;font-size:13px;background:#fff}
+.grp{border:1px solid var(--line);padding:12px;background:#fff;min-width:0}
+.grp h3{margin:0 0 6px;font-size:15px}
+.who{background:var(--panel);padding:10px 14px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between}
+.who b{font-size:17px}
+.opt{border:1px solid var(--line);padding:10px 12px;margin-bottom:8px;display:flex;gap:10px;align-items:flex-start}
+.opt input{margin-top:4px}
+.locked{border-left:4px solid var(--ok);padding:10px 14px;background:var(--okbg)}
+.pts{font-size:22px;font-weight:700}
+.lead1 td{font-weight:700}
+.sm-table td,.sm-table th{padding:5px 8px}
+.demo{background:#FFF4D6;padding:6px 12px;font-size:13px}
+</style>
+</head>
+<body>
+<main class="wrap" id="app"><p class="muted">Lade ...</p></main>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="firebase-config.js"></script>
+<script src="assets/nordstil-data.js"></script>
+<script src="assets/site.js"></script>
+<script>
+var D = window.NORDSTIL, M = D.meta, PIN = "2311";
+var CLSNAME = {W:"wertschöpfend",N:"notwendig",B:"Bürokratie",V:"Verschwendung"};
+var CLSCOL = {W:"#1F7A4D",N:"#9AA4AA",B:"#B07A00",V:"#E2001A"};
+var app = document.getElementById("app");
+var params = new URLSearchParams(location.search);
+var CODE = (params.get("code")||"").toUpperCase().replace(/[^A-Z0-9]/g,"");
+var DEMO = params.get("demo")==="1";
+var STATE = {}; var store = null; var boardTab = "beitritt";
+function parseNum(s){ if(s==null) return NaN; s=String(s).trim().replace(/\s|€|%/g,""); if(s.indexOf(",")>-1) s=s.replace(/\./g,"").replace(",","."); return parseFloat(s); }
+function near(x,y,tol){ return Math.abs(x-y) <= Math.max(tol, Math.abs(y)*0.01); }
+function dept(g){ return D.depts.filter(function(x){return x.id===g;})[0]; }
+function lsGet(k){ try{ return JSON.parse(localStorage.getItem(k)||"null"); }catch(e){ return null; } }
+function lsSet(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} }
+function randCode(){ var c="ABCDEFGHJKLMNPQRSTUVWXYZ23456789",s=""; for(var i=0;i<4;i++) s+=c[Math.floor(Math.random()*c.length)]; return s; }
+var ADJ=["Flinker","Kluger","Ruhiger","Mutiger","Wacher","Heller","Stiller","Kühner","Schlauer","Treuer","Fixer","Klarer"];
+var ANI=["Luchs","Fuchs","Kranich","Biber","Falke","Dachs","Otter","Steinbock","Uhu","Hirsch","Wiesel","Marder"];
+function randName(){ return ADJ[Math.floor(Math.random()*ADJ.length)]+" "+ANI[Math.floor(Math.random()*ANI.length)]+" "+(10+Math.floor(Math.random()*90)); }
+
+/* ---------- Rechenkern ---------- */
+function chain(o){
+  o=o||{}; var rq=o.rq==null?0.65:o.rq; var fv0=2.86, fr0=1.86;
+  var fv = Math.abs(rq-0.65)<1e-9?fv0:1/(1-rq), fr = Math.abs(rq-0.65)<1e-9?fr0:rq/(1-rq);
+  var parts=[], cls={W:0,N:0,B:0,V:0}, prop=0, leer=0;
+  D.depts.forEach(function(d){ var c=0;
+    d.acts.forEach(function(a){ var f=a.f; if(f===fv0) f=fv; else if(f===fr0) f=fr; var v=d.rate*a.t*f; if(o.noV&&a.cls==="V") v=0; if(o.halfB&&a.cls==="B") v/=2; c+=v; cls[a.cls]+=v; });
+    var p = (o.prop && o.prop[d.id]!=null) ? o.prop[d.id] : d.prop;
+    if(o.override && o.override[d.id]!=null) c = o.override[d.id];
+    parts.push({id:d.id,name:d.name,v:c}); prop+=c*p; leer+=d.leer; });
+  var porto=M.porto_hin*fv+M.porto_rueck*fr; var proc=parts.reduce(function(s,p){return s+p.v;},0);
+  return {parts:parts,porto:porto,cls:cls,total:M.we+porto+proc,proc:proc,grenz:M.we+porto+prop,propProc:prop,leer:leer};
+}
+function zuschlag(){ return M.we*(1+M.zuschlag_alt); }
+
+/* ---------- SVG-Diagramme ---------- */
+function hbar(items,o){
+  o=o||{}; var W=820, L=o.L||330, R=90, bh=o.bh||22, gap=8, n=items.length;
+  var max=o.max||Math.max.apply(null,items.map(function(i){return i.v;}).concat((o.lines||[]).map(function(l){return l.v;})))*1.3||1;
+  var H=n*(bh+gap)+(o.lines?40:10); var sx=(W-L-R)/max;
+  var s='<svg viewBox="0 0 '+W+' '+H+'" width="100%" style="min-width:560px" role="img" aria-label="'+esc(o.aria||"Balkendiagramm")+'">';
+  items.forEach(function(it,i){ var y=4+i*(bh+gap); s+='<text x="'+(L-8)+'" y="'+(y+bh*0.7)+'" text-anchor="end" font-size="12">'+esc(it.l)+'</text>';
+    if(it.stack){ var x0=L; it.stack.forEach(function(st){ var w=Math.max(0,st.v*sx); s+='<rect x="'+x0+'" y="'+y+'" width="'+w+'" height="'+bh+'" fill="'+st.c+'"><title>'+esc(st.n+": "+eur(st.v))+'</title></rect>'; x0+=w; }); s+='<text x="'+(x0+6)+'" y="'+(y+bh*0.7)+'" font-size="12" class="num">'+(o.fmt?o.fmt(it.v):eur(it.v))+'</text>'; }
+    else { s+='<rect x="'+L+'" y="'+y+'" width="'+Math.max(1,it.v*sx)+'" height="'+bh+'" fill="'+(it.c||"#5D6971")+'"></rect><text x="'+(L+it.v*sx+6)+'" y="'+(y+bh*0.7)+'" font-size="12" class="num">'+(o.fmt?o.fmt(it.v):eur(it.v))+(it.note?'  '+esc(it.note):'')+'</text>'; } });
+  (o.lines||[]).forEach(function(l,k){ var x=L+l.v*sx; s+='<line x1="'+x+'" x2="'+x+'" y1="0" y2="'+(n*(bh+gap))+'" stroke="'+(l.c||"#5D6971")+'" stroke-dasharray="4 3"></line><text x="'+x+'" y="'+(n*(bh+gap)+14+(k%2)*13)+'" font-size="11" text-anchor="middle">'+esc(l.t)+'</text>'; });
+  return s+'</svg>';
+}
+function waterfall(steps,o){
+  o=o||{}; var W=760,H=300,L=40,B=60,T=16; var tot=steps.reduce(function(s,x){return s+x.v;},0); var max=Math.max(tot,(o.lines||[]).reduce(function(m,l){return Math.max(m,l.v);},0))*1.08;
+  var n=steps.length+1, bw=(W-L-20)/n*0.7, step=(W-L-20)/n, sy=(H-B-T)/max; var s='<svg viewBox="0 0 '+W+' '+H+'" width="100%" style="min-width:560px" role="img" aria-label="Wasserfall Kosten je verkauftem Kleid">';
+  var cum=0; steps.forEach(function(st,i){ var x=L+i*step+(step-bw)/2, y=H-B-(cum+st.v)*sy; s+='<rect x="'+x+'" y="'+y+'" width="'+bw+'" height="'+Math.max(1,st.v*sy)+'" fill="'+(st.c||"#5D6971")+'" opacity="'+(st.pending?0.35:1)+'"></rect><text x="'+(x+bw/2)+'" y="'+(y-4)+'" font-size="11" text-anchor="middle" class="num">'+eur(st.v)+'</text><text x="'+(x+bw/2)+'" y="'+(H-B+14)+'" font-size="10.5" text-anchor="middle">'+esc(st.s)+'</text>'+(st.pending?'<text x="'+(x+bw/2)+'" y="'+(H-B+27)+'" font-size="10" text-anchor="middle" fill="#B3001A">ausstehend</text>':''); cum+=st.v; });
+  var x=L+steps.length*step+(step-bw)/2; s+='<rect x="'+x+'" y="'+(H-B-cum*sy)+'" width="'+bw+'" height="'+cum*sy+'" fill="#E2001A"></rect><text x="'+(x+bw/2)+'" y="'+(H-B-cum*sy-4)+'" font-size="12" font-weight="700" text-anchor="middle">'+eur(cum)+'</text><text x="'+(x+bw/2)+'" y="'+(H-B+14)+'" font-size="10.5" text-anchor="middle" font-weight="700">Summe</text>';
+  (o.lines||[]).forEach(function(l,k){ var y=H-B-l.v*sy; s+='<line x1="'+L+'" x2="'+(W-10)+'" y1="'+y+'" y2="'+y+'" stroke="#2B3439" stroke-dasharray="5 4"></line><text x="'+(L+4)+'" y="'+(y-4)+'" font-size="11">'+esc(l.t)+'</text>'; });
+  return s+'</svg>';
+}
+
+/* ---------- Speicher: Firebase oder lokal (Demo) ---------- */
+function localStore(seed){
+  var data=seed||{}, cbs=[]; function fire(){ cbs.forEach(function(cb){ cb(JSON.parse(JSON.stringify(data))); }); }
+  function setP(p,v){ var ks=p.split("/").filter(Boolean), o=data; for(var i=0;i<ks.length-1;i++){ o[ks[i]]=o[ks[i]]||{}; o=o[ks[i]]; } if(v===null) delete o[ks[ks.length-1]]; else o[ks[ks.length-1]]=v; }
+  return { on:function(cb){ cbs.push(cb); setTimeout(fire,0); }, set:function(p,v){ setP(p,v); fire(); return Promise.resolve(); },
+    update:function(p,obj){ Object.keys(obj).forEach(function(k){ setP(p+"/"+k,obj[k]); }); fire(); return Promise.resolve(); },
+    push:function(p,v){ var k="k"+Math.random().toString(36).slice(2,9); setP(p+"/"+k,v); fire(); return k; }, ts:function(){ return Date.now(); },
+    claim:function(p,v){ var ks=p.split("/"); var o=data; for(var i=0;i<ks.length;i++){ if(!o||o[ks[i]]==null){ o=null; break;} o=o[ks[i]]; } if(o) return Promise.resolve(false); setP(p,v); fire(); return Promise.resolve(true); } };
+}
+function fbStore(db,code){
+  var base=db.ref("refi/challenge/"+code);
+  return { on:function(cb){ base.on("value",function(s){ cb(s.val()||{}); }); }, set:function(p,v){ return base.child(p).set(v); },
+    update:function(p,obj){ return base.child(p).update(obj); }, push:function(p,v){ var r=base.child(p).push(); r.set(v); return r.key; },
+    ts:function(){ return firebase.database.ServerValue.TIMESTAMP; },
+    claim:function(p,v){ return base.child(p).transaction(function(cur){ return cur===null?v:undefined; }).then(function(r){ return r.committed; }); } };
+}
+function demoSeed(){
+  var t0=Date.now()-20*60000, players={}, names=["Flinker Luchs 12","Kluger Fuchs 31","Wacher Uhu 44","Ruhiger Biber 27","Kühner Falke 58","Stiller Dachs 19","Heller Otter 63","Treuer Hirsch 85","Klarer Marder 22","Fixer Wiesel 47","Mutiger Kranich 70","Schlauer Steinbock 15","Flinker Biber 38","Kluger Uhu 91","Wacher Fuchs 26","Ruhiger Falke 53","Heller Luchs 77","Stiller Kranich 14","Treuer Otter 66","Fixer Dachs 49","Klarer Hirsch 81","Kühner Wiesel 35","Mutiger Marder 29","Schlauer Uhu 57"];
+  names.forEach(function(n,i){ players["p"+i]={name:n,group:(i%6)+1,at:t0+i*1000}; });
+  var groups={}, prog={};
+  D.depts.forEach(function(d,i){ var g=d.id; prog[g]={}; Object.keys(players).forEach(function(pid){ if(players[pid].group===g) prog[g][pid]={r1ok:Math.random()>0.3,r2n:d.acts.length-(Math.random()>0.5?1:0)}; });
+    if(g<=4){ groups[g]={sub:{by:names[i],at:t0+(12+g*2)*60000,r1:{rate:d.rate,leer:d.leer,ausl:Math.round(d.ausl*100),cost:+(g===3?8.40:d.cost).toFixed(2)},r2:d.acts.map(function(a,k){ return (g===2&&k===1)?"V":a.cls; }),r3:(g===1?"B":g===2?"A":g===3?"B":"B"),text:"Begründung der Gruppe "+g,q:(g===4?"Wer misst eigentlich die Minuten?":"")}}; } });
+  Object.keys(prog).forEach(function(g){ groups[g]=groups[g]||{}; groups[g].progress=prog[g]; });
+  return {meta:{createdAt:t0,phase:"play",bonus:{4:10}},players:players,groups:groups};
+}
+
+/* ---------- Punkte ---------- */
+function r1ok(d,r){ return r && near(r.rate,d.rate,0.005) && near(r.leer,d.leer,1) && near(r.ausl,d.ausl*100,0.5) && near(r.cost,d.cost,0.02); }
+function score(st){
+  var groups=st.groups||{}, bonus=(st.meta&&st.meta.bonus)||{}; var res={};
+  var solved=D.depts.filter(function(d){ var s=groups[d.id]&&groups[d.id].sub; return s&&r1ok(d,s.r1); }).map(function(d){ return {g:d.id,at:groups[d.id].sub.at||0}; }).sort(function(a,b){return a.at-b.at;});
+  D.depts.forEach(function(d){ var s=groups[d.id]&&groups[d.id].sub; var p={r1:0,r2:0,r3:0,b:+bonus[d.id]||0,sub:!!s};
+    if(s){ if(r1ok(d,s.r1)){ var pos=solved.map(function(x){return x.g;}).indexOf(d.id); p.r1=40+([15,10,5][pos]||0); }
+      var n=(s.r2||[]).filter(function(c,k){ return d.acts[k]&&c===d.acts[k].cls; }).length; p.r2n=n; p.r2=Math.round(n/d.acts.length*25);
+      var o=d.opts.filter(function(x){return x.key===s.r3;})[0]; p.r3=o?o.pts:0; }
+    p.total=p.r1+p.r2+p.r3+p.b; res[d.id]=p; });
+  return res;
+}
+
+/* ---------- Ansicht: Einstieg ---------- */
+function viewEntry(){
+  app.innerHTML='<div class="kicker">Prozesskosten-Challenge</div><h1>Nordstil: Was kostet ein Abendkleid wirklich?</h1><p class="lead">Sechs Gruppen übernehmen je eine Abteilung der Lieferkette. Sie rechnen, ordnen ein und entscheiden. Am Ende setzen wir die Kette zusammen und vergleichen mit Zuschlags- und Teilkostenrechnung.</p>'+
+  '<div class="panel"><h2 style="margin-top:0">Mitspielen</h2><p>Geben Sie den Spielcode vom Beamer ein oder scannen Sie den QR-Code.</p><div class="row"><input id="code" style="max-width:180px;text-transform:uppercase" placeholder="Code" maxlength="6" aria-label="Spielcode"><button class="red" id="go">Weiter</button></div></div>'+
+  '<div class="panel grey"><h3 style="margin-top:0">Spielleitung</h3><p class="small">Neues Spiel anlegen, QR-Code zeigen, Ergebnisse live auswerten.</p><a class="btn ghost" href="challenge.html#leitung">Zur Spielleitung</a> <a class="btn ghost" href="challenge.html?demo=1#leitung">Demo mit Beispieldaten</a></div>';
+  document.getElementById("go").onclick=function(){ var c=document.getElementById("code").value.trim().toUpperCase(); if(c) location.href="challenge.html?code="+encodeURIComponent(c); };
+}
+
+/* ---------- Ansicht: Beitritt und Gruppe ---------- */
+var me=null;
+function viewJoin(){
+  var players=STATE.players||{}; var counts=[0,0,0,0,0,0,0]; Object.keys(players).forEach(function(k){ counts[players[k].group]=(counts[players[k].group]||0)+1; });
+  var nm=randName();
+  app.innerHTML='<div class="kicker">Spiel '+esc(CODE)+'</div><h1>Willkommen zur Prozesskosten-Challenge</h1><p class="lead">Wählen Sie einen Spielnamen. Sie werden danach automatisch einer der sechs Gruppen zugeordnet.</p>'+
+   '<div class="panel"><label for="nm">Ihr Spielname (bitte keinen Klarnamen)</label><div class="row"><input id="nm" value="'+esc(nm)+'" maxlength="30" style="max-width:320px"><button class="ghost" id="nn">Neuer Vorschlag</button><button class="red" id="join">Beitreten</button></div><div class="fb" id="jfb"></div></div>'+
+   '<p class="small muted">Bisher beigetreten: '+Object.keys(players).length+' Personen.</p>';
+  document.getElementById("nn").onclick=function(){ document.getElementById("nm").value=randName(); };
+  document.getElementById("join").onclick=function(){ var name=document.getElementById("nm").value.trim()||randName();
+    var min=Infinity, cand=[]; for(var g=1;g<=6;g++){ if(counts[g]<min){min=counts[g];cand=[g];} else if(counts[g]===min) cand.push(g); }
+    var grp=cand[Math.floor(Math.random()*cand.length)]; var pid=store.push("players",{name:name,group:grp,at:store.ts()});
+    me={pid:pid,name:name,group:grp}; lsSet("ch_"+CODE,me); render(); };
+}
+var local={};
+function viewGroup(){
+  var g=me.group, d=dept(g), st=STATE, gs=(st.groups&&st.groups[g])||{}, sub=gs.sub; var players=st.players||{};
+  var mates=Object.keys(players).filter(function(k){return players[k].group===g;}).map(function(k){return players[k].name;});
+  local=lsGet("chl_"+CODE)||{r1:{},r2:null,tries:0};
+  var timeItems=d.acts.map(function(a){ return {l:a.name.length>46?a.name.slice(0,44)+" …":a.name, v:a.t*a.f}; }).sort(function(a,b){return b.v-a.v;});
+  var h='<div class="who"><span>Sie sind <b>'+esc(me.name)+'</b> in <b>Gruppe '+g+': '+esc(d.name)+'</b></span><span class="small muted">Spiel '+esc(CODE)+' · '+mates.length+(mates.length===1?' Person':' Personen')+' in Ihrer Gruppe</span></div>';
+  h+='<div class="chips" style="margin-top:8px">'+mates.map(function(n){return '<span class="chip">'+esc(n)+'</span>';}).join("")+'</div>';
+  h+='<h2>Daten Ihrer Abteilung</h2><div class="kpis"><div class="kpi"><div class="l">Kapazitätskosten p. a.</div><div class="v">'+eur(d.K,0)+' €</div></div><div class="kpi"><div class="l">Praktische Kapazität p. a.</div><div class="v">'+eur(d.M,0)+' min</div></div><div class="kpi"><div class="l">Genutzte Minuten p. a. (alle Produkte)</div><div class="v">'+eur(d.U,0)+' min</div></div></div>';
+  h+='<div class="tbl" style="margin-top:12px"><table><thead><tr><th>Tätigkeit</th><th class="r">Min. je Vorgang</th><th class="r">Vorgänge je verk. Kleid</th><th>Bezug</th></tr></thead><tbody>'+d.acts.map(function(a){return '<tr><td>'+esc(a.name)+'</td><td class="r num">'+eur(a.t,a.t%1?2:0)+'</td><td class="r num">'+eur(a.f,a.f<0.1?3:2)+'</td><td class="small muted">'+esc(a.bezug)+'</td></tr>';}).join("")+'</tbody></table></div>';
+  h+='<p class="small muted">Gemeinsam: Netto-Verkaufspreis 90 €, Wareneinsatz 32 €, Retourenquote 65 %: je verkauftem Kleid 2,86 versandte und 1,86 retournierte Kleider.</p>';
+  h+='<div><div class="panel"><h3 style="margin-top:0">Wohin geht die Zeit? Minuten je verkauftem Kleid</h3><div class="chart">'+hbar(timeItems,{fmt:function(v){return eur(v,2)+" min";},aria:"Minuten je Tätigkeit"})+'</div><p class="small muted">Pareto-Sicht: Wo liegt der größte Hebel?</p></div>'+
+       '<div class="panel"><h3 style="margin-top:0">Kapazität: genutzt und ungenutzt</h3><div class="chart">'+hbar([{l:"Praktische Kapazität",v:d.M,stack:[{n:"genutzt",v:d.U,c:"#5D6971"},{n:"ungenutzt",v:d.M-d.U,c:"#E2001A"}]}],{fmt:function(v){return eur(v,0)+" min";},bh:34,aria:"Kapazität"})+'</div><p class="small muted">Grau genutzt, rot ungenutzt. Was kostet das Rote?</p></div></div>';
+  // Runde 1
+  h+='<h2>Runde 1: Rechnen (jede Person für sich)</h2><div class="fields"><div><label for="a">Kapazitätskostensatz (€ je Minute)</label><input id="a" inputmode="decimal"><div class="fb" id="fa"></div></div><div><label for="b">Leerkosten p. a. (€)</label><input id="b" inputmode="decimal"><div class="fb" id="fb"></div></div><div><label for="c">Auslastung (%)</label><input id="c" inputmode="decimal"><div class="fb" id="fc"></div></div><div><label for="dd">Prozesskosten je verkauftem Kleid (€)</label><input id="dd" inputmode="decimal"><div class="fb" id="fd"></div></div></div><div class="row" style="margin-top:10px"><button id="chk1">Prüfen</button><span class="small muted" id="tr"></span></div><div id="r1res"></div>';
+  // Runde 2
+  h+='<h2>Runde 2: Einordnen</h2><div class="legend"><span style="--c:'+CLSCOL.W+'">W wertschöpfend</span><span style="--c:'+CLSCOL.N+'">N notwendig</span><span style="--c:'+CLSCOL.B+'">B Bürokratie, gesetzliche Pflicht</span><span style="--c:'+CLSCOL.V+'">V Verschwendung</span></div><div class="tbl" style="margin-top:8px"><table><tbody>'+d.acts.map(function(a,i){return '<tr><td>'+esc(a.name)+'</td><td style="width:200px"><select id="s'+i+'" aria-label="Kategorie"><option value="">wählen</option><option>W</option><option>N</option><option>B</option><option>V</option></select></td></tr>';}).join("")+'</tbody></table></div><div class="row" style="margin-top:10px"><button id="chk2">Prüfen</button></div><div id="r2res"></div><div id="r2chart"></div>';
+  // Runde 3
+  h+='<h2>Runde 3: Entscheiden</h2><p>Welche Maßnahme nützt dem ganzen Unternehmen am meisten? Diskutieren Sie in der Gruppe.</p>'+d.opts.map(function(o){return '<div class="opt"><b>'+o.key+'</b><span>'+esc(o.text)+'</span></div>';}).join("");
+  // Abgabe
+  h+='<h2>Gruppenergebnis abgeben</h2>';
+  if(sub){ h+='<div class="locked"><b>Abgegeben von '+esc(sub.by)+'.</b> Satz '+eur(sub.r1.rate)+' €/min · Leerkosten '+eur(sub.r1.leer,0)+' € · Auslastung '+eur(sub.r1.ausl,0)+' % · '+eur(sub.r1.cost)+' € je Kleid · Einordnung '+esc((sub.r2||[]).join(" "))+' · Maßnahme '+esc(sub.r3)+'</div><p class="small muted">Spielen Sie gern weiter. Gewertet wird diese Abgabe.</p>'; }
+  else { h+='<p>Eine Person je Gruppe trägt das Ergebnis ein, sobald sich alle einig sind. Die erste Abgabe zählt, danach ist das Formular gesperrt.</p><div class="panel"><div class="fields"><div><label for="sa">Satz € je Minute</label><input id="sa" inputmode="decimal"></div><div><label for="sb">Leerkosten €</label><input id="sb" inputmode="decimal"></div><div><label for="sc">Auslastung %</label><input id="sc" inputmode="decimal"></div><div><label for="sd">€ je verkauftem Kleid</label><input id="sd" inputmode="decimal"></div></div><h3>Einordnung</h3><div class="fields">'+d.acts.map(function(a,i){return '<div><label for="sk'+i+'">'+esc(a.name)+'</label><select id="sk'+i+'"><option value="">wählen</option><option>W</option><option>N</option><option>B</option><option>V</option></select></div>';}).join("")+'</div><h3>Maßnahme und Begründung</h3><div class="row">'+d.opts.map(function(o){return '<label style="display:flex;gap:6px;align-items:center;margin:0"><input type="radio" name="r3" value="'+o.key+'"> '+o.key+'</label>';}).join("")+'</div><label for="st" style="margin-top:8px">Begründung in zwei Sätzen</label><textarea id="st" rows="2"></textarea><label for="sq" style="margin-top:8px">Eine kritische Frage an das Plenum (Bonus)</label><input id="sq"><div class="row" style="margin-top:12px"><button class="red" id="send">Ergebnis der Gruppe abgeben</button><span class="fb" id="sfb"></span></div></div>'; }
+  app.innerHTML=h;
+  // Werte zurückholen
+  ["a","b","c","dd"].forEach(function(id){ if(local.r1[id]!=null) document.getElementById(id).value=local.r1[id]; });
+  var trEl=document.getElementById("tr"); var showTr=function(){ trEl.textContent=local.tries?("Prüfungen: "+local.tries):""; }; showTr();
+  var r1done=function(){ document.getElementById("r1res").innerHTML='<div class="note ok">Alle vier Werte stimmen. Teilen Sie Ihren Rechenweg mit der Gruppe.</div>'; };
+  if(local.r1ok) r1done();
+  document.getElementById("chk1").onclick=function(){ var ids=["a","b","c","dd"], v=ids.map(function(id){ local.r1[id]=document.getElementById(id).value; return parseNum(local.r1[id]); });
+    var ok=[near(v[0],d.rate,0.005),near(v[1],d.leer,1),near(v[2],d.ausl*100,0.5),near(v[3],d.cost,0.02)];
+    ["fa","fb","fc","fd"].forEach(function(f,i){ var e=document.getElementById(f); if(isNaN(v[i])){e.textContent="Bitte eine Zahl";e.className="fb bad";} else {e.textContent=ok[i]?"richtig":"noch nicht richtig";e.className="fb "+(ok[i]?"ok":"bad");} });
+    local.tries++; if(ok.every(Boolean)){ local.r1ok=true; r1done(); } lsSet("chl_"+CODE,local); showTr(); if(local.r1ok) store.update("groups/"+g+"/progress/"+me.pid,{r1ok:true,name:me.name}); };
+  var drawR2=function(){ if(local.r2==null) return; document.getElementById("r2res").innerHTML='<div class="note '+(local.r2===d.acts.length?"ok":"bad")+'">Erster Versuch: '+local.r2+' von '+d.acts.length+' richtig.</div>';
+    if(local.r1ok){ var items=d.acts.map(function(a,i){ return {l:a.name.length>46?a.name.slice(0,44)+" …":a.name, v:d.rate*a.t*a.f, c:CLSCOL[local.sel[i]]||"#9AA4AA"}; }).sort(function(a,b){return b.v-a.v;}); document.getElementById("r2chart").innerHTML='<div class="panel"><h3 style="margin-top:0">Ihre Kosten je Tätigkeit, eingefärbt nach Ihrer Einordnung (€ je verkauftem Kleid)</h3><div class="chart">'+hbar(items,{aria:"Kosten je Tätigkeit"})+'</div></div>'; } };
+  if(local.sel) local.sel.forEach(function(v,i){ var e=document.getElementById("s"+i); if(e) e.value=v; });
+  drawR2();
+  document.getElementById("chk2").onclick=function(){ var sel=d.acts.map(function(a,i){ return document.getElementById("s"+i).value; }); if(sel.some(function(x){return !x;})){ document.getElementById("r2res").innerHTML='<div class="note bad">Bitte jede Tätigkeit einordnen.</div>'; return; }
+    local.sel=sel; var first2=(local.r2==null); if(first2){ local.r2=sel.filter(function(x,i){return x===d.acts[i].cls;}).length; } lsSet("chl_"+CODE,local); drawR2(); if(first2) store.update("groups/"+g+"/progress/"+me.pid,{r2n:local.r2,name:me.name}); };
+  var send=document.getElementById("send");
+  if(send){ ["a","b","c","dd"].forEach(function(id,i){ var t=document.getElementById(["sa","sb","sc","sd"][i]); if(local.r1[id]) t.value=local.r1[id]; }); if(local.sel) local.sel.forEach(function(v,i){ document.getElementById("sk"+i).value=v; });
+    send.onclick=function(){ var r1={rate:parseNum(document.getElementById("sa").value),leer:parseNum(document.getElementById("sb").value),ausl:parseNum(document.getElementById("sc").value),cost:parseNum(document.getElementById("sd").value)};
+      var r2=d.acts.map(function(a,i){ return document.getElementById("sk"+i).value; }); var r3=(document.querySelector('input[name=r3]:checked')||{}).value;
+      var fb=document.getElementById("sfb"); if([r1.rate,r1.leer,r1.ausl,r1.cost].some(isNaN)||r2.some(function(x){return !x;})||!r3){ fb.textContent="Bitte alle Felder ausfüllen."; fb.className="fb bad"; return; }
+      send.disabled=true; store.claim("groups/"+g+"/sub",{by:me.name,at:store.ts(),r1:r1,r2:r2,r3:r3,text:document.getElementById("st").value.slice(0,400),q:document.getElementById("sq").value.slice(0,200)}).then(function(ok){ if(!ok){ fb.textContent="Ihre Gruppe hat bereits abgegeben."; fb.className="fb bad"; } }); };
+  }
+}
+
+/* ---------- Ansicht: Spielleitung ---------- */
+function viewBoardGate(){
+  if(lsGet("ch_pin")===true || DEMO){ return viewBoard(); }
+  app.innerHTML='<h1>Spielleitung</h1><p>Diese Ansicht zeigt Lösungen und Punkte.</p><div class="row"><input id="pin" style="max-width:160px" inputmode="numeric" aria-label="PIN"><button id="ok">Öffnen</button></div><div class="fb bad" id="pfb"></div>';
+  document.getElementById("ok").onclick=function(){ if(document.getElementById("pin").value.trim()===PIN){ lsSet("ch_pin",true); viewBoard(); } else document.getElementById("pfb").textContent="PIN stimmt nicht."; };
+}
+var sliders={rq:65,noV:false,halfB:false,price:90,prop:null};
+function viewBoard(){
+  if(!CODE){ app.innerHTML='<h1>Spielleitung</h1><p>Legen Sie ein neues Spiel an. Danach erscheint der QR-Code für den Beamer.</p><button class="red" id="new">Neues Spiel anlegen</button> <a class="btn ghost" href="challenge.html?demo=1#leitung">Demo mit Beispieldaten</a><div class="fb" id="nfb"></div>';
+    document.getElementById("new").onclick=function(){ var db=getDb(); if(!db){ document.getElementById("nfb").textContent="Firebase ist nicht erreichbar. Nutzen Sie die Demo oder prüfen Sie firebase-config.js."; return; }
+      var c=randCode(); db.ref("refi/challenge/"+c+"/meta").set({createdAt:firebase.database.ServerValue.TIMESTAMP,phase:"play"}).then(function(){ location.href="challenge.html?code="+c+"#leitung"; }).catch(function(e){ document.getElementById("nfb").textContent="Fehler: "+e.message+". Regeln für den Pfad refi prüfen."; }); };
+    return; }
+  var st=STATE, players=st.players||{}, groups=st.groups||{}, sc=score(st);
+  var url=location.href.split("#")[0].split("?")[0]+"?code="+CODE;
+  var h=(DEMO?'<div class="demo">Demo-Modus mit Beispieldaten. Nichts wird gespeichert.</div>':'')+'<div class="row" style="justify-content:space-between"><div><div class="kicker">Spielleitung</div><h1 style="margin:0">Prozesskosten-Challenge · Spiel '+esc(CODE)+'</h1></div><span class="muted">'+Object.keys(players).length+' Personen · '+D.depts.filter(function(d){return groups[d.id]&&groups[d.id].sub;}).length+' von 6 Gruppen abgegeben</span></div>';
+  h+='<div class="tabs">'+[["beitritt","Beitritt"],["live","Live-Stand"],["punkte","Punkte"],["auswertung","Auswertung"],["vergleich","Drei Kostenrechnungen"]].map(function(t){return '<button data-t="'+t[0]+'" class="'+(boardTab===t[0]?"on":"")+'">'+t[1]+'</button>';}).join("")+'</div><div id="tab"></div>';
+  app.innerHTML=h; app.querySelectorAll(".tabs button").forEach(function(b){ b.onclick=function(){ boardTab=b.dataset.t; viewBoard(); }; });
+  var T=document.getElementById("tab");
+  var byG={}; Object.keys(players).forEach(function(k){ var p=players[k]; (byG[p.group]=byG[p.group]||[]).push(p.name); });
+  if(boardTab==="beitritt"){
+    T.innerHTML='<div class="grid2" style="margin-top:16px"><div class="panel" style="text-align:center"><div class="muted">Spielcode</div><div class="codebig">'+esc(CODE)+'</div><div class="qr" id="qr" style="margin-top:12px"></div><p class="small" style="margin-top:8px;word-break:break-all">'+esc(url)+'</p></div><div>'+D.depts.map(function(d){ return '<div class="grp" style="margin-bottom:8px"><h3>Gruppe '+d.id+': '+esc(d.name)+' <span class="muted small">('+((byG[d.id]||[]).length)+')</span></h3><div class="chips">'+(byG[d.id]||[]).map(function(n){return '<span class="chip">'+esc(n)+'</span>';}).join("")+'</div></div>'; }).join("")+'</div></div>';
+    try{ new QRCode(document.getElementById("qr"),{text:url,width:240,height:240,colorDark:"#1F272C",colorLight:"#ffffff"}); }catch(e){ document.getElementById("qr").textContent="QR nicht verfügbar"; }
+  }
+  if(boardTab==="live"){
+    var items=D.depts.map(function(d){ var pr=(groups[d.id]&&groups[d.id].progress)||{}; var n=(byG[d.id]||[]).length||0; var ok=Object.keys(pr).filter(function(k){return pr[k].r1ok;}).length; return {l:"G"+d.id+" "+d.name, v:n?ok/n*100:0, c:(groups[d.id]&&groups[d.id].sub)?"#1F7A4D":"#5D6971", note:ok+" von "+n+(groups[d.id]&&groups[d.id].sub?" · abgegeben":"")}; });
+    var rows=D.depts.map(function(d){ var s=groups[d.id]&&groups[d.id].sub, pr=(groups[d.id]&&groups[d.id].progress)||{}; var r2=Object.keys(pr).map(function(k){return pr[k].r2n;}).filter(function(x){return x!=null;}); var avg=r2.length?r2.reduce(function(a,b){return a+b;},0)/r2.length:null;
+      return '<tr><td>G'+d.id+' '+esc(d.name)+'</td><td class="r num">'+((byG[d.id]||[]).length)+'</td><td class="r num">'+(avg==null?"":eur(avg,1)+" / "+d.acts.length)+'</td><td>'+(s?('<span class="badge ok">abgegeben</span> '+esc(s.by)):'<span class="badge grey">offen</span>')+'</td><td class="r num">'+(s?eur(s.r1.cost)+(r1ok(d,s.r1)?' <span class="ok">✓</span>':' <span class="bad">✗</span>'):"")+'</td><td>'+(s?esc(s.r3):"")+'</td><td class="small">'+(s&&s.q?esc(s.q):"")+'</td></tr>'; }).join("");
+    T.innerHTML='<div class="panel"><h3 style="margin-top:0">Anteil der Mitglieder mit Runde 1 richtig</h3><div class="chart">'+hbar(items,{max:100,fmt:function(v){return eur(v,0)+" %";},aria:"Fortschritt je Gruppe"})+'</div></div><div class="tbl panel"><table><thead><tr><th>Gruppe</th><th class="r">Personen</th><th class="r">Runde 2 Ø richtig</th><th>Abgabe</th><th class="r">€ je Kleid</th><th>R3</th><th>Kritische Frage</th></tr></thead><tbody>'+rows+'</tbody></table></div>';
+  }
+  if(boardTab==="punkte"){
+    var rk=D.depts.map(function(d){return {d:d,p:sc[d.id]};}).sort(function(a,b){return b.p.total-a.p.total;});
+    T.innerHTML='<div class="panel"><div class="chart">'+hbar(rk.map(function(x){return {l:"G"+x.d.id+" "+x.d.name,v:x.p.total,stack:[{n:"Runde 1",v:x.p.r1,c:"#2B3439"},{n:"Runde 2",v:x.p.r2,c:"#7D8990"},{n:"Runde 3",v:Math.max(0,x.p.r3),c:"#E2001A"},{n:"Bonus",v:x.p.b,c:"#B07A00"}]};}),{fmt:function(v){return eur(v,0)+" P.";},aria:"Punkte"})+'</div><div class="legend"><span style="--c:#2B3439">Runde 1</span><span style="--c:#7D8990">Runde 2</span><span style="--c:#E2001A">Runde 3</span><span style="--c:#B07A00">Bonus</span></div></div>'+
+      '<div class="tbl panel"><table class="sm-table"><thead><tr><th>Rang</th><th>Gruppe</th><th class="r">R1</th><th class="r">R2</th><th class="r">R3</th><th>Bonus</th><th class="r">Summe</th></tr></thead><tbody>'+rk.map(function(x,i){return '<tr class="'+(i===0&&x.p.total>0?"lead1":"")+'"><td>'+(i+1)+'</td><td>G'+x.d.id+' '+esc(x.d.name)+'</td><td class="r num">'+x.p.r1+'</td><td class="r num">'+x.p.r2+'</td><td class="r num">'+x.p.r3+'</td><td><input data-b="'+x.d.id+'" value="'+(x.p.b||"")+'" style="width:64px" inputmode="numeric" aria-label="Bonus"></td><td class="r num pts">'+x.p.total+'</td></tr>';}).join("")+'</tbody></table><p class="small muted">R1: 40 Punkte bei vier richtigen Werten, dazu 15, 10, 5 für die ersten drei Abgaben. R2: bis 25 nach Anteil richtiger Zuordnungen. R3: beste Gesamtentscheidung 40, Pflicht streichen minus 20.</p></div>';
+    T.querySelectorAll("[data-b]").forEach(function(i){ i.onchange=function(){ store.update("meta/bonus",(function(o){o[i.dataset.b]=Math.max(0,Math.min(10,parseInt(i.value)||0));return o;})({})); }; });
+  }
+  if(boardTab==="auswertung"){
+    var ov={}; var steps=[{s:"Wareneinsatz",v:M.we,c:"#9AA4AA"}];
+    D.depts.forEach(function(d){ var s=groups[d.id]&&groups[d.id].sub; steps.push({s:"G"+d.id,v:s?s.r1.cost:d.cost,c:s?(r1ok(d,s.r1)?"#5D6971":"#B3001A"):"#5D6971",pending:!s}); });
+    var ch=chain({rq:sliders.rq/100,noV:sliders.noV,halfB:sliders.halfB}); steps.push({s:"Porto",v:ch.porto,c:"#9AA4AA"});
+    T.innerHTML='<div class="panel"><h3 style="margin-top:0">Kostenkette je verkauftem Kleid aus den Abgaben der Gruppen</h3><div class="chart">'+waterfall(steps,{lines:[{v:90,t:"Preis heute 90 €"},{v:79,t:"Marktpreis 79 €"},{v:71.1,t:"erlaubte Kosten 71,10 €"}]})+'</div><p class="small muted">Rot: Abgabe weicht von der Lösung ab. Blass: Gruppe hat noch nicht abgegeben, eingesetzt ist der Lösungswert.</p></div>'+
+     '<div><div class="panel"><h3 style="margin-top:0">Wofür das Geld ausgegeben wird (€ je verkauftem Kleid)</h3><div class="chart">'+hbar(D.depts.map(function(d){ var o={W:0,N:0,B:0,V:0}; d.acts.forEach(function(a){o[a.cls]+=d.rate*a.t*a.f;}); return {l:"G"+d.id+" "+d.name,v:d.cost,stack:["W","N","B","V"].map(function(k){return {n:CLSNAME[k],v:o[k],c:CLSCOL[k]};})}; }),{aria:"W N B V je Abteilung"})+'</div><div class="legend"><span style="--c:'+CLSCOL.W+'">W</span><span style="--c:'+CLSCOL.N+'">N</span><span style="--c:'+CLSCOL.B+'">B</span><span style="--c:'+CLSCOL.V+'">V</span></div></div>'+
+     '<div class="panel"><h3 style="margin-top:0">Leerkosten je Abteilung p. a. (ungenutzte Kapazität)</h3><div class="chart">'+hbar(D.depts.map(function(d){return {l:"G"+d.id+" "+d.name,v:d.leer,c:"#E2001A",note:eur(d.ausl*100,0)+" % ausgelastet"};}),{fmt:function(v){return eur(v,0)+" €";},aria:"Leerkosten"})+'</div><p class="small muted">Summe '+eur(ch.leer,0)+' € im Jahr. Leerkosten verschwinden nicht durch Rechnen.</p></div></div>'+
+     '<div class="panel"><h3 style="margin-top:0">Hebel</h3><div class="fields"><div><label for="rq">Retourenquote: <b id="rqv">'+sliders.rq+' %</b></label><input type="range" id="rq" min="35" max="65" step="5" value="'+sliders.rq+'"></div><div><label><input type="checkbox" id="nov" '+(sliders.noV?"checked":"")+'> Verschwendung beseitigen</label><label><input type="checkbox" id="hb" '+(sliders.halfB?"checked":"")+'> Bürokratie halbieren</label></div></div><div class="kpis" style="margin-top:12px"><div class="kpi red"><div class="l">Kosten je verkauftem Kleid</div><div class="v">'+eur(ch.total)+' €</div></div><div class="kpi"><div class="l">Ergebnis bei 90 €</div><div class="v">'+eur(90-ch.total)+' €</div></div><div class="kpi"><div class="l">Ergebnis bei 79 €</div><div class="v">'+eur(79-ch.total)+' €</div></div><div class="kpi'+(ch.total>71.1?" red":"")+'"><div class="l">Lücke zu 71,10 € (Target Gap)</div><div class="v">'+eur(ch.total-71.1)+' €</div></div></div><p class="small muted">Die Hebel rechnen mit den Lösungswerten; die Kette oben zeigt die Abgaben der Gruppen.</p></div>';
+    bindSliders(T);
+  }
+  if(boardTab==="vergleich"){
+    var c2=chain({rq:sliders.rq/100,noV:sliders.noV,halfB:sliders.halfB,prop:sliders.prop}); var z=zuschlag(); var p=sliders.price;
+    var meth=[{l:"Zuschlagskalkulation (Vollkosten)",v:z,c:"#9AA4AA"},{l:"Grenzplankostenrechnung (Teilkosten)",v:c2.grenz,c:"#5D6971"},{l:"Prozesskostenrechnung (Vollkosten)",v:c2.total,c:"#E2001A"}];
+    T.innerHTML='<div class="panel"><h3 style="margin-top:0">Drei Kostenrechnungen, drei Antworten: Kosten je verkauftem Kleid</h3><div class="chart">'+hbar(meth,{lines:[{v:p,t:"Preis "+eur(p,0)+" €"},{v:71.1,t:"erlaubt 71,10 €",c:"#E2001A"}],L:290,aria:"Vergleich der Verfahren"})+'</div></div>'+
+     '<div class="tbl panel"><table><thead><tr><th>Verfahren</th><th>Was gerechnet wird</th><th class="r">Kosten je Kleid</th><th class="r">Ergebnis je Kleid</th><th>Was es sagt</th></tr></thead><tbody>'+
+     '<tr><td><b>Zuschlagskalkulation</b></td><td class="small">Wareneinsatz 32 € plus 80 % Gemeinkostenzuschlag</td><td class="r num">'+eur(z)+'</td><td class="r num">'+eur(p-z)+' Gewinn</td><td class="small">Das Kleid sieht wie ein Renner aus. Der Zuschlag folgt dem Wert, nicht der Inanspruchnahme.</td></tr>'+
+     '<tr><td><b>Grenzplankostenrechnung</b><br><span class="small muted">nach Plaut und Kilger</span></td><td class="small">nur proportionale Kosten: Wareneinsatz, Porto, proportionaler Anteil der Prozesse ('+eur(c2.propProc)+' €)</td><td class="r num">'+eur(c2.grenz)+'</td><td class="r num">'+eur(p-c2.grenz)+' Deckungsbeitrag</td><td class="small">Kurzfristig deckt jedes Kleid Fixkosten. Annehmen lohnt, solange die Kapazität ohnehin da ist.</td></tr>'+
+     '<tr><td><b>Prozesskostenrechnung</b></td><td class="small">alle Tätigkeiten der Kette nach Inanspruchnahme, inklusive Kapazitätskosten</td><td class="r num">'+eur(c2.total)+'</td><td class="r num">'+eur(p-c2.total)+'</td><td class="small">Langfristig bindet das Kleid mehr Ressourcen, als es einbringt. Frage an Sortiment und Prozesse.</td></tr></tbody></table></div>'+
+     '<div class="panel"><h3 style="margin-top:0">Stellschrauben</h3><div class="fields"><div><label for="pr">Preis: <b>'+eur(p,0)+' €</b></label><input type="range" id="pr" min="70" max="100" step="1" value="'+p+'"></div><div><label for="rq">Retourenquote: <b id="rqv">'+sliders.rq+' %</b></label><input type="range" id="rq" min="35" max="65" step="5" value="'+sliders.rq+'"></div><div><label><input type="checkbox" id="nov" '+(sliders.noV?"checked":"")+'> Verschwendung beseitigen</label><label><input type="checkbox" id="hb" '+(sliders.halfB?"checked":"")+'> Bürokratie halbieren</label></div></div>'+
+     '<h3>Proportionaler Anteil der Prozesskosten je Abteilung (Grenzplankosten)</h3><div class="fields">'+D.depts.map(function(d){ var v=Math.round(((sliders.prop&&sliders.prop[d.id]!=null)?sliders.prop[d.id]:d.prop)*100); return '<div><label for="pp'+d.id+'">G'+d.id+' '+esc(d.name)+': <b>'+v+' %</b></label><input type="range" id="pp'+d.id+'" min="0" max="100" step="10" value="'+v+'"></div>'; }).join("")+'</div><p class="small muted">Annahme: proportional sind vor allem Zeitarbeit nach Menge, Verpackungsmaterial und mengenabhängige Gebühren. Der Rest ist Kapazität, die kurzfristig bleibt.</p></div>'+
+     '<div class="note info"><b>Aha:</b> Zuschlag und Grenzplankosten liefern fast dieselbe Zahl, meinen aber Verschiedenes. Erst die Prozesskostenrechnung zeigt, dass das Kleid die Kapazität von sechs Abteilungen bindet. Welche Rechnung Sie brauchen, hängt von der Frage ab: kurzfristige Annahme eines Auftrags oder langfristige Sortiments- und Prozessentscheidung.</div>';
+    bindSliders(T);
+    D.depts.forEach(function(d){ var e=document.getElementById("pp"+d.id); e.oninput=function(){ sliders.prop=sliders.prop||{}; sliders.prop[d.id]=+e.value/100; viewBoard(); }; });
+    var pr=document.getElementById("pr"); pr.oninput=function(){ sliders.price=+pr.value; viewBoard(); };
+  }
+}
+function bindSliders(T){ var rq=T.querySelector("#rq"); if(rq) rq.oninput=function(){ sliders.rq=+rq.value; viewBoard(); };
+  var nv=T.querySelector("#nov"); if(nv) nv.onchange=function(){ sliders.noV=nv.checked; viewBoard(); }; var hb=T.querySelector("#hb"); if(hb) hb.onchange=function(){ sliders.halfB=hb.checked; viewBoard(); }; }
+
+/* ---------- Steuerung ---------- */
+function render(){
+  var isBoard=(location.hash==="#leitung");
+  if(isBoard){ return viewBoardGate(); }
+  if(!CODE){ return viewEntry(); }
+  me=lsGet("ch_"+CODE); var players=STATE.players||{};
+  if(!me || (!DEMO && STATE.players && !players[me.pid])) { me=null; return viewJoin(); }
+  viewGroup();
+}
+function boot(){
+  if(DEMO){ CODE=CODE||"DEMO"; store=localStore(demoSeed()); }
+  else if(CODE){ var db=getDb(); if(!db){ app.innerHTML='<h1>Keine Verbindung</h1><p>Die Datenbank ist nicht erreichbar. Bitte WLAN prüfen oder die Datenblätter aus den Folien nutzen.</p>'; return; } store=fbStore(db,CODE); }
+  if(store){ var lastSig=null; store.on(function(v){ STATE=v;
+      if(location.hash!=="#leitung" && me){ var g=me.group, pl=v.players||{}; var sig=JSON.stringify([(v.groups&&v.groups[g]&&v.groups[g].sub)||null, Object.keys(pl).filter(function(k){return pl[k].group===g;}).length]); if(sig===lastSig) return; lastSig=sig; }
+      if(location.hash==="#leitung"){ var a=document.activeElement; if(a && a.dataset && a.dataset.b!=null) return; }
+      render(); if(me && !lastSig){ var pl2=v.players||{}; lastSig=JSON.stringify([(v.groups&&v.groups[me.group]&&v.groups[me.group].sub)||null, Object.keys(pl2).filter(function(k){return pl2[k].group===me.group;}).length]); } }); }
+  else render();
+}
+window.addEventListener("hashchange",render);
+boot();
+</script>
+</body>
+</html>

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tools ReFi</title>
+<link rel="stylesheet" href="assets/site.css">
+<style>
+.toolnav{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.toolnav a{border:1px solid var(--line);padding:6px 12px;text-decoration:none;color:var(--ink);font-size:14px}
+.toolnav a:hover{border-color:var(--red)}
+section.tool{border-top:1px solid var(--line);margin-top:34px;padding-top:6px;scroll-margin-top:12px}
+.sl label b{color:var(--ink)}
+.out td.r{font-variant-numeric:tabular-nums}
+.aha{border-left:none;background:var(--panel);padding:12px 14px;margin-top:12px;font-size:14px}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>Tools: mit Schiebereglern ausprobieren</h1>
+  <p class="lead">Jedes Tool rechnet ein Beispiel aus der Vorlesung. Ziehen Sie an den Reglern und beobachten Sie, welche Größe sich bewegt und welche nicht. Alle Werte bleiben in Ihrem Browser.</p>
+  <div class="toolnav"><a href="#kosten">Drei Kostenrechnungen</a><a href="#leer">Leerkosten</a><a href="#wc">Working Capital</a><a href="#ifrs16">Leasing nach IFRS 16</a></div>
+
+  <section class="tool" id="kosten">
+    <h2>Drei Kostenrechnungen geben für dasselbe Kleid drei verschiedene Antworten</h2>
+    <p class="small muted">Fall Nordstil, Abendkleid, Werte je verkauftem Kleid. Zuschlagskalkulation, Grenzplankostenrechnung nach Plaut und Kilger, Prozesskostenrechnung.</p>
+    <div class="fields sl">
+      <div><label for="k_p">Verkaufspreis: <b id="k_pv"></b></label><input type="range" id="k_p" min="60" max="120" step="1" value="90"></div>
+      <div><label for="k_rq">Retourenquote: <b id="k_rqv"></b></label><input type="range" id="k_rq" min="20" max="75" step="5" value="65"></div>
+      <div><label for="k_z">Gemeinkostenzuschlag auf den Wareneinsatz: <b id="k_zv"></b></label><input type="range" id="k_z" min="40" max="200" step="10" value="80"></div>
+      <div><label><input type="checkbox" id="k_v"> Verschwendung abbauen</label><label><input type="checkbox" id="k_b"> Bürokratie halbieren</label></div>
+    </div>
+    <div class="chart" id="k_chart" style="margin-top:12px"></div>
+    <div class="tbl"><table class="out" id="k_tab"></table></div>
+    <div class="aha" id="k_aha"></div>
+    <p class="small muted">Quelle: Fall Nordstil (Lehrfall, Größenordnungen aus Branchendaten zu Retouren, u. a. Forschungsgruppe Retourenmanagement Universität Bamberg); Verfahren nach Kilger, Pampel und Vikas (2012) sowie Kaplan und Anderson (2007).</p>
+  </section>
+
+  <section class="tool" id="leer">
+    <h2>Wer Leerkosten auf Produkte verteilt, macht sie mit jedem verlorenen Auftrag teurer</h2>
+    <div class="fields sl">
+      <div><label for="l_k">Kapazitätskosten der Abteilung je Jahr: <b id="l_kv"></b></label><input type="range" id="l_k" min="100000" max="1000000" step="20000" value="300000"></div>
+      <div><label for="l_m">Praktische Kapazität in Minuten: <b id="l_mv"></b></label><input type="range" id="l_m" min="100000" max="1000000" step="20000" value="300000"></div>
+      <div><label for="l_u">Genutzte Minuten: <b id="l_uv"></b></label><input type="range" id="l_u" min="20000" max="1000000" step="5000" value="255000"></div>
+      <div><label for="l_t">Minuten je Produkt: <b id="l_tv"></b></label><input type="range" id="l_t" min="1" max="60" step="1" value="12"></div>
+    </div>
+    <div class="kpis" id="l_kpi" style="margin-top:14px"></div>
+    <div class="chart" id="l_chart" style="margin-top:12px"></div>
+    <div class="aha" id="l_aha"></div>
+    <p class="small muted">Quelle: Kaplan, R. S., und Anderson, S. R. (2004), Time-driven activity-based costing, Harvard Business Review 82(11); Nutz- und Leerkosten nach Bredt (1939) und Gutenberg (1951). Beispielwerte: Abteilung Einkauf im Fall Nordstil.</p>
+  </section>
+
+  <section class="tool" id="wc">
+    <h2>Wachstum bindet Kapital: Gewinn und operativer Cashflow laufen auseinander</h2>
+    <div class="fields sl">
+      <div><label for="w_u">Umsatz Vorjahr in Mio. €: <b id="w_uv"></b></label><input type="range" id="w_u" min="10" max="500" step="10" value="100"></div>
+      <div><label for="w_g">Umsatzwachstum: <b id="w_gv"></b></label><input type="range" id="w_g" min="0" max="60" step="5" value="30"></div>
+      <div><label for="w_m">Gewinnmarge nach Steuern: <b id="w_mv"></b></label><input type="range" id="w_m" min="0" max="20" step="1" value="6"></div>
+      <div><label for="w_c">Materialaufwand in % vom Umsatz: <b id="w_cv"></b></label><input type="range" id="w_c" min="20" max="90" step="5" value="60"></div>
+      <div><label for="w_dso">Forderungslaufzeit DSO in Tagen: <b id="w_dsov"></b></label><input type="range" id="w_dso" min="0" max="120" step="5" value="50"></div>
+      <div><label for="w_dio">Lagerreichweite DIO in Tagen: <b id="w_diov"></b></label><input type="range" id="w_dio" min="0" max="180" step="5" value="60"></div>
+      <div><label for="w_dpo">Verbindlichkeitenlaufzeit DPO in Tagen: <b id="w_dpov"></b></label><input type="range" id="w_dpo" min="0" max="120" step="5" value="40"></div>
+    </div>
+    <div class="kpis" id="w_kpi" style="margin-top:14px"></div>
+    <div class="chart" id="w_chart" style="margin-top:12px"></div>
+    <div class="aha" id="w_aha"></div>
+    <p class="small muted">Vereinfachung: Abschreibungen gleich Investitionen, Working Capital aus Forderungen, Vorräten und Lieferantenverbindlichkeiten zum Jahresende. Quelle: Berk und DeMarzo, Corporate Finance, Kapitel Working Capital Management; PwC Working Capital Study 25/26 (Mittelwerte DSO rund 50 Tage).</p>
+  </section>
+
+  <section class="tool" id="ifrs16">
+    <h2>IFRS 16 hebt das EBITDA und die Nettoverschuldung zugleich</h2>
+    <div class="fields sl">
+      <div><label for="i_r">Jährliche Leasingrate in Mio. €: <b id="i_rv"></b></label><input type="range" id="i_r" min="1" max="50" step="1" value="10"></div>
+      <div><label for="i_n">Laufzeit in Jahren: <b id="i_nv"></b></label><input type="range" id="i_n" min="2" max="20" step="1" value="8"></div>
+      <div><label for="i_i">Grenzfremdkapitalzins: <b id="i_iv"></b></label><input type="range" id="i_i" min="1" max="10" step="0.5" value="5"></div>
+      <div><label for="i_e">EBITDA vor IFRS 16 in Mio. €: <b id="i_ev"></b></label><input type="range" id="i_e" min="20" max="300" step="5" value="80"></div>
+      <div><label for="i_d">Nettoverschuldung vor IFRS 16 in Mio. €: <b id="i_dv"></b></label><input type="range" id="i_d" min="0" max="600" step="10" value="160"></div>
+    </div>
+    <div class="tbl" style="margin-top:14px"><table class="out" id="i_tab"></table></div>
+    <div class="aha" id="i_aha"></div>
+    <p class="small muted">Jahr 1, Rate nachschüssig, lineare Abschreibung des Nutzungsrechts. Quelle: IASB (2016), IFRS 16 Leases, Abs. 26, 31 und 36; Kennzahlenwirkung nach Vorlesung ReFi II, Kapitel 1.</p>
+  </section>
+</main>
+<script src="assets/site.js"></script>
+<script src="assets/nordstil-data.js"></script>
+<script src="assets/kern.js"></script>
+<script>
+function $(id){ return document.getElementById(id); }
+function v(id){ return +$(id).value; }
+function bind(ids,fn){ ids.forEach(function(id){ $(id).addEventListener("input",fn); }); fn(); }
+function pct(x,d){ return eur(x*100,d==null?0:d)+" %"; }
+
+/* 1 Drei Kostenrechnungen */
+bind(["k_p","k_rq","k_z","k_v","k_b"],function(){
+  var p=v("k_p"), rq=v("k_rq")/100, z=v("k_z")/100;
+  $("k_pv").textContent=eur(p,0)+" €"; $("k_rqv").textContent=pct(rq); $("k_zv").textContent=pct(z);
+  var c=chain({rq:rq,noV:$("k_v").checked,halfB:$("k_b").checked}); var zk=M.we*(1+z);
+  var meth=[{l:"Zuschlagskalkulation",v:zk,c:"#7D8990"},{l:"Grenzkosten (Plaut/Kilger)",v:c.grenz,c:"#2B3439"},{l:"Prozesskostenrechnung",v:c.total,c:"#E2001A"}];
+  $("k_chart").innerHTML=hbar(meth,{lines:[{v:p,t:"Preis "+eur(p,0)+" €"},{v:M.markt,t:"Markt 79 €"},{v:71.1,t:"erlaubt 71,10 €",c:"#E2001A"}],L:230,aria:"Kosten je Kleid nach drei Verfahren"});
+  $("k_tab").innerHTML='<thead><tr><th>Verfahren</th><th class="r">Kosten je Kleid</th><th class="r">Ergebnis bei '+eur(p,0)+' €</th><th>Was das Verfahren sagt</th></tr></thead><tbody>'+
+   '<tr><td>Zuschlagskalkulation</td><td class="r">'+eur(zk)+' €</td><td class="r">'+eur(p-zk)+' € Gewinn</td><td class="small">Gemeinkosten folgen dem Wareneinsatz. Retouren und Prozesse sind unsichtbar.</td></tr>'+
+   '<tr><td>Grenzplankostenrechnung</td><td class="r">'+eur(c.grenz)+' €</td><td class="r">'+eur(p-c.grenz)+' € Deckungsbeitrag</td><td class="small">Nur proportionale Kosten. Richtig für kurzfristige Entscheidungen bei freier Kapazität.</td></tr>'+
+   '<tr><td>Prozesskostenrechnung</td><td class="r">'+eur(c.total)+' €</td><td class="r">'+eur(p-c.total)+' € '+(p-c.total<0?'Verlust':'Gewinn')+'</td><td class="small">Gemeinkosten nach Inanspruchnahme der Tätigkeiten, inklusive Retourenkette. Sicht für Sortiment und Preis.</td></tr></tbody>';
+  var gap=c.total-71.1;
+  $("k_aha").innerHTML='<b>Beobachten Sie:</b> Der Zuschlag ändert sich nicht, wenn Sie die Retourenquote bewegen. Die Prozesskosten ändern sich stark ('+eur(c.total)+' € bei '+pct(rq)+'). '+(gap>0?'Bis zu den erlaubten Kosten von 71,10 € fehlen noch '+eur(gap)+' €.':'Die erlaubten Kosten von 71,10 € sind erreicht.')+' Welche Rechnung Sie zeigen, entscheidet über die Sortimentsentscheidung.';
+});
+
+/* 2 Leerkosten */
+bind(["l_k","l_m","l_u","l_t"],function(){
+  var K=v("l_k"), Mx=v("l_m"), U=Math.min(v("l_u"),Mx), t=v("l_t");
+  $("l_kv").textContent=eur(K,0)+" €"; $("l_mv").textContent=eur(Mx,0); $("l_uv").textContent=eur(U,0)+(v("l_u")>Mx?" (gekappt)":""); $("l_tv").textContent=eur(t,0);
+  var rate=K/Mx, rateIst=K/U, leer=K*(1-U/Mx);
+  $("l_kpi").innerHTML='<div class="kpi"><div class="v">'+eur(rate)+' €</div><div class="l">Satz je Minute auf praktische Kapazität</div></div><div class="kpi"><div class="v">'+pct(U/Mx)+'</div><div class="l">Auslastung</div></div><div class="kpi red"><div class="v">'+eur(leer,0)+' €</div><div class="l">Leerkosten je Jahr, gehören nicht ins Produkt</div></div><div class="kpi"><div class="v">'+eur(rateIst)+' €</div><div class="l">Satz je Minute auf Istbasis</div></div>';
+  var rows=[1,0.9,0.8,0.7,0.6,0.5].map(function(a){ return {l:"Auslastung "+pct(a),stack:[{n:"Nutzkosten",v:rate*t,c:"#5D6971"},{n:"verteilte Leerkosten",v:K/(Mx*a)*t-rate*t,c:"#E2001A"}],v:K/(Mx*a)*t}; });
+  $("l_chart").innerHTML='<p class="small" style="margin:0 0 4px"><b>Kosten je Produkt bei Istbasis</b> (grau Nutzkosten, rot mitverteilte Leerkosten)</p>'+hbar(rows,{L:170,aria:"Kosten je Produkt nach Auslastung"});
+  $("l_aha").innerHTML='<b>Beobachten Sie:</b> Auf Istbasis steigt der Produktpreis, wenn Aufträge wegfallen. Wer daraufhin die Preise erhöht, verliert weitere Aufträge (Todesspirale der Vollkostenrechnung). Auf Basis der praktischen Kapazität bleibt der Satz bei '+eur(rate)+' €, und die '+eur(leer,0)+' € Leerkosten werden als Managementthema sichtbar.';
+});
+
+/* 3 Working Capital */
+bind(["w_u","w_g","w_m","w_c","w_dso","w_dio","w_dpo"],function(){
+  var U0=v("w_u"), g=v("w_g")/100, m=v("w_m")/100, cq=v("w_c")/100, dso=v("w_dso"), dio=v("w_dio"), dpo=v("w_dpo");
+  $("w_uv").textContent=eur(U0,0); $("w_gv").textContent=pct(g); $("w_mv").textContent=pct(m); $("w_cv").textContent=pct(cq); $("w_dsov").textContent=dso; $("w_diov").textContent=dio; $("w_dpov").textContent=dpo;
+  function wc(U){ return U/365*dso + U*cq/365*dio - U*cq/365*dpo; }
+  var U1=U0*(1+g), gewinn=U1*m, dWC=wc(U1)-wc(U0), cf=gewinn-dWC, ccc=dso+dio-dpo;
+  $("w_kpi").innerHTML='<div class="kpi"><div class="v">'+eur(ccc,0)+' Tage</div><div class="l">Cash Conversion Cycle (DSO + DIO − DPO, vereinfacht)</div></div><div class="kpi"><div class="v">'+eur(wc(U1),1)+' Mio. €</div><div class="l">gebundenes Working Capital am Jahresende</div></div><div class="kpi '+(cf<0?'red':'')+'"><div class="v">'+eur(cf,1)+' Mio. €</div><div class="l">operativer Cashflow</div></div>';
+  var neg=cf<0;
+  $("w_chart").innerHTML=hbar([{l:"Jahresüberschuss",v:Math.max(gewinn,0),c:"#5D6971"},{l:"Aufbau Working Capital",v:Math.abs(dWC),c:dWC>0?"#E2001A":"#1F7A4D",note:dWC>0?"Mittelbindung":"Freisetzung"},{l:"Operativer Cashflow",v:Math.abs(cf),c:neg?"#E2001A":"#1F7A4D",note:neg?"negativ":""}],{L:200,aria:"Gewinn und Cashflow",fmt:function(x){return eur(x,1)+" Mio. €";}});
+  var gBreak = (function(){ var lo=0,hi=5; for(var i=0;i<50;i++){ var mid=(lo+hi)/2, U=U0*(1+mid); if(U*m-(wc(U)-wc(U0))>0) lo=mid; else hi=mid; } return lo; })();
+  $("w_aha").innerHTML='<b>Beobachten Sie:</b> '+(neg?'Das Unternehmen verdient '+eur(gewinn,1)+' Mio. € und hat trotzdem '+eur(-cf,1)+' Mio. € weniger Geld in der Kasse. ':'Der Gewinn kommt als Geld an. ')+'Ab rund '+pct(gBreak)+' Wachstum frisst das Working Capital den Gewinn auf. Senken Sie DSO um zehn Tage und vergleichen Sie.';
+});
+
+/* 4 IFRS 16 */
+bind(["i_r","i_n","i_i","i_e","i_d"],function(){
+  var R=v("i_r"), n=v("i_n"), i=v("i_i")/100, E=v("i_e"), ND=v("i_d");
+  $("i_rv").textContent=eur(R,0); $("i_nv").textContent=n; $("i_iv").textContent=pct(i,1); $("i_ev").textContent=eur(E,0); $("i_dv").textContent=eur(ND,0);
+  var pv=R*(1-Math.pow(1+i,-n))/i, afa=pv/n, zins=pv*i;
+  var E2=E+R, EBIT1=E-0, d1=ND/E, d2=(ND+pv)/E2;
+  function row(l,a,b,f){ return '<tr><td>'+l+'</td><td class="r">'+(f?f(a):eur(a,1))+'</td><td class="r">'+(f?f(b):eur(b,1))+'</td><td class="r">'+(f?'':(b-a>=0?'+':'')+eur(b-a,1))+'</td></tr>'; }
+  $("i_tab").innerHTML='<thead><tr><th>Jahr 1, Mio. €</th><th class="r">Operating Lease alt</th><th class="r">IFRS 16</th><th class="r">Veränderung</th></tr></thead><tbody>'+
+   row("Leasingaufwand im EBITDA",R,0)+row("EBITDA",E,E2)+row("Abschreibung Nutzungsrecht",0,afa)+row("Zinsaufwand Leasing",0,zins)+
+   row("Ergebnis vor Steuern, Effekt",-R,-(afa+zins))+row("Nettoverschuldung inklusive Leasing",ND,ND+pv)+
+   row("Nettoverschuldung / EBITDA",d1,d2,function(x){return eur(x,2)+"x";})+'</tbody>';
+  $("i_aha").innerHTML='<b>Beobachten Sie:</b> Das EBITDA steigt um die volle Rate ('+eur(R,1)+' Mio. €), obwohl sich am Geschäft nichts ändert. Der Verschuldungsgrad '+(d2>d1?'steigt':'sinkt')+' von '+eur(d1,2)+'x auf '+eur(d2,2)+'x. Im ersten Jahr ist der Aufwand unter IFRS 16 um '+eur(afa+zins-R,1)+' Mio. € '+(afa+zins>R?'höher':'niedriger')+' (Zins fällt anfangs höher an). Fragen Sie bei jeder Kennzahl: vor oder nach IFRS 16?';
+});
+</script>
+</body>
+</html>

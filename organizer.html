@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Advance Organizer ReFi</title>
+<link rel="stylesheet" href="assets/site.css">
+<style>
+.lane{margin-top:22px}
+.lane h2{margin:0 0 4px}
+.lane .q{color:var(--grey);font-size:14px;margin-bottom:10px}
+.track{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;position:relative}
+.node{position:relative;padding:14px 14px 12px;border:1px solid var(--line);margin-right:18px;background:#fff;min-width:0}
+.node:last-child{margin-right:0}
+.node:not(:last-child)::after{content:"";position:absolute;right:-19px;top:50%;width:18px;border-top:2px solid var(--line)}
+.node .n{font-size:12px;font-weight:700;color:var(--grey);letter-spacing:.5px;text-transform:uppercase}
+.node .t{font-weight:700;margin:2px 0 4px}
+.node .l{font-size:13px;color:var(--grey)}
+.node.behandelt{background:var(--panel);border-color:var(--panel)}
+.node.behandelt .t::after{content:" ✓";color:var(--ok)}
+.node.heute{border:2px solid var(--red)}
+.node.heute .here{position:absolute;top:-11px;left:10px;background:var(--red);color:#fff;font-size:11px;font-weight:700;padding:1px 7px;letter-spacing:.4px}
+.node.folgt{border-style:dashed}
+.bridges td:first-child{white-space:nowrap;font-weight:700}
+@media (max-width:760px){.track{grid-template-columns:1fr}.node{margin-right:0;margin-bottom:14px}.node:not(:last-child)::after{right:auto;left:24px;top:auto;bottom:-15px;width:0;height:14px;border-top:none;border-left:2px solid var(--line)}}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>Advance Organizer: wo wir stehen und wie alles zusammenhängt</h1>
+  <p class="lead">Die Karte wird nach jedem Termin fortgeschrieben. Grau ist behandelt, rot umrandet ist der aktuelle Termin, gestrichelt folgt noch. Die Leitfrage je Kapitel ist zugleich die Prüfungsfrage, auf die Sie am Ende eine begründete Antwort geben können sollten.</p>
+  <div id="map"></div>
+
+  <h2>Was heute zusammenkommt</h2>
+  <div class="grid3">
+    <div class="panel"><h3 style="margin-top:0">Was Sie schon können</h3><p class="small">Kosten nach Arten, Stellen und Trägern gliedern. Gemeinkosten per Zuschlag verteilen. Bilanz, GuV und die Idee der Kapitalflussrechnung lesen.</p></div>
+    <div class="panel"><h3 style="margin-top:0">Was heute dazukommt</h3><p class="small">Vormittag: Gemeinkosten nach Tätigkeiten statt nach Wert verteilen, Leerkosten sichtbar machen, Kostenkette gegen Marktpreis und Zielkosten halten. Danach: warum Gewinn und Liquidität auseinanderlaufen, Working Capital und Kapitalflussrechnung als Werkzeug.</p></div>
+    <div class="panel"><h3 style="margin-top:0">Wohin es führt</h3><p class="small">Die Prozesskosten liefern die Kostenbasis für den Business Case (ReFi II, Kapitel 3). Die Cashflows aus Kapitel 1 sind die Rechengröße der Investitionsrechnung (Kapitel 2). Working Capital ist ein Finanzierungsbedarf (Kapitel 4).</p></div>
+  </div>
+
+  <h2>Verbindungen zwischen den Kapiteln</h2>
+  <div class="tbl"><table class="bridges">
+    <thead><tr><th>Von</th><th>Nach</th><th>Was hinüberwandert</th></tr></thead>
+    <tbody>
+      <tr><td>ReFi I, Kap. 2</td><td>ReFi II, Kap. 1</td><td>Strom- und Bestandsgrößen: Die Kapitalflussrechnung verbindet Bilanz und GuV.</td></tr>
+      <tr><td>ReFi I, Kap. 3</td><td>ReFi II, Kap. 1 und 4</td><td>Jahresabschlusskennzahlen werden zu Liquiditäts- und Ratingkennzahlen.</td></tr>
+      <tr><td>ReFi I, Kap. 4</td><td>ReFi II, Kap. 3</td><td>Kostenmodelle (Zuschlag, Deckungsbeitrag, Prozesskosten) bestimmen, ob ein Business Case trägt.</td></tr>
+      <tr><td>ReFi II, Kap. 1</td><td>ReFi II, Kap. 2</td><td>Gerechnet wird mit Zahlungen, nicht mit Gewinnen.</td></tr>
+      <tr><td>ReFi II, Kap. 2 und 3</td><td>ReFi II, Kap. 4</td><td>Aus dem Kapitalbedarf folgt die Finanzierungsentscheidung.</td></tr>
+    </tbody>
+  </table></div>
+  <p class="small muted" style="margin-top:10px">Quelle: Modulhandbuch T3WIW2003, DHBW Stuttgart; Gliederung der Vorlesung, Stand November 2026. Zum Konzept: Ausubel, D. P. (1960). The use of advance organizers in the learning and retention of meaningful verbal material. Journal of Educational Psychology, 51(5), 267 bis 272.</p>
+</main>
+<script src="assets/site.js"></script>
+<script src="assets/kurs.js"></script>
+<script>
+(function(){
+  var h="";
+  KURS.teile.forEach(function(t){
+    h+='<section class="lane"><h2>'+esc(t.titel)+'</h2><div class="q">'+esc(t.frage)+'</div><div class="track">';
+    t.kapitel.forEach(function(k){
+      h+='<a class="node '+k.status+'" href="vorlesung.html#'+k.id+'" style="text-decoration:none;color:inherit">'+(k.status==="heute"?'<span class="here">Sie sind hier</span>':'')+'<div class="n">Kapitel '+k.nr+'</div><div class="t">'+esc(k.titel)+'</div><div class="l">'+esc(k.leit)+'</div></a>';
+    });
+    h+='</div></section>';
+  });
+  document.getElementById("map").innerHTML=h;
+})();
+</script>
+</body>
+</html>

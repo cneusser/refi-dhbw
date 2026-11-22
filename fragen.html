@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Fragen ReFi</title>
+<link rel="stylesheet" href="assets/site.css">
+<style>
+.q{border:1px solid var(--line);padding:14px;margin-top:10px;display:grid;grid-template-columns:64px minmax(0,1fr);gap:12px;background:#fff}
+.q.answered{border-color:var(--ok)}
+.vote{display:flex;flex-direction:column;align-items:center;gap:2px}
+.vote button{background:#fff;color:var(--ink);border:1px solid var(--line);padding:4px 10px;font-size:15px}
+.vote button.on{border-color:var(--red);color:var(--red)}
+.vote b{font-size:18px}
+.meta{font-size:12px;color:var(--grey)}
+.ans{background:var(--okbg);padding:10px 12px;margin-top:8px;font-size:15px}
+.ans .meta{color:var(--ok);font-weight:700}
+.adm{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.adm textarea{min-height:60px}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>Fragen und Antworten</h1>
+  <p class="lead">Stellen Sie hier Ihre Fragen zur Vorlesung, auch anonym. Unterstützen Sie Fragen anderer mit einem Klick, dann sieht der Dozent, was viele bewegt. Antworten erscheinen direkt unter der Frage.</p>
+  <div id="status" class="note info small" hidden></div>
+  <form class="panel grey" id="f">
+    <div class="fields">
+      <div style="grid-column:1/-1"><label for="t">Ihre Frage</label><textarea id="t" rows="3" maxlength="600" required placeholder="Zum Beispiel: Warum gehören Leerkosten nicht in den Produktpreis?"></textarea></div>
+      <div><label for="n">Name (freiwillig)</label><input id="n" maxlength="40" placeholder="anonym"></div>
+      <div><label for="ch">Kapitel</label><select id="ch"></select></div>
+    </div>
+    <div class="row" style="margin-top:12px"><button class="red" type="submit">Frage senden</button><span class="small muted" id="fmsg"></span></div>
+  </form>
+  <div class="row" style="justify-content:space-between;margin-top:22px">
+    <div class="row"><label for="sort" style="margin:0">Sortieren</label><select id="sort" style="width:auto"><option value="v">meiste Stimmen</option><option value="ts">neueste</option><option value="open">offene zuerst</option></select>
+      <label for="flt" style="margin:0 0 0 8px">Kapitel</label><select id="flt" style="width:auto;max-width:190px"></select></div>
+    <button class="ghost" id="lock" type="button">Dozentenmodus</button>
+  </div>
+  <div id="list"></div>
+</main>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script src="assets/site.js"></script>
+<script src="assets/kurs.js"></script>
+<script>
+var PIN="2311", ADMIN=false, DATA={}, db=getDb(), ref=db?db.ref("refi/qa"):null;
+var CH=[["allg","Allgemein und Organisation"]]; KURS.teile.forEach(function(t){ t.kapitel.forEach(function(k){ CH.push([k.id,(t.id==="refi1"?"ReFi I":"ReFi II")+", Kap. "+k.nr+" "+k.titel]); }); });
+var CHN={}; CH.forEach(function(c){CHN[c[0]]=c[1];});
+document.getElementById("ch").innerHTML=CH.map(function(c){return '<option value="'+c[0]+'"'+(c[0]==="r1k4"?' selected':'')+'>'+esc(c[1])+'</option>';}).join("");
+document.getElementById("flt").innerHTML='<option value="">alle</option>'+CH.map(function(c){return '<option value="'+c[0]+'">'+esc(c[1])+'</option>';}).join("");
+function voted(){ try{ return JSON.parse(localStorage.getItem("refi_votes")||"{}"); }catch(e){ return {}; } }
+function setVoted(o){ try{ localStorage.setItem("refi_votes",JSON.stringify(o)); }catch(e){} }
+var local={ data:{}, push:function(v){ var k="l"+Date.now(); this.data[k]=v; DATA=this.data; render(); return Promise.resolve(); } };
+if(!ref){ var s=document.getElementById("status"); s.hidden=false; s.textContent="Ohne Verbindung zur Datenbank: Fragen bleiben nur in diesem Fenster sichtbar. Bitte die Firebase-Konfiguration prüfen."; }
+else ref.on("value",function(sn){ DATA=sn.val()||{}; render(); },function(e){ var s=document.getElementById("status"); s.hidden=false; s.textContent="Datenbank nicht erreichbar ("+e.code+"). Bitte die Regeln für den Pfad refi/qa prüfen."; });
+
+document.getElementById("f").onsubmit=function(ev){ ev.preventDefault(); var t=document.getElementById("t").value.trim(); if(t.length<5) return;
+  var o={t:t,n:document.getElementById("n").value.trim().slice(0,40),ch:document.getElementById("ch").value,ts:ref?firebase.database.ServerValue.TIMESTAMP:Date.now(),v:0};
+  (ref?ref.push(o):local.push(o)).then(function(){ document.getElementById("t").value=""; document.getElementById("fmsg").textContent="Danke, Ihre Frage ist eingegangen."; setTimeout(function(){document.getElementById("fmsg").textContent="";},4000); });
+};
+document.getElementById("sort").onchange=render; document.getElementById("flt").onchange=render;
+document.getElementById("lock").onclick=function(){
+  if(ADMIN){ ADMIN=false; this.textContent="Dozentenmodus"; render(); return; }
+  var box=document.getElementById("status"); box.hidden=false; box.innerHTML='<div class="row"><label for="pin" style="margin:0">PIN</label><input id="pin" type="password" inputmode="numeric" style="width:120px"><button type="button" id="pinok">Freischalten</button></div>';
+  document.getElementById("pinok").onclick=function(){ if(document.getElementById("pin").value===PIN){ ADMIN=true; box.hidden=true; document.getElementById("lock").textContent="Dozentenmodus beenden"; render(); } else document.getElementById("pin").value=""; };
+};
+function when(ts){ if(!ts) return ""; var d=new Date(ts); return d.toLocaleDateString("de-DE")+" "+d.toLocaleTimeString("de-DE",{hour:"2-digit",minute:"2-digit"}); }
+function render(){
+  var vs=voted(), sort=document.getElementById("sort").value, flt=document.getElementById("flt").value;
+  var arr=Object.keys(DATA).map(function(k){ var o=DATA[k]; o.k=k; return o; }).filter(function(o){ return !flt||o.ch===flt; });
+  arr.sort(function(a,b){ if(sort==="ts") return (b.ts||0)-(a.ts||0); if(sort==="open"&&(!!a.a)!==(!!b.a)) return a.a?1:-1; return (b.v||0)-(a.v||0)||(b.ts||0)-(a.ts||0); });
+  var L=document.getElementById("list");
+  if(!arr.length){ L.innerHTML='<p class="muted" style="margin-top:14px">Noch keine Fragen'+(flt?' zu diesem Kapitel':'')+'. Trauen Sie sich: Wenn Sie es fragen, fragen es sich fünf andere auch.</p>'; return; }
+  L.innerHTML=arr.map(function(o){ return '<div class="q'+(o.a?' answered':'')+'"><div class="vote"><button data-v="'+o.k+'" class="'+(vs[o.k]?'on':'')+'" aria-label="Frage unterstützen">▲</button><b class="num">'+(o.v||0)+'</b></div><div style="min-width:0"><div class="meta">'+esc(o.n||"anonym")+' · '+esc(CHN[o.ch]||"")+' · '+when(o.ts)+'</div><div style="margin-top:4px;white-space:pre-wrap">'+esc(o.t)+'</div>'+
+    (o.a?'<div class="ans"><div class="meta">Antwort Dr. Neusser</div><div style="white-space:pre-wrap">'+esc(o.a)+'</div></div>':'')+
+    (ADMIN?'<div class="adm"><textarea id="a_'+o.k+'" placeholder="Antwort">'+esc(o.a||"")+'</textarea><button data-a="'+o.k+'">Antwort speichern</button><button class="ghost" data-d="'+o.k+'">Löschen</button></div>':'')+'</div></div>'; }).join("");
+  [].forEach.call(L.querySelectorAll("[data-v]"),function(b){ b.onclick=function(){ var k=b.dataset.v, vs=voted(), d=vs[k]?-1:1; vs[k]=!vs[k]; if(!vs[k]) delete vs[k]; setVoted(vs);
+    if(ref) ref.child(k+"/v").transaction(function(c){ return Math.max(0,(c||0)+d); }); else { DATA[k].v=Math.max(0,(DATA[k].v||0)+d); render(); } }; });
+  [].forEach.call(L.querySelectorAll("[data-a]"),function(b){ b.onclick=function(){ var k=b.dataset.a, t=document.getElementById("a_"+k).value.trim(); if(ref) ref.child(k).update({a:t||null}); else { DATA[k].a=t; render(); } }; });
+  [].forEach.call(L.querySelectorAll("[data-d]"),function(b){ b.onclick=function(){ var k=b.dataset.d; if(b.dataset.c){ if(ref) ref.child(k).remove(); else { delete DATA[k]; render(); } } else { b.dataset.c="1"; b.textContent="Wirklich löschen?"; } }; });
+}
+render();
+</script>
+</body>
+</html>

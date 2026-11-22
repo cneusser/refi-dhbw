@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Literatur und Links ReFi</title>
+<link rel="stylesheet" href="assets/site.css">
+<style>
+.refgrp{margin-top:6px}
+.refgrp h3{font-size:14px;color:var(--grey);text-transform:uppercase;letter-spacing:.5px;margin:18px 0 6px}
+.refgrp ul{margin:0;padding-left:18px}
+.refgrp li{margin:4px 0;font-size:15px;max-width:95ch}
+section.ch{scroll-margin-top:12px;border-top:1px solid var(--line);margin-top:28px}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>Literatur und weiterführende Links</h1>
+  <p class="lead">Je Kapitel die wissenschaftlichen Grundlagen und Praxisquellen aus den Literaturfolien. Lehrbücher finden Sie in der Bibliothek der DHBW Stuttgart, viele davon als E-Book im Hochschulnetz.</p>
+  <div class="toolnav row" id="nav" style="margin-top:12px"></div>
+  <div id="refs"></div>
+  <section class="ch">
+    <h2>Dauerhaft nützlich</h2>
+    <div class="refgrp"><ul>
+      <li><a href="https://www.destatis.de/DE/Themen/Staat/Buerokratiekosten/_inhalt.html" target="_blank" rel="noopener">Statistisches Bundesamt: Bürokratiekosten und Erfüllungsaufwand</a></li>
+      <li><a href="https://www.ifrs.org/issued-standards/list-of-standards/" target="_blank" rel="noopener">IFRS Foundation: Liste der Standards (IAS 7, IFRS 16, IFRS 18)</a></li>
+      <li><a href="https://www.drsc.de" target="_blank" rel="noopener">DRSC: Deutsche Rechnungslegungs Standards</a></li>
+      <li><a href="https://www.unternehmensregister.de" target="_blank" rel="noopener">Unternehmensregister: Jahresabschlüsse deutscher Unternehmen</a></li>
+      <li><a href="https://www.retourenforschung.de" target="_blank" rel="noopener">Forschungsgruppe Retourenmanagement, Universität Bamberg</a></li>
+      <li><a href="https://www.pwc.co.uk/working-capital-study" target="_blank" rel="noopener">PwC Working Capital Study</a></li>
+    </ul></div>
+  </section>
+  <p class="small muted" style="margin-top:20px">Webquellen abgerufen im November 2026. Gesetzesstände und Zahlen vor der Nutzung in Hausarbeiten prüfen.</p>
+</main>
+<script src="assets/site.js"></script>
+<script src="assets/refs.js"></script>
+<script>
+(function(){
+  var CH=[["pkr","ReFi I, Kapitel 4: Prozesskostenrechnung"],["kap1","ReFi II, Kapitel 1: Cashflow und Liquidität"]];
+  document.getElementById("nav").innerHTML=CH.map(function(c){return '<a class="btn ghost" href="#'+c[0]+'">'+esc(c[1])+'</a>';}).join("");
+  function linkify(s){ return esc(s).replace(/((?:https?:\/\/)?(?:www\.)?[a-z0-9-]+(?:\.[a-z0-9-]+)*\.(?:de|com|org|co\.uk|bund\.de)(?:\/[\w\-./]*)?)/gi,function(m){ var u=/^https?:/.test(m)?m:"https://"+m; return '<a href="'+u+'" target="_blank" rel="noopener">'+m+'</a>'; }); }
+  document.getElementById("refs").innerHTML=CH.map(function(c){ var R=REFS[c[0]]||[];
+    return '<section class="ch" id="'+c[0]+'"><h2>'+esc(c[1])+'</h2>'+R.map(function(sl){ return sl.groups.map(function(g){ return '<div class="refgrp"><h3>'+esc(g[0])+'</h3><ul>'+g[1].map(function(r){return '<li>'+linkify(r)+'</li>';}).join("")+'</ul></div>'; }).join("")+(sl.note?'<p class="small muted">'+esc(sl.note)+'</p>':''); }).join("")+'</section>'; }).join("");
+})();
+</script>
+</body>
+</html>

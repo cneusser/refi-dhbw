@@ -1,0 +1,80 @@
+/* DHBW-Stuttgart-Anmutung: Weiß, Grau, Rot als einziger Akzent; Arial; Kacheln ohne Schatten-Spielerei */
+:root{--red:#E2001A;--red2:#B8000F;--ink:#1F272C;--grey:#5D6971;--grey2:#7D8990;--line:#D5DADD;--panel:#F1F3F4;--bg:#FFFFFF;--dark:#2B3439;--ok:#1F7A4D;--okbg:#E3F2EA;--bad:#B3001A;--badbg:#FBE4E7;--amber:#B07A00;
+--f:Arial,"Helvetica Neue",Helvetica,system-ui,sans-serif}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:var(--f);color:var(--ink);background:var(--bg);font-size:16px;line-height:1.5;min-height:100vh;display:flex;flex-direction:column}
+a{color:var(--red)}
+.wrap{max-width:1120px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header.site{border-bottom:1px solid var(--line);background:#fff}
+header.site .wrap{display:flex;align-items:center;gap:18px;padding-block:14px;flex-wrap:wrap}
+header.site img{height:46px;width:auto}
+header.site .t{display:flex;flex-direction:column;line-height:1.2}
+header.site .t b{font-size:17px}
+header.site .t span{font-size:13px;color:var(--grey)}
+nav.main{background:var(--dark)}
+nav.main .wrap{display:flex;gap:2px;flex-wrap:wrap;padding-block:0}
+nav.main a{color:#fff;text-decoration:none;font-size:14px;padding:10px 12px;border-bottom:3px solid transparent}
+nav.main a:hover,nav.main a:focus-visible{border-bottom-color:var(--red);outline:none}
+nav.main a.on{border-bottom-color:var(--red);font-weight:700}
+main{flex:1;padding-block:28px 48px}
+main.wrap{display:block}
+h1{font-size:28px;margin:0 0 6px;line-height:1.2;text-wrap:balance}
+h2{font-size:20px;margin:28px 0 10px;text-wrap:balance}
+h3{font-size:16px;margin:16px 0 6px}
+p{margin:0 0 12px;max-width:75ch}
+.lead{color:var(--grey);font-size:17px;max-width:75ch}
+.kicker{font-size:12px;letter-spacing:.8px;text-transform:uppercase;color:var(--red);font-weight:700;margin-bottom:6px}
+.tiles{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));margin-top:18px}
+a.tile,div.tile{display:flex;flex-direction:column;gap:6px;background:#fff;border:1px solid var(--line);padding:18px 18px 16px;text-decoration:none;color:var(--ink);min-width:0;position:relative}
+a.tile:hover,a.tile:focus-visible{border-color:var(--red);outline:none}
+.tile .k{font-size:12px;letter-spacing:.6px;text-transform:uppercase;color:var(--grey);font-weight:700}
+.tile .h{font-size:18px;font-weight:700}
+.tile .d{font-size:14px;color:var(--grey)}
+.tile .go{margin-top:auto;padding-top:8px;font-size:14px;color:var(--red);font-weight:700}
+.tile.today{border-color:var(--red);box-shadow:inset 0 0 0 1px var(--red)}
+.badge{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;padding:2px 7px;border:1px solid currentColor}
+.badge.red{color:var(--red)}.badge.grey{color:var(--grey2)}.badge.ok{color:var(--ok)}
+.panel{border:1px solid var(--line);padding:18px;background:#fff;margin-top:14px}
+.panel.grey{background:var(--panel);border-color:var(--panel)}
+.grid2{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(320px,1fr))}
+.grid3{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.4px;color:var(--grey);font-weight:700}
+td.r,th.r{text-align:right}
+.num{font-variant-numeric:tabular-nums}
+label{display:block;font-size:13px;color:var(--grey);margin-bottom:4px}
+input,select,textarea{font:inherit;color:var(--ink);background:#fff;border:1px solid var(--line);padding:8px 10px;width:100%;min-width:0}
+input[type=range]{padding:0;accent-color:var(--red)}
+input[type=checkbox]{width:auto;accent-color:var(--red)}
+input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible{outline:2px solid var(--red);outline-offset:2px}
+button,.btn{font:inherit;font-weight:700;border:1px solid var(--ink);background:var(--ink);color:#fff;padding:9px 16px;cursor:pointer;text-decoration:none;display:inline-block}
+button.red,.btn.red{background:var(--red);border-color:var(--red)}
+button.ghost,.btn.ghost{background:#fff;color:var(--ink)}
+button:disabled{opacity:.45;cursor:not-allowed}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.fields{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.ok{color:var(--ok)}.bad{color:var(--bad)}.muted{color:var(--grey)}.small{font-size:13px}
+.fb{font-size:13px;min-height:1.2em;margin-top:3px}
+.note{padding:10px 12px;margin-top:12px}
+.note.ok{background:var(--okbg)}.note.bad{background:var(--badbg)}.note.info{background:var(--panel);color:var(--ink)}
+.kpis{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}
+.kpi{border-top:3px solid var(--line);padding-top:8px}
+.kpi .v{font-size:24px;font-weight:700;font-variant-numeric:tabular-nums}
+.kpi.red{border-top-color:var(--red)}
+.kpi .l{font-size:13px;color:var(--grey)}
+footer.site{border-top:1px solid var(--line);background:var(--panel);font-size:13px;color:var(--grey)}
+footer.site .wrap{padding-block:16px;display:flex;gap:12px;flex-wrap:wrap;justify-content:space-between}
+.cls-W{color:var(--ok)}.cls-N{color:var(--grey2)}.cls-B{color:var(--amber)}.cls-V{color:var(--red)}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:13px}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;margin-right:6px;background:var(--c)}
+svg text{font-family:var(--f);fill:var(--ink)}
+.chart{overflow-x:auto}
+@media (max-width:600px){h1{font-size:23px}header.site img{height:38px}}
+@media (prefers-reduced-motion:no-preference){a.tile{transition:border-color .15s}}
+/* Schmale Bildschirme: nichts darf die Seite verbreitern */
+main{min-width:0;width:100%}
+.grid2>*,.grid3>*,.fields>*,.kpis>*,.tiles>*{min-width:0}
+@media (max-width:700px){nav.main .wrap{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}nav.main a{white-space:nowrap}header.site img{height:38px}h1{font-size:24px}}
