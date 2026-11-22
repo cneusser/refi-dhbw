@@ -1,5 +1,10 @@
 # Änderungen
 
+## v0.4 (22.11.2026)
+
+- ReFi I, Kapitel 4 neu aufgebaut: Foliensatz „Kosten- und Leistungsrechnung“ (57 Folien) mit vier Blöcken, Advance Organizer, Peer-Instruction-Fragen, Gruppenübungen, kritischen Folien, Selbstlernfragen je Block und Literatur. Für Studierende als PDF ohne Lösungsfolien unter unterlagen/.
+- Vorlesungsseite und Advance Organizer zeigen die Blöcke 4.1 bis 4.4.
+
 ## v0.3 (22.11.2026)
 
 - Prüfungsvorbereitung (pruefung.html) mit Anmeldung (Firebase Authentication, E-Mail und Passwort) oder Gastmodus; Stand wird gespeichert und kann fortgesetzt werden.

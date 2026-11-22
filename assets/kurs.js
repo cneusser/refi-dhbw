@@ -8,8 +8,9 @@ window.KURS = {
         { id: "r1k1", nr: "1", titel: "Einführung und Grundbegriffe", leit: "Warum braucht ein Unternehmen ein Rechnungswesen, und wer liest es?", inhalt: ["Aufgaben und Adressaten", "Fall Supercomputer AG", "Grundbegriffe von Auszahlung bis Kosten"], status: "behandelt" },
         { id: "r1k2", nr: "2", titel: "Systematik des Rechnungswesens", leit: "Wie hängen Bestände und Ströme zusammen?", inhalt: ["Stromgrößen und Bestandsgrößen", "Bilanz, GuV, Kapitalflussrechnung", "Abgrenzungen"], status: "behandelt" },
         { id: "r1k3", nr: "3", titel: "Externes Rechnungswesen", leit: "Was zeigt der Jahresabschluss, und was verbirgt er?", inhalt: ["HGB und IFRS", "Bilanzierung und Bewertung", "Jahresabschlussanalyse"], status: "behandelt" },
-        { id: "r1k4", nr: "4", titel: "Internes Rechnungswesen", leit: "Was kostet ein Produkt wirklich, und wovon hängt die Antwort ab?", inhalt: ["Kostenarten, Kostenstellen, Kostenträger", "Zuschlagskalkulation und Deckungsbeitrag", "Prozesskostenrechnung und Target Costing"], status: "heute",
+        { id: "r1k4", nr: "4", titel: "Internes Rechnungswesen", leit: "Was kostet ein Produkt wirklich, und wovon hängt die Antwort ab?", inhalt: ["4.1 Grundbegriffe, Kostenverhalten, Sunk Costs", "4.2 BAB, Äquivalenz-, Zuschlags-, Maschinenstundensatzkalkulation", "4.3 Deckungsbeitrag, Break-even, Programm, Make or Buy", "4.4 TCO, Plankosten, Target Costing, Prozesskosten"], status: "heute",
           material: [
+            { t: "Kapitel 4 Kosten- und Leistungsrechnung, überarbeitet (Folien, PDF ohne Lösungsfolien)", href: "unterlagen/261130_REFI_I_Kap4_KLR.pdf" },
             { t: "Prozesskostenrechnung entlang der Lieferkette (Folien, PDF ohne Lösungsfolien)", href: "unterlagen/261123_PKR_Challenge_Nordstil.pdf" },
             { t: "Prozesskosten-Challenge Nordstil (online)", href: "challenge.html" },
             { t: "Drei Kostenrechnungen im Vergleich (Tool)", href: "tools.html#kosten" },
