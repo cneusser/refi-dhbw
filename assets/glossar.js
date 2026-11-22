@@ -1,4 +1,4 @@
-/* Glossar Finanz- und Rechnungswesen. [Begriff, Erklärung, Kapitel-ID, Abschnitt]. Entwurf, Version v0.3, Stand 22.11.2026. */
+/* Glossar Finanz- und Rechnungswesen. [Begriff, Erklärung, Kapitel-ID, Abschnitt]. Entwurf, Version v0.5, Stand 22.11.2026. */
 window.GLOSSAR = [
  ["Abweichungsanalyse", "Zerlegung der Differenz zwischen Ist- und Plankosten in Preis-, Verbrauchs- und Beschäftigungsabweichung, um Ursachen und Verantwortliche zu finden.", "r1k4", "4.4.2"],
  ["Äquivalenzziffernkalkulation", "Kalkulation für Sortenfertigung: Ähnliche Produkte werden über feste Verhältniszahlen auf eine Einheitssorte umgerechnet, die Kosten je Recheneinheit dann zurückverteilt.", "r1k4", "4.2.4"],
@@ -68,5 +68,31 @@ window.GLOSSAR = [
  ["Working Capital", "Vorräte plus Forderungen minus Verbindlichkeiten aus Lieferungen und Leistungen; im Umsatzprozess gebundenes Kapital.", "r2k1", "Kap. 1"],
  ["Zielkostenindex", "Nutzenanteil geteilt durch Kostenanteil einer Komponente. Unter 1: zu teuer für den Nutzen.", "r1k4", "4.4.3"],
  ["Zusatzkosten", "Kosten ohne Aufwand, zum Beispiel kalkulatorischer Unternehmerlohn im Einzelunternehmen.", "r1k2", "2.3"],
- ["Zuschlagskalkulation", "Kalkulation, die Gemeinkosten über Zuschlagssätze auf Einzelkosten verrechnet. Standard in der Serien- und Einzelfertigung.", "r1k4", "4.2.4"]
+ ["Zuschlagskalkulation", "Kalkulation, die Gemeinkosten über Zuschlagssätze auf Einzelkosten verrechnet. Standard in der Serien- und Einzelfertigung.", "r1k4", "4.2.4"],
+ ["Kapitalwert", "Summe aller auf t = 0 abgezinsten Ein- und Auszahlungen eines Projekts (Net Present Value). Über null verdient das Projekt mehr als den Kalkulationszins.", "r2k2", "2.2"],
+ ["Kalkulationszins", "Geforderte Mindestverzinsung, mit der Zahlungen abgezinst werden; in der Praxis aus den Kapitalkosten (WACC) abgeleitet.", "r2k2", "2.2"],
+ ["Annuität", "Kapitalwert als gleichbleibender Jahresbetrag über die Laufzeit: Kapitalwert × Wiedergewinnungsfaktor.", "r2k2", "2.2"],
+ ["Wiedergewinnungsfaktor", "Faktor i(1 + i)^n / ((1 + i)^n − 1), der einen Barwert in eine gleichbleibende Annuität umrechnet; Kehrwert des Rentenbarwertfaktors.", "r2k2", "2.2"],
+ ["Interner Zinsfuß", "Zins, bei dem der Kapitalwert null wird (IRR). Unterstellt Wiederanlage zum IRR selbst; kann bei mehreren Vorzeichenwechseln mehrdeutig sein.", "r2k2", "2.3"],
+ ["Modifizierter interner Zinsfuß", "Rendite auf den Endwert der zum Kalkulationszins aufgezinsten Rückflüsse (MIRR, Excel QIKV); vermeidet die Wiederanlageprämisse des IRR.", "r2k2", "2.3"],
+ ["Differenzinvestition", "Zahlungsreihe der Mehrinvestition zwischen zwei Alternativen. Verzinst sie sich über dem Kalkulationszins, lohnt die größere Alternative.", "r2k2", "2.3"],
+ ["Amortisationsdauer", "Zeit, bis die kumulierten Rückflüsse (statisch) oder Barwerte (dynamisch) die Anschaffungsauszahlung decken. Risikomaß, kein Wertmaß.", "r2k2", "2.3"],
+ ["Ewige Rente", "Unbegrenzte Zahlungsreihe; Barwert R / i, bei Wachstum g: R / (i − g), nur für g < i.", "r2k2", "2.2"],
+ ["WACC", "Gewichtete durchschnittliche Kapitalkosten: EK/GK × rEK + FK/GK × rFK × (1 − s).", "r2k2", "2.2"],
+ ["CAPM", "Capital Asset Pricing Model: Eigenkapitalkosten = risikoloser Zins + Beta × Marktrisikoprämie.", "r2k2", "2.2"],
+ ["Tax Shield", "Steuerersparnis aus abzugsfähigen Fremdkapitalzinsen; senkt die effektiven Fremdkapitalkosten auf rFK × (1 − s).", "r2k2", "2.4"],
+ ["Kritische Menge", "Menge, bei der zwei Alternativen gleiche Kosten haben: Differenz der Fixkosten geteilt durch Differenz der variablen Stückkosten.", "r2k2", "2.1"],
+ ["Return on Investment", "ROI = Umsatzrendite × Kapitalumschlag; Periodenkennzahl auf Buchwertbasis (DuPont-Schema).", "r2k2", "2.1"],
+ ["Optimale Nutzungsdauer", "Nutzungsdauer mit dem höchsten Kapitalwert unter Berücksichtigung der sinkenden Liquidationserlöse.", "r2k2", "2.4"],
+ ["Vollständiger Finanzplan", "Tabellarische Investitionsrechnung (VoFi), die jede Kreditaufnahme, Tilgung und Anlage zeigt; erlaubt getrennte Soll- und Habenzinsen.", "r2k2", "2.4"],
+ ["Sensitivitätsanalyse", "Veränderung einer Eingangsgröße bei sonst gleichen Annahmen, um kritische Werte und Treiber zu finden.", "r2k2", "2.5"],
+ ["Monte-Carlo-Simulation", "Wiederholte Zufallsziehung unsicherer Größen aus Verteilungen, um eine Verteilung des Kapitalwerts und Verlustwahrscheinlichkeiten zu erhalten.", "r2k2", "2.5"],
+ ["Nutzwertanalyse", "Bewertung von Alternativen über gewichtete Punkte je Kriterium; Gewichte sind subjektiv und sollten getestet werden.", "r2k2", "2.5"],
+ ["Business Plan", "Schriftliche Darstellung einer Geschäftsidee mit Markt, Team, Umsetzung und Financials; Aufbau folgt dem Adressaten.", "r2k3", "3.1"],
+ ["Business Case", "Rechnung, die zeigt, ob ein Vorhaben Wert schafft und finanzierbar ist: Zahlungsreihe, Kennzahlen, Risiken.", "r2k3", "3.3"],
+ ["Integrierte Planung", "Verknüpfte Plan-GuV, Kapitalflussrechnung und Planbilanz; die aufgehende Bilanz ist die Probe der Konsistenz.", "r2k3", "3.2"],
+ ["DSCR", "Debt Service Coverage Ratio: Cashflow vor Kapitaldienst / (Zinsen + Tilgung); Banken verlangen deutlich über 1.", "r2k3", "3.2"],
+ ["Stresstest", "Durchrechnen ungünstiger Szenarien, um Kapitalbedarf und Puffer zu bestimmen.", "r2k3", "3.4"],
+ ["Business Model Canvas", "Strukturhilfe in neun Feldern nach Osterwalder und Pigneur; Kosten und Einnahmen bilden die Brücke zur Finanzplanung.", "r2k3", "3.1"],
+ ["Covenant", "Auflage im Kreditvertrag, etwa eine Mindest-DSCR oder Höchstverschuldung; bei Verstoß kann die Bank nachverhandeln oder kündigen.", "r2k3", "3.2"]
 ];

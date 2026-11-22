@@ -1,5 +1,13 @@
 # Änderungen
 
+## v0.5 (22.11.2026)
+
+- ReFi II, Kapitel 2 Investitionsrechnung (64 Folien) und Kapitel 3 Business Case (31 Folien) neu aufgebaut, mit Advance Organizer, Peer Instruction, Gruppenübungen, kritischen Folien, Selbstlernfragen und Literatur; PDFs unter unterlagen/.
+- Excel-Übungen ReFi II Kapitel 2 und 3 (B01 bis B17, C01), alle Ergebnisse nachgerechnet; Aufgabenblatt unter unterlagen/.
+- Tools zur Investitionsrechnung und zum Business Case (tools-k2.html): 13 Werkzeuge mit Schiebereglern und Grafiken.
+- Prüfungsvorbereitung: 37 neue Fragen und 8 neue Rechenaufgaben zu Kapitel 2 und 3; Probeklausur und Klausur enthalten jetzt Investition und Business Case.
+- Glossar um 26 Begriffe erweitert, Live-Quiz-Fragensätze Kapitel 2 und 3, Literatur zu ReFi I Kapitel 4 und ReFi II Kapitel 2 und 3 auf der Linkseite.
+
 ## v0.4 (22.11.2026)
 
 - ReFi I, Kapitel 4 neu aufgebaut: Foliensatz „Kosten- und Leistungsrechnung“ (57 Folien) mit vier Blöcken, Advance Organizer, Peer-Instruction-Fragen, Gruppenübungen, kritischen Folien, Selbstlernfragen je Block und Literatur. Für Studierende als PDF ohne Lösungsfolien unter unterlagen/.

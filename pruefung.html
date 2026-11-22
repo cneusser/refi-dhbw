@@ -102,11 +102,12 @@ function makeSelbst(ch){
 }
 function makeProbe(){
   var r = mul(seed()), it = [];
-  [["r1k1", 2], ["r1k2", 2], ["r1k3", 3], ["r1k4", 7], ["r2k1", 3]].forEach(function(x){ pick(mcIdx(x[0]), x[1], r).forEach(function(i){ it.push(itMC(i, r, P.CH[x[0]].t)); }); });
+  [["r1k1", 2], ["r1k2", 2], ["r1k3", 3], ["r1k4", 6], ["r2k1", 2], ["r2k2", 2], ["r2k3", 1]].forEach(function(x){ pick(mcIdx(x[0]), x[1], r).forEach(function(i){ it.push(itMC(i, r, P.CH[x[0]].t)); }); });
   it.push(itMx(4, r, P.CH.r1k2.t));
   var s = seed(); pick([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17], 3, r).forEach(function(l){ it.push(itBl(s, l, P.CH.r1k3.t)); });
   pick(genIdx("r1k4"), 3, r).forEach(function(g){ it.push(itGen(g, P.CH.r1k4.t)); });
   pick(genIdx("r2k1"), 1, r).forEach(function(g){ it.push(itGen(g, P.CH.r2k1.t)); });
+  pick(genIdx("r2k2").concat(genIdx("r2k3")), 1, r).forEach(function(g){ it.push(itGen(g, P.CH[P.GEN[g].ch].t)); });
   return { mode: "probe", items: shuffle(it, r), limit: 60 };
 }
 function makeKlausur(){
@@ -118,7 +119,8 @@ function makeKlausur(){
     { t: "Kalkulation", it: pick(["zuschlag", "mss", "aequi", "pkr"], 2, r).map(function(g){ return itGen(g); }) },
     { t: "Entscheidungsrechnungen", it: pick(["bem", "bep", "krit", "mob", "prog"], 2, r).map(function(g){ return itGen(g); }).concat([itTxt(pick(txtIdx("r1k4"), 1, r)[0])]) },
     { t: "Weiterführende Kostenrechnung", it: pick(["tco", "abw", "zki"], 1, r).map(function(g){ return itGen(g); }).concat(pick(mcIdx("r1k4"), 4, r).map(function(i){ return itMC(i, r); })) },
-    { t: "Cashflow und Liquidität (ReFi II)", it: pick(["ccc", "ocf", "ifrs"], 2, r).map(function(g){ return itGen(g); }).concat(pick(mcIdx("r2k1"), 2, r).map(function(i){ return itMC(i, r); })) }
+    { t: "Cashflow und Liquidität (ReFi II)", it: pick(["ccc", "ocf", "ifrs"], 2, r).map(function(g){ return itGen(g); }).concat(pick(mcIdx("r2k1"), 2, r).map(function(i){ return itMC(i, r); })) },
+    { t: "Investition und Business Case (ReFi II)", it: pick(["kw", "irr2", "wacc", "amo", "ewig", "stx", "dscr", "fcf"], 2, r).map(function(g){ return itGen(g); }).concat(pick(mcIdx("r2k2").concat(mcIdx("r2k3")), 2, r).map(function(i){ return itMC(i, r); })) }
   ];
   var items = []; shuffle(secs, r).forEach(function(s, k){ s.it.forEach(function(x){ x.sec = "Aufgabe " + (k + 1) + ": " + s.t; items.push(x); }); });
   return { mode: "klausur", items: items, limit: 120 };

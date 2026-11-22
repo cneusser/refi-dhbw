@@ -160,3 +160,140 @@ window.REFS={
   }
  ]
 };
+window.REFS["r1k4"] = [
+ {
+  "title": "Lehrbücher und Klassiker zu Kapitel 4",
+  "groups": [
+   [
+    "Lehrbücher",
+    [
+     "Coenenberg, A. G.; Fischer, T. M.; Günther, T. (2016): Kostenrechnung und Kostenanalyse, 9. Aufl., Stuttgart: Schäffer-Poeschel.",
+     "Schweitzer, M.; Küpper, H.-U.; Friedl, G.; Hofmann, C.; Pedell, B. (2016): Systeme der Kosten- und Erlösrechnung, 11. Aufl., München: Vahlen.",
+     "Kilger, W.; Pampel, J.; Vikas, K. (2012): Flexible Plankostenrechnung und Deckungsbeitragsrechnung, 13. Aufl., Wiesbaden: Gabler.",
+     "Vahs, D.; Schäfer-Kunz, J. (2007): Einführung in die Betriebswirtschaftslehre, 5. Aufl., Stuttgart: Schäffer-Poeschel.",
+     "Macha, R.: Grundlagen der Kosten- und Leistungsrechnung, München: Vahlen (Beispiele Make or Buy, S. 202 ff.)."
+    ]
+   ],
+   [
+    "Klassiker",
+    [
+     "Schmalenbach, E. (1963): Kostenrechnung und Preispolitik, 8. Aufl., Köln: Westdeutscher Verlag.",
+     "Gutenberg, E. (1951): Grundlagen der Betriebswirtschaftslehre, Bd. 1: Die Produktion, Berlin: Springer.",
+     "Plaut, H. G. (1953): Die Grenz-Plankostenrechnung, Zeitschrift für Betriebswirtschaft 23, S. 347 bis 363.",
+     "Riebel, P. (1994): Einzelkosten- und Deckungsbeitragsrechnung, 7. Aufl., Wiesbaden: Gabler."
+    ]
+   ]
+  ],
+  "note": "Bestand der Bibliothek DHBW Stuttgart prüfen; viele Titel als E-Book im Hochschulnetz."
+ },
+ {
+  "title": "Forschung und Praxisquellen zu Kapitel 4",
+  "groups": [
+   [
+    "Forschung",
+    [
+     "Miller, J. G.; Vollmann, T. E. (1985): The hidden factory, Harvard Business Review 63(5), S. 142 bis 150.",
+     "Cooper, R.; Kaplan, R. S. (1988): Measure costs right: make the right decisions, Harvard Business Review 66(5), S. 96 bis 103.",
+     "Horváth, P.; Mayer, R. (1989): Prozesskostenrechnung, Controlling 1(4), S. 214 bis 219.",
+     "Kaplan, R. S.; Anderson, S. R. (2004): Time-driven activity-based costing, Harvard Business Review 82(11), S. 131 bis 138.",
+     "Seidenschwarz, W. (1993): Target Costing, München: Vahlen."
+    ]
+   ],
+   [
+    "Praxis und Daten",
+    [
+     "Bundesministerium der Finanzen: AfA-Tabelle für die allgemein verwendbaren Anlagegüter (AV), bundesfinanzministerium.de.",
+     "BDI: Industriekontenrahmen (IKR), Kontenklasse 6.",
+     "Gartner (2008): Total Cost of Ownership eines Desktop-PCs, zitiert in der Vorlesung ReFi I.",
+     "SAP: Produktkosten-Controlling und Leistungsarten in SAP S/4HANA, help.sap.com."
+    ]
+   ]
+  ],
+  "note": "Webquellen abgerufen im November 2026."
+ }
+];
+window.REFS["kap2"] = [
+ {
+  "title": "Lehrbücher und Grundlagen zu Kapitel 2",
+  "groups": [
+   [
+    "Lehrbücher",
+    [
+     "Brealey, R. A.; Myers, S. C.; Allen, F. (2023): Principles of Corporate Finance, 14. Aufl., New York: McGraw-Hill.",
+     "Kruschwitz, L. (2019): Investitionsrechnung, 15. Aufl., Berlin: De Gruyter Oldenbourg.",
+     "Troßmann, E. (2018): Investition, 2. Aufl., Konstanz: UVK.",
+     "Götze, U. (2014): Investitionsrechnung, 7. Aufl., Berlin: Springer Gabler.",
+     "Vahs, D.; Schäfer-Kunz, J. (2021): Einführung in die Betriebswirtschaftslehre, 8. Aufl., Stuttgart: Schäffer-Poeschel.",
+     "Horváth, P.; Gleich, R.; Seiter, M. (2020): Controlling, 14. Aufl., München: Vahlen."
+    ]
+   ],
+   [
+    "Methoden",
+    [
+     "Zangemeister, C. (1976): Nutzwertanalyse in der Systemtechnik, München: Wittemann.",
+     "Adam, D. (2000): Investitionscontrolling, 3. Aufl., München: Oldenbourg.",
+     "Kahneman, D. (2011): Thinking, Fast and Slow, New York: Farrar, Straus and Giroux."
+    ]
+   ]
+  ],
+  "note": "Bestand der Bibliothek DHBW Stuttgart prüfen; viele Titel als E-Book im Hochschulnetz."
+ },
+ {
+  "title": "Forschung und Praxisquellen zu Kapitel 2",
+  "groups": [
+   [
+    "Forschung",
+    [
+     "Graham, J. R.; Harvey, C. R. (2001): The theory and practice of corporate finance, Journal of Financial Economics 60(2-3), S. 187 bis 243.",
+     "Brounen, D.; de Jong, A.; Koedijk, K. (2004): Corporate finance in Europe, Financial Management 33(4), S. 71 bis 101.",
+     "Flyvbjerg, B. (2014): What you should know about megaprojects and why, Project Management Journal 45(2), S. 6 bis 19.",
+     "Crouch, C. H.; Mazur, E. (2001): Peer instruction, American Journal of Physics 69(9), S. 970 bis 977."
+    ]
+   ],
+   [
+    "Praxis und Daten",
+    [
+     "E.ON SE: Geschäftsberichte 2005 bis 2018; Nestlé S.A.: Geschäftsberichte 2006 bis 2018.",
+     "Europäische Zentralbank: Leitzinsen, ecb.europa.eu.",
+     "Gesetz für ein steuerliches Investitionssofortprogramm zur Stärkung des Wirtschaftsstandorts Deutschland (2025).",
+     "Microsoft: Excel-Funktionsreferenz NBW, IKV, QIKV, XINTZINSFUSS."
+    ]
+   ]
+  ],
+  "note": "Webquellen abgerufen im November 2026."
+ }
+];
+window.REFS["kap3"] = [
+ {
+  "title": "Literatur und Quellen zu Kapitel 3",
+  "groups": [
+   [
+    "Lehrbücher und Leitfäden",
+    [
+     "Nagl, A. (2018): Der Businessplan, 9. Aufl., Wiesbaden: Springer Gabler.",
+     "Osterwalder, A.; Pigneur, Y. (2010): Business Model Generation, Hoboken: Wiley.",
+     "Ries, E. (2011): The Lean Startup, New York: Crown Business.",
+     "Brealey, R. A.; Myers, S. C.; Allen, F. (2023): Principles of Corporate Finance, 14. Aufl., New York: McGraw-Hill, Kap. 6 und 10.",
+     "Kruschwitz, L. (2019): Investitionsrechnung, 15. Aufl., Berlin: De Gruyter Oldenbourg."
+    ]
+   ],
+   [
+    "Forschung",
+    [
+     "Brinckmann, J.; Grichnik, D.; Kapsa, D. (2010): Should entrepreneurs plan or just storm the castle?, Journal of Business Venturing 25(1), S. 24 bis 40.",
+     "Kahneman, D.; Tversky, A. (1979): Intuitive prediction: biases and corrective procedures, TIMS Studies in Management Science 12, S. 313 bis 327.",
+     "de Bono, E. (1985): Six Thinking Hats, Boston: Little, Brown."
+    ]
+   ],
+   [
+    "Praxis",
+    [
+     "TOPSIM GmbH: TOPSIM Startup!, Fallstudienmaterial easyStartup! Web (in Teams).",
+     "KfW: ERP-Gründerkredit und StartGeld, kfw.de; L-Bank Baden-Württemberg: Gründungsfinanzierung, l-bank.de.",
+     "BMWK: Existenzgründungsportal, existenzgruendungsportal.de."
+    ]
+   ]
+  ],
+  "note": "Webquellen abgerufen im November 2026; Förderkonditionen ändern sich."
+ }
+];

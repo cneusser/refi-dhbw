@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tools Investition und Business Case</title>
+<link rel="stylesheet" href="assets/site.css">
+<style>
+.toolnav{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.toolnav a{border:1px solid var(--line);padding:6px 12px;text-decoration:none;color:var(--ink);font-size:14px}
+.toolnav a:hover{border-color:var(--red)}
+.blk{font-size:12px;font-weight:700;color:var(--grey);text-transform:uppercase;letter-spacing:.5px;margin-top:18px}
+section.tool{border-top:1px solid var(--line);margin-top:34px;padding-top:6px;scroll-margin-top:12px}
+.aha{background:var(--panel);padding:12px 14px;margin-top:12px;font-size:14px}
+.chart{overflow-x:auto}
+input.cf{width:100%;font:inherit;padding:6px 8px;border:1px solid var(--line)}
+button.b{font:inherit;padding:6px 14px;border:1px solid var(--ink);background:var(--panel);color:var(--ink);cursor:pointer;margin-top:18px}
+table.out td.r,table.out th.r{text-align:right;font-variant-numeric:tabular-nums}
+table.out td.bad{color:var(--red);font-weight:700}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>Tools zur Investitionsrechnung und zum Business Case</h1>
+  <p class="lead">ReFi II, Kapitel 2 und 3. Jedes Tool rechnet eine Aufgabe aus den Übungen (Excel-Blatt in Klammern). Verändern Sie die Annahmen und beobachten Sie, wie Kapitalwert, Rendite oder Liquidität reagieren.</p>
+  <div class="blk">2.1 und 2.2 Statische Verfahren, Kapitalwert, Zins</div>
+  <div class="toolnav"><a href="#km">Kritische Menge (B01)</a><a href="#roi">ROI-Isoquante (B02)</a><a href="#kw">Kapitalwertprofil (B03, B04)</a><a href="#wacc">WACC-Rechner (B05)</a></div>
+  <div class="blk">2.3 und 2.4 Fallen, Amortisation, Nutzungsdauer, Steuern, VoFi</div>
+  <div class="toolnav"><a href="#irr">IRR-Fallen (B06)</a><a href="#amort">Amortisation (B10)</a><a href="#nd">Nutzungsdauer (B12)</a><a href="#afa">Steuern und AfA (B14)</a><a href="#vofi">VoFi (B16)</a></div>
+  <div class="blk">2.5 Unsicherheit und Nutzwert</div>
+  <div class="toolnav"><a href="#mc">Monte-Carlo (B11)</a><a href="#nwa">Nutzwertanalyse (B15)</a></div>
+  <div class="blk">Kapitel 3 Business Case</div>
+  <div class="toolnav"><a href="#bigbag">Sensitivität BigBag (B17)</a><a href="#dscr">Kapitalbedarf und DSCR (C01)</a></div>
+
+  <section class="tool" id="km">
+    <h2>Ab welcher Fahrleistung ist der teurere Raimler das günstigere Auto?</h2>
+    <div class="fields">
+      <div><label for="km_kv1">Variable Kosten Raimler je km: <b id="km_kv1v"></b></label><input type="range" id="km_kv1" min="0.3" max="0.9" step="0.01" value="0.5"></div>
+      <div><label for="km_kv2">Variable Kosten Data je km: <b id="km_kv2v"></b></label><input type="range" id="km_kv2" min="0.3" max="1.0" step="0.01" value="0.7"></div>
+      <div><label for="km_kp1">Kaufpreis Raimler: <b id="km_kp1v"></b></label><input type="range" id="km_kp1" min="50000" max="100000" step="1000" value="75000"></div>
+      <div><label for="km_i">Kalkulationszins: <b id="km_iv"></b></label><input type="range" id="km_i" min="0" max="15" step="0.5" value="10"></div>
+    </div>
+    <div class="kpis" id="km_kpi" style="margin-top:14px"></div>
+    <div class="chart" id="km_chart" style="margin-top:12px"></div>
+    <div class="aha" id="km_aha"></div>
+    <p class="small muted">Fest: Data 60.000 €, Versicherung und Steuer 2.500 und 4.000 €, 5 Jahre, kein Restwert, Erlös 1,50 € je km. Aufgabe B01.</p>
+  </section>
+
+  <section class="tool" id="roi">
+    <h2>Derselbe ROI entsteht über Marge oder über Kapitalumschlag</h2>
+    <div class="fields">
+      <div><label for="roi_ur">Umsatzrendite: <b id="roi_urv"></b></label><input type="range" id="roi_ur" min="1" max="40" step="0.5" value="15"></div>
+      <div><label for="roi_ku">Kapitalumschlag: <b id="roi_kuv"></b></label><input type="range" id="roi_ku" min="0.3" max="4" step="0.05" value="0.67"></div>
+    </div>
+    <div class="kpis" id="roi_kpi" style="margin-top:14px"></div>
+    <div class="chart" id="roi_chart" style="margin-top:12px"></div>
+    <div class="aha">Nestlé 2018: Umsatzrendite (EBIT) 15,1 %, Kapitalumschlag 0,67, ROI 10,1 %. Wer den Umschlag halbiert, zum Beispiel durch ein großes neues Werk, muss die Marge verdoppeln, um denselben ROI zu halten.</div>
+    <p class="small muted">Quelle: Nestlé S.A., Geschäftsbericht 2018, ROI vereinfacht auf Bilanzsumme. Aufgabe B02.</p>
+  </section>
+
+  <section class="tool" id="kw">
+    <h2>Das Kapitalwertprofil zeigt Kapitalwert, Annuität und internen Zinsfuß zugleich</h2>
+    <div class="fields">
+      <div style="grid-column:1/-1"><label for="kw_cf">Zahlungsreihe ab t = 0, durch Semikolon getrennt</label><input class="cf" id="kw_cf" value="-100; 30; 30; 30; 30; 30"></div>
+      <div><label for="kw_i">Kalkulationszins: <b id="kw_iv"></b></label><input type="range" id="kw_i" min="0" max="30" step="0.25" value="10"></div>
+      <div><label for="kw_pre">Beispiel laden</label><select id="kw_pre"><option value="">bitte wählen</option><option>-100; 30; 30; 30; 30; 30</option><option>-1000; 300; 300; 300; 300; 300</option><option>-1000; 100; 200; 300; 400; 500</option><option>-1000; 500; 400; 300; 200; 100</option><option>-1000; 350; 350; 350; 450</option><option>-1000; 3010; -2020</option></select></div>
+    </div>
+    <div class="kpis" id="kw_kpi" style="margin-top:14px"></div>
+    <div class="chart" id="kw_chart" style="margin-top:12px"></div>
+    <div class="aha" id="kw_aha"></div>
+    <p class="small muted">Annuität mit dem Wiedergewinnungsfaktor der Laufzeit, MIRR mit Wiederanlage zum Kalkulationszins. Aufgaben B03 und B04.</p>
+  </section>
+
+  <section class="tool" id="wacc">
+    <h2>Der Kalkulationszins folgt aus CAPM und Kapitalstruktur</h2>
+    <div class="fields">
+      <div><label for="w_rf">Risikoloser Zins: <b id="w_rfv"></b></label><input type="range" id="w_rf" min="-0.5" max="6" step="0.05" value="2.5"></div>
+      <div><label for="w_b">Beta: <b id="w_bv"></b></label><input type="range" id="w_b" min="0.3" max="2" step="0.01" value="0.95"></div>
+      <div><label for="w_mrp">Marktrisikoprämie: <b id="w_mrpv"></b></label><input type="range" id="w_mrp" min="3" max="9" step="0.25" value="6"></div>
+      <div><label for="w_fk">Fremdkapitalzins vor Steuern: <b id="w_fkv"></b></label><input type="range" id="w_fk" min="0.5" max="10" step="0.1" value="4.5"></div>
+      <div><label for="w_ek">Eigenkapitalquote (Marktwerte): <b id="w_ekv"></b></label><input type="range" id="w_ek" min="10" max="100" step="1" value="50"></div>
+      <div><label for="w_s">Steuersatz: <b id="w_sv"></b></label><input type="range" id="w_s" min="0" max="40" step="1" value="30"></div>
+    </div>
+    <div class="kpis" id="w_kpi" style="margin-top:14px"></div>
+    <div class="chart" id="w_chart" style="margin-top:12px"></div>
+    <div class="aha" id="w_aha"></div>
+    <p class="small muted">Vergleich E.ON 2018: rf 1,25 %, β 0,95, Prämie 6,25 %, Eigenkapitalkosten 7,2 %, WACC nach Steuern 4,7 %. Aufgabe B05.</p>
+  </section>
+
+  <section class="tool" id="irr">
+    <h2>Der höhere Zinsfuß ist nicht das bessere Projekt: E gegen F</h2>
+    <div class="fields">
+      <div><label for="irr_i">Kalkulationszins: <b id="irr_iv"></b></label><input type="range" id="irr_i" min="0" max="120" step="1" value="10"></div>
+      <div><label for="irr_f">Rückfluss von F nach einem Jahr: <b id="irr_fv"></b></label><input type="range" id="irr_f" min="25000" max="45000" step="500" value="35000"></div>
+    </div>
+    <div class="kpis" id="irr_kpi" style="margin-top:14px"></div>
+    <div class="chart" id="irr_chart" style="margin-top:12px"></div>
+    <div class="aha" id="irr_aha"></div>
+    <p class="small muted">E: −10.000; +20.000. F: −20.000; Rückfluss nach Regler. Der Schnittpunkt der Profile ist der Zinsfuß der Differenzinvestition (Fisher-Zins). Aufgabe B06.</p>
+  </section>
+
+  <section class="tool" id="amort">
+    <h2>Statisch amortisiert sich das Segelflugzeug, dynamisch erst bei mehr Deckungsbeitrag</h2>
+    <div class="fields">
+      <div><label for="am_db">Deckungsbeitrag je Flugzeug: <b id="am_dbv"></b></label><input type="range" id="am_db" min="5000" max="20000" step="250" value="10000"></div>
+      <div><label for="am_q">Stückzahl Jahre 3 bis 9: <b id="am_qv"></b></label><input type="range" id="am_q" min="40" max="160" step="5" value="100"></div>
+      <div><label for="am_i">Kalkulationszins: <b id="am_iv"></b></label><input type="range" id="am_i" min="0" max="15" step="0.5" value="10"></div>
+    </div>
+    <div class="kpis" id="am_kpi" style="margin-top:14px"></div>
+    <div class="chart" id="am_chart" style="margin-top:12px"></div>
+    <div class="aha" id="am_aha"></div>
+    <p class="small muted">Entwicklung 5 Mio. € in Jahr 1 und 2, Jahre 10 bis 20 mit 60 % der Stückzahl. Aufgabe B10.</p>
+  </section>
+
+  <section class="tool" id="nd">
+    <h2>Die optimale Nutzungsdauer liegt dort, wo der Kapitalwert über alle Laufzeiten am höchsten ist</h2>
+    <div class="fields">
+      <div><label for="nd_i">Kalkulationszins: <b id="nd_iv"></b></label><input type="range" id="nd_i" min="0" max="25" step="0.5" value="10"></div>
+      <div><label for="nd_l">Liquidationserlöse in % der Tabelle: <b id="nd_lv"></b></label><input type="range" id="nd_l" min="0" max="150" step="5" value="100"></div>
+      <div><label for="nd_case">Fall</label><select id="nd_case"><option value="0">Maschine 600 Tsd. € (B12)</option><option value="1">Anlage 150 Tsd. €, Troßmann (B13)</option></select></div>
+    </div>
+    <div class="chart" id="nd_chart" style="margin-top:12px"></div>
+    <div class="aha" id="nd_aha"></div>
+    <p class="small muted">Rückflüsse und Liquidationserlöse wie in den Aufgaben B12 und B13; einmalige Investition ohne Folgeanlage.</p>
+  </section>
+
+  <section class="tool" id="afa">
+    <h2>Degressive Abschreibung verschiebt Steuern nach hinten und erhöht den Kapitalwert</h2>
+    <div class="fields">
+      <div><label for="af_s">Steuersatz: <b id="af_sv"></b></label><input type="range" id="af_s" min="0" max="50" step="1" value="40"></div>
+      <div><label for="af_i">Zins vor Steuern: <b id="af_iv"></b></label><input type="range" id="af_i" min="2" max="15" step="0.5" value="10"></div>
+      <div><label for="af_d">Degressiver Satz: <b id="af_dv"></b></label><input type="range" id="af_d" min="10" max="40" step="1" value="30"></div>
+    </div>
+    <div class="kpis" id="af_kpi" style="margin-top:14px"></div>
+    <div class="chart" id="af_chart" style="margin-top:12px"></div>
+    <div class="aha" id="af_aha"></div>
+    <p class="small muted">Anlage 24.000 €, 10 Jahre, Rückflüsse vor Steuern 5.000; 5.000; 4.500; 4.000; 3.800; 3.600; 3.200; 2.800; 2.500; 2.000. Zins nach Steuern i × (1 − s). Rechtsstand 2025: degressiv bis 30 %, höchstens das Dreifache der linearen AfA. Aufgabe B14.</p>
+  </section>
+
+  <section class="tool" id="vofi">
+    <h2>Mit getrennten Soll- und Habenzinsen kann der vollständige Finanzplan anders entscheiden als der Kapitalwert</h2>
+    <div class="fields">
+      <div><label for="vf_s">Sollzins: <b id="vf_sv"></b></label><input type="range" id="vf_s" min="0" max="20" step="0.5" value="10"></div>
+      <div><label for="vf_h">Habenzins: <b id="vf_hv"></b></label><input type="range" id="vf_h" min="0" max="15" step="0.5" value="10"></div>
+      <div><label for="vf_e">Entnahme je Jahr in t = 0 bis 3: <b id="vf_ev"></b></label><input type="range" id="vf_e" min="0" max="200" step="10" value="100"></div>
+    </div>
+    <div class="tbl" style="margin-top:12px"><table class="out" id="vf_tab"></table></div>
+    <div class="aha" id="vf_aha"></div>
+    <p class="small muted">Vermögen 1.100 Tsd. €. A: −1.000; 0; 0; 1.525. B: −1.300; 800; 900; 0. Nach Kruschwitz (2019). Aufgabe B16.</p>
+  </section>
+
+  <section class="tool" id="mc">
+    <h2>Die Monte-Carlo-Simulation zeigt, wie oft die Farbpigmentanlage Geld verliert</h2>
+    <div class="fields">
+      <div><label for="mc_nd">Erwartete Nutzungsdauer (Modus): <b id="mc_ndv"></b></label><input type="range" id="mc_nd" min="2" max="10" step="0.5" value="6"></div>
+      <div><label for="mc_sd">Streuung der Marktgröße (t): <b id="mc_sdv"></b></label><input type="range" id="mc_sd" min="0" max="150000" step="5000" value="80000"></div>
+      <div><label for="mc_n">Ziehungen: <b id="mc_nv"></b></label><input type="range" id="mc_n" min="500" max="20000" step="500" value="5000"></div>
+      <div><button class="b" id="mc_go" type="button">Neu ziehen</button></div>
+    </div>
+    <div class="kpis" id="mc_kpi" style="margin-top:14px"></div>
+    <div class="chart" id="mc_chart" style="margin-top:12px"></div>
+    <div class="aha" id="mc_aha"></div>
+    <p class="small muted">Annahmen wie im Foliensatz: Markt normalverteilt um 250.000 t, Anteil 12 %, Deckungsbeitrag und Fixkosten dreiecksverteilt, Nutzungsdauer dreiecksverteilt zwischen Modus − 4,5 und Modus + 4,5 Jahren (mindestens 1). Aufgabe B11.</p>
+  </section>
+
+  <section class="tool" id="nwa">
+    <h2>In der Nutzwertanalyse entscheiden die Gewichte über den Sieger</h2>
+    <div class="fields" id="nwa_f"></div>
+    <div class="chart" id="nwa_chart" style="margin-top:12px"></div>
+    <div class="aha" id="nwa_aha"></div>
+    <p class="small muted">Punkte 1 bis 3 wie in Aufgabe B15; Gewichte werden auf 100 % normiert. Multiplikativ: gewichtetes geometrisches Mittel.</p>
+  </section>
+
+  <section class="tool" id="bigbag">
+    <h2>Im Business Case BigBag entscheiden Preis und Herstellkosten über den Kapitalwert</h2>
+    <div class="fields">
+      <div><label for="bb_p">Preis je kg: <b id="bb_pv"></b></label><input type="range" id="bb_p" min="1.9" max="2.6" step="0.01" value="2.25"></div>
+      <div><label for="bb_hk">Herstellkosten ohne AfA je kg: <b id="bb_hkv"></b></label><input type="range" id="bb_hk" min="1.5" max="2.2" step="0.01" value="1.85"></div>
+      <div><label for="bb_q">Menge in % des Plans: <b id="bb_qv"></b></label><input type="range" id="bb_q" min="50" max="130" step="5" value="100"></div>
+      <div><label for="bb_inv">Maschineninvestition (Tsd. €): <b id="bb_invv"></b></label><input type="range" id="bb_inv" min="400" max="900" step="10" value="600"></div>
+      <div><label for="bb_nd">Nutzungsdauer: <b id="bb_ndv"></b></label><input type="range" id="bb_nd" min="4" max="12" step="1" value="10"></div>
+      <div><label><input type="checkbox" id="bb_san"> vermiedene Sanierung (150 Tsd. € in Jahr 3) berücksichtigen</label></div>
+    </div>
+    <div class="kpis" id="bb_kpi" style="margin-top:14px"></div>
+    <div class="chart" id="bb_chart" style="margin-top:12px"></div>
+    <div class="aha" id="bb_aha"></div>
+    <p class="small muted">Fest: Material 0,75 €/kg (bei Herstellkostenänderung anteilig), 600 t p. a., Jahr 1 mit 75 %, Abbruch 50 Tsd. €, Marketing 28 Tsd. €, Steuern 40 %, Kapitalkosten 7,25 %, Working Capital 30/45/45 Tage. Aufgabe B17.</p>
+  </section>
+
+  <section class="tool" id="dscr">
+    <h2>Der Stresstest zeigt, wie viel Liquidität die Küstenwerkstatt im Anlaufjahr wirklich braucht</h2>
+    <div class="fields">
+      <div><label for="ds_x">Absatz in % des Plans: <b id="ds_xv"></b></label><input type="range" id="ds_x" min="60" max="120" step="5" value="100"></div>
+      <div><label for="ds_p">Preis je Board: <b id="ds_pv"></b></label><input type="range" id="ds_p" min="600" max="1000" step="10" value="800"></div>
+      <div><label for="ds_m">Material je Board: <b id="ds_mv"></b></label><input type="range" id="ds_m" min="200" max="450" step="5" value="300"></div>
+      <div><label for="ds_ek">Eigenkapital (Tsd. €): <b id="ds_ekv"></b></label><input type="range" id="ds_ek" min="20" max="200" step="5" value="80"></div>
+      <div><label for="ds_dv">Zahlungsziel Lieferanten (Tage): <b id="ds_dvv"></b></label><input type="range" id="ds_dv" min="0" max="90" step="5" value="30"></div>
+      <div><label><input type="checkbox" id="ds_tf"> tilgungsfreies erstes Jahr</label></div>
+    </div>
+    <div class="kpis" id="ds_kpi" style="margin-top:14px"></div>
+    <div class="tbl" style="margin-top:12px"><table class="out" id="ds_tab"></table></div>
+    <div class="aha" id="ds_aha"></div>
+    <p class="small muted">Fiktives Beispiel aus Kapitel 3: Darlehen 100 Tsd. € zu 6 %, Tilgung 20 Tsd. € p. a., Maschinen 120 Tsd. € (AfA 5 Jahre), Personal 140/170/190, sonstige Fixkosten 60, Absatz 400/700/900 Boards, Lager 60 Tage, Forderungen 20 Tage, Steuern 30 % mit Verlustvortrag. Aufgabe C01.</p>
+  </section>
+
+  <p class="small muted" style="margin-top:24px">Excel mit allen Aufgaben: <a href="unterlagen/ReFi_II_Kap2_3_Uebungen_Aufgaben.xlsx">ReFi_II_Kap2_3_Uebungen_Aufgaben.xlsx</a>. Die Lösungen mit Formeln stellt der Dozent nach der Übung im Teams-Kanal bereit.</p>
+</main>
+<script src="assets/site.js"></script>
+<script src="assets/nordstil-data.js"></script>
+<script src="assets/kern.js"></script>
+<script>
+function $(id){ return document.getElementById(id); }
+function v(id){ return +$(id).value; }
+function bind(ids, fn){ ids.forEach(function(id){ $(id).addEventListener("input", fn); $(id).addEventListener("change", fn); }); fn(); }
+function pct(x, d){ return eur(x * 100, d == null ? 1 : d) + " %"; }
+function kpi(items){ return items.map(function(k){ return '<div class="kpi' + (k[2] ? " red" : "") + '"><div class="v">' + k[0] + '</div><div class="l">' + k[1] + "</div></div>"; }).join(""); }
+function npv(i, c){ return c.reduce(function(s, x, t){ return s + x / Math.pow(1 + i, t); }, 0); }
+function irrs(c){ var out = [], lo = -0.95, step = 0.005, prev = npv(lo, c); for (var r = lo + step; r <= 3; r += step) { var cur = npv(r, c); if (prev === 0) out.push(r - step); else if (prev * cur < 0) { var a = r - step, b = r; for (var k = 0; k < 60; k++) { var m = (a + b) / 2; if (npv(a, c) * npv(m, c) <= 0) b = m; else a = m; } out.push((a + b) / 2); } prev = cur; } return out; }
+function wgf(i, n){ return i === 0 ? 1 / n : i * Math.pow(1 + i, n) / (Math.pow(1 + i, n) - 1); }
+function tri(a, m, b){ var u = Math.random(), f = (m - a) / (b - a); return u < f ? a + Math.sqrt(u * (b - a) * (m - a)) : b - Math.sqrt((1 - u) * (b - a) * (b - m)); }
+function nrm(){ var u = 1 - Math.random(), w = Math.random(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * w); }
+/* Liniendiagramm mit negativen Werten */
+function lc(series, o){
+  var W = 760, H = 300, L = 64, B = 40, T = 14, R = 20;
+  var all = []; series.forEach(function(s){ s.pts.forEach(function(p){ all.push(p[1]); }); });
+  var ymax = o.ymax != null ? o.ymax : Math.max.apply(null, all.concat([0])), ymin = o.ymin != null ? o.ymin : Math.min.apply(null, all.concat([0]));
+  var pad = (ymax - ymin) * 0.08 || 1; ymax += pad; if (ymin < 0) ymin -= pad;
+  var xmin = o.xmin || 0, xmax = o.xmax;
+  function X(x){ return L + (x - xmin) / (xmax - xmin) * (W - L - R); } function Y(y){ return H - B - (y - ymin) / (ymax - ymin) * (H - B - T); }
+  var s = '<svg viewBox="0 0 ' + W + " " + H + '" width="100%" style="min-width:520px" role="img" aria-label="' + esc(o.aria || "Diagramm") + '">';
+  for (var k = 0; k <= 4; k++) { var yy = ymin + (ymax - ymin) * k / 4; s += '<line x1="' + L + '" x2="' + (W - R) + '" y1="' + Y(yy) + '" y2="' + Y(yy) + '" stroke="#E9ECEE"/><text x="' + (L - 6) + '" y="' + (Y(yy) + 4) + '" font-size="11" text-anchor="end">' + (o.yf ? o.yf(yy) : eur(yy, 0)) + "</text>"; }
+  if (ymin < 0 && ymax > 0) s += '<line x1="' + L + '" x2="' + (W - R) + '" y1="' + Y(0) + '" y2="' + Y(0) + '" stroke="#2B3439"/>';
+  var nt = o.nt || 5; for (var j = 0; j <= nt; j++) { var xx = xmin + (xmax - xmin) * j / nt; s += '<text x="' + X(xx) + '" y="' + (H - B + 16) + '" font-size="11" text-anchor="middle">' + (o.xf ? o.xf(xx) : eur(xx, 0)) + "</text>"; }
+  s += '<text x="' + (W - R) + '" y="' + (H - 6) + '" font-size="11" text-anchor="end" fill="#5D6971">' + esc(o.xl || "") + "</text>";
+  series.forEach(function(se){ s += '<polyline fill="none" stroke="' + se.c + '" stroke-width="' + (se.w || 2.5) + '"' + (se.dash ? ' stroke-dasharray="6 4"' : "") + ' points="' + se.pts.map(function(p){ return X(p[0]).toFixed(1) + "," + Y(p[1]).toFixed(1); }).join(" ") + '"/>'; var last = se.pts[se.at != null ? se.at : se.pts.length - 1]; s += '<text x="' + (X(last[0]) - 4) + '" y="' + (Y(last[1]) - 6) + '" font-size="11.5" text-anchor="end" fill="' + se.c + '">' + esc(se.n) + "</text>"; });
+  (o.marks || []).forEach(function(m, q){ s += '<line x1="' + X(m.x) + '" x2="' + X(m.x) + '" y1="' + T + '" y2="' + (H - B) + '" stroke="' + (m.c || "#E2001A") + '" stroke-dasharray="4 3"/><text x="' + (X(m.x) + 4) + '" y="' + (T + 12 + q * 14) + '" font-size="11" fill="' + (m.c || "#E2001A") + '">' + esc(m.t) + "</text>"; });
+  (o.dots || []).forEach(function(d){ s += '<circle cx="' + X(d.x) + '" cy="' + Y(d.y) + '" r="5" fill="' + (d.c || "#E2001A") + '"/><text x="' + (X(d.x) + 8) + '" y="' + (Y(d.y) - 8) + '" font-size="11.5" fill="' + (d.c || "#E2001A") + '">' + esc(d.t || "") + "</text>"; });
+  return s + "</svg>";
+}
+/* Säulen mit Vorzeichen */
+function sbar(items, o){
+  o = o || {}; var W = 760, H = 280, L = 56, B = 46, T = 18, n = items.length, vals = items.map(function(i){ return i.v; });
+  var ymax = Math.max.apply(null, vals.concat([0])), ymin = Math.min.apply(null, vals.concat([0])), pad = (ymax - ymin) * 0.12 || 1; ymax += pad; if (ymin < 0) ymin -= pad;
+  function Y(y){ return H - B - (y - ymin) / (ymax - ymin) * (H - B - T); }
+  var step = (W - L - 10) / n, bw = step * 0.62, s = '<svg viewBox="0 0 ' + W + " " + H + '" width="100%" style="min-width:520px" role="img" aria-label="' + esc(o.aria || "Säulendiagramm") + '">';
+  s += '<line x1="' + L + '" x2="' + (W - 10) + '" y1="' + Y(0) + '" y2="' + Y(0) + '" stroke="#2B3439"/>';
+  items.forEach(function(it, k){ var x = L + k * step + (step - bw) / 2, y0 = Y(0), y1 = Y(it.v); s += '<rect x="' + x + '" y="' + Math.min(y0, y1) + '" width="' + bw + '" height="' + Math.max(1, Math.abs(y1 - y0)) + '" fill="' + (it.c || (it.v < 0 ? "#E2001A" : "#5D6971")) + '"/><text x="' + (x + bw / 2) + '" y="' + (it.v < 0 ? y1 + 13 : y1 - 4) + '" font-size="11" text-anchor="middle">' + (o.fmt ? o.fmt(it.v) : eur(it.v, 1)) + '</text><text x="' + (x + bw / 2) + '" y="' + (H - B + 16) + '" font-size="11" text-anchor="middle">' + esc(it.l) + "</text>"; });
+  if (o.xl) s += '<text x="' + (W - 10) + '" y="' + (H - 8) + '" font-size="11" text-anchor="end" fill="#5D6971">' + esc(o.xl) + "</text>";
+  return s + "</svg>";
+}
+
+/* Kritische Menge */
+bind(["km_kv1", "km_kv2", "km_kp1", "km_i"], function(){
+  var kv1 = v("km_kv1"), kv2 = v("km_kv2"), kp1 = v("km_kp1"), i = v("km_i") / 100;
+  $("km_kv1v").textContent = eur(kv1) + " €"; $("km_kv2v").textContent = eur(kv2) + " €"; $("km_kp1v").textContent = eur(kp1, 0) + " €"; $("km_iv").textContent = pct(i);
+  var f1 = kp1 / 5 + kp1 / 2 * i + 2500, f2 = 60000 / 5 + 60000 / 2 * i + 4000, xk = (f1 - f2) / (kv2 - kv1);
+  var be1 = f1 / (1.5 - kv1), be2 = f2 / (1.5 - kv2);
+  $("km_kpi").innerHTML = kpi([[isFinite(xk) && xk > 0 ? eur(xk, 0) + " km" : "keine", "kritische Menge", true], [eur(f1, 0) + " / " + eur(f2, 0) + " €", "Fixkosten Raimler / Data"], [eur(be1, 0) + " / " + eur(be2, 0) + " km", "Gewinnschwelle Raimler / Data"]]);
+  var p1 = [], p2 = []; for (var x = 0; x <= 50000; x += 2500) { p1.push([x, f1 + kv1 * x]); p2.push([x, f2 + kv2 * x]); }
+  $("km_chart").innerHTML = lc([{ n: "Raimler", c: "#E2001A", pts: p1 }, { n: "Data", c: "#5D6971", pts: p2 }, { n: "Erlös", c: "#1F7A4D", dash: true, pts: [[0, 0], [50000, 75000]] }], { xmax: 50000, ymin: 0, xl: "km p. a.", marks: isFinite(xk) && xk > 0 && xk < 50000 ? [{ x: xk, t: "kritische Menge " + eur(xk, 0) + " km" }] : [], aria: "Kosten nach Fahrleistung" });
+  var who = xk > 0 ? "Oberhalb von " + eur(xk, 0) + " km ist " + (kv1 < kv2 ? "der Raimler" : "der Data") + " günstiger." : "Ein Fahrzeug ist bei jeder Fahrleistung günstiger.";
+  $("km_aha").innerHTML = "<b>Beobachten Sie:</b> " + who + " Der Zins verschiebt nur die Fixkosten. Was die Rechnung nicht sieht: Restwert, Ausfallrisiko, Image, Fahrkomfort.";
+});
+
+/* ROI */
+bind(["roi_ur", "roi_ku"], function(){
+  var ur = v("roi_ur"), ku = v("roi_ku"), roi = ur * ku;
+  $("roi_urv").textContent = eur(ur, 1) + " %"; $("roi_kuv").textContent = eur(ku, 2);
+  $("roi_kpi").innerHTML = kpi([[eur(roi, 1) + " %", "ROI", true], [eur(20 / ku, 1) + " %", "nötige Umsatzrendite für 20 % ROI"]]);
+  function iso(r){ var p = []; for (var k = 0.3; k <= 4.0001; k += 0.05) p.push([k, Math.min(45, r / k)]); return p; }
+  $("roi_chart").innerHTML = lc([{ n: "ROI 20 %", c: "#E2001A", pts: iso(20) }, { n: "ROI 10 %", c: "#9AA4AA", pts: iso(10) }], { xmin: 0, xmax: 4, ymin: 0, ymax: 45, nt: 8, xf: function(x){ return eur(x, 1); }, yf: function(y){ return eur(y, 0) + " %"; }, xl: "Kapitalumschlag", dots: [{ x: ku, y: Math.min(ur, 45), t: "ROI " + eur(roi, 1) + " %", c: "#2B3439" }], aria: "ROI-Isoquanten" });
+});
+
+/* Kapitalwertprofil */
+$("kw_pre").addEventListener("change", function(){ if (this.value) { $("kw_cf").value = this.value; $("kw_cf").dispatchEvent(new Event("input")); } });
+bind(["kw_cf", "kw_i"], function(){
+  var c = $("kw_cf").value.split(";").map(function(x){ return parseFloat(x.replace(",", ".")); }).filter(function(x){ return !isNaN(x); });
+  var i = v("kw_i") / 100; $("kw_iv").textContent = pct(i, 2);
+  if (c.length < 2) { $("kw_kpi").innerHTML = ""; $("kw_chart").innerHTML = ""; $("kw_aha").textContent = "Bitte mindestens zwei Zahlungen eingeben."; return; }
+  var n = c.length - 1, k = npv(i, c), an = k * wgf(i, n), r = irrs(c);
+  var pos = c.slice(1).reduce(function(s, x, t){ return s + (x > 0 ? x * Math.pow(1 + i, n - t - 1) : 0); }, 0), neg = -c.reduce(function(s, x, t){ return s + (x < 0 ? x / Math.pow(1 + i, t) : 0); }, 0);
+  var mirr = neg > 0 && pos > 0 ? Math.pow(pos / neg, 1 / n) - 1 : NaN;
+  $("kw_kpi").innerHTML = kpi([[eur(k, 2), "Kapitalwert", true], [eur(an, 2), "Annuität p. a."], [r.length ? r.map(function(x){ return pct(x, 1); }).join(" und ") : "keiner", "interner Zinsfuß"], [isNaN(mirr) ? "nicht definiert" : pct(mirr, 1), "MIRR"]]);
+  var pts = []; for (var z = 0; z <= 0.4001; z += 0.01) pts.push([z * 100, npv(z, c)]);
+  if (r.some(function(x){ return x > 0.4; })) { pts = []; for (var z2 = 0; z2 <= 1.2001; z2 += 0.02) pts.push([z2 * 100, npv(z2, c)]); }
+  var xm = pts[pts.length - 1][0];
+  $("kw_chart").innerHTML = lc([{ n: "Kapitalwert", c: "#E2001A", pts: pts }], { xmax: xm, xf: function(x){ return eur(x, 0) + " %"; }, xl: "Kalkulationszins", marks: [{ x: i * 100, t: "i = " + pct(i, 1), c: "#2B3439" }].concat(r.filter(function(x){ return x * 100 <= xm && x >= 0; }).map(function(x){ return { x: x * 100, t: "IRR " + pct(x, 1) }; })), aria: "Kapitalwertprofil" });
+  $("kw_aha").innerHTML = "<b>Lesart:</b> " + (k >= 0 ? "Das Projekt verdient mehr als den Kalkulationszins und schafft " + eur(k, 2) + " Wert in t = 0." : "Das Kapital ist anderswo besser angelegt.") + (r.length > 1 ? " Achtung: mehrere Zinsfüße, weil die Reihe mehrfach das Vorzeichen wechselt. Entscheiden Sie mit dem Kapitalwert." : r.length === 0 ? " Es gibt keinen reellen Zinsfuß; der Kapitalwert entscheidet trotzdem." : "");
+});
+
+/* WACC */
+bind(["w_rf", "w_b", "w_mrp", "w_fk", "w_ek", "w_s"], function(){
+  var rf = v("w_rf"), b = v("w_b"), mrp = v("w_mrp"), fk = v("w_fk"), ek = v("w_ek") / 100, s = v("w_s") / 100;
+  $("w_rfv").textContent = eur(rf, 2) + " %"; $("w_bv").textContent = eur(b, 2); $("w_mrpv").textContent = eur(mrp, 2) + " %"; $("w_fkv").textContent = eur(fk, 1) + " %"; $("w_ekv").textContent = eur(ek * 100, 0) + " %"; $("w_sv").textContent = eur(s * 100, 0) + " %";
+  var rek = rf + b * mrp, fkn = fk * (1 - s), wacc = ek * rek + (1 - ek) * fkn;
+  $("w_kpi").innerHTML = kpi([[eur(wacc, 2) + " %", "WACC nach Steuern", true], [eur(rek, 2) + " %", "Eigenkapitalkosten (CAPM)"], [eur(fkn, 2) + " %", "Fremdkapital nach Steuern"], [eur(npv(wacc / 100, [-100, 30, 30, 30, 30, 30]), 1) + " Mio. €", "KW des 100-Mio.-Projekts beim WACC"]]);
+  var items = [{ l: "risikoloser Zins", v: rf, c: "#9AA4AA" }, { l: "β × Prämie", v: b * mrp, c: "#5D6971" }, { l: "Eigenkapital", v: rek, c: "#2B3439" }, { l: "FK nach Steuern", v: fkn, c: "#9AA4AA" }, { l: "WACC", v: wacc, c: "#E2001A" }];
+  $("w_chart").innerHTML = sbar(items, { fmt: function(x){ return eur(x, 2) + " %"; }, aria: "Zusammensetzung der Kapitalkosten" });
+  $("w_aha").innerHTML = "<b>Beobachten Sie:</b> Ein Prozentpunkt mehr risikoloser Zins erhöht die Eigenkapitalkosten genau um einen Punkt, den WACC nur um die Eigenkapitalquote. Mehr Fremdkapital senkt den WACC rechnerisch; in der Praxis steigen dann Beta und Fremdkapitalzins (Kapitel 4).";
+});
+
+/* IRR-Fallen */
+bind(["irr_i", "irr_f"], function(){
+  var i = v("irr_i") / 100, f1 = v("irr_f"); $("irr_iv").textContent = pct(i, 0); $("irr_fv").textContent = eur(f1, 0) + " €";
+  var E = [-10000, 20000], F = [-20000, f1], D = [-10000, f1 - 20000];
+  var kE = npv(i, E), kF = npv(i, F), rF = f1 / 20000 - 1, rD = (f1 - 20000) / 10000 - 1;
+  $("irr_kpi").innerHTML = kpi([[eur(kE, 0) + " / " + eur(kF, 0), "Kapitalwert E / F"], ["100 % / " + pct(rF, 1), "IRR E / F"], [pct(rD, 1), "IRR der Differenz F − E", true], [kF > kE ? "F" : "E", "Wahl nach Kapitalwert", true]]);
+  var pE = [], pF = []; for (var z = 0; z <= 1.2001; z += 0.02) { pE.push([z * 100, npv(z, E)]); pF.push([z * 100, npv(z, F)]); }
+  $("irr_chart").innerHTML = lc([{ n: "E", c: "#5D6971", pts: pE }, { n: "F", c: "#E2001A", pts: pF }], { xmax: 120, nt: 6, xf: function(x){ return eur(x, 0) + " %"; }, xl: "Kalkulationszins", marks: [{ x: i * 100, t: "i", c: "#2B3439" }].concat(rD > 0 && rD < 1.2 ? [{ x: rD * 100, t: "Fisher-Zins " + pct(rD, 1) }] : []), aria: "Kapitalwertprofile E und F" });
+  $("irr_aha").innerHTML = "<b>Lesart:</b> Unterhalb des Fisher-Zinses (" + pct(rD, 1) + ") hat F den höheren Kapitalwert, darüber E. Der IRR von E ist immer höher, entscheidet aber nicht. Entscheidend ist, ob sich die Mehrinvestition von F über dem Kalkulationszins verzinst.";
+});
+
+/* Amortisation Segelflugzeug */
+bind(["am_db", "am_q", "am_i"], function(){
+  var db = v("am_db") / 1e6, q = v("am_q"), i = v("am_i") / 100; $("am_dbv").textContent = eur(v("am_db"), 0) + " €"; $("am_qv").textContent = q; $("am_iv").textContent = pct(i);
+  var c = []; for (var t = 0; t <= 20; t++) c.push(t === 1 || t === 2 ? -5 : t >= 3 && t <= 9 ? q * db : t >= 10 ? q * 0.6 * db : 0);
+  var cs = 0, cb = 0, p1 = [], p2 = [], s1 = null, s2 = null;
+  c.forEach(function(x, t){ var ps = cs, pb = cb; cs += x; cb += x / Math.pow(1 + i, t); p1.push([t, cs]); p2.push([t, cb]); if (s1 === null && t > 2 && cs >= 0) s1 = t - 1 + (-ps) / x; if (s2 === null && t > 2 && cb >= 0) s2 = t - 1 + (-pb) / (x / Math.pow(1 + i, t)); });
+  var r = irrs(c);
+  $("am_kpi").innerHTML = kpi([[eur(npv(i, c), 2) + " Mio. €", "Kapitalwert", true], [r.length ? pct(r[0], 1) : "keiner", "interner Zinsfuß"], [s1 === null ? "nicht in 20 Jahren" : eur(s1, 1) + " Jahre", "statische Amortisation"], [s2 === null ? "nicht in 20 Jahren" : eur(s2, 1) + " Jahre", "dynamische Amortisation"]]);
+  $("am_chart").innerHTML = lc([{ n: "kumuliert", c: "#9AA4AA", pts: p1 }, { n: "kumulierter Barwert", c: "#E2001A", pts: p2 }], { xmax: 20, nt: 10, xl: "Jahr", yf: function(y){ return eur(y, 1); }, aria: "Amortisation" });
+  $("am_aha").innerHTML = "<b>Beobachten Sie:</b> Die Entwicklungskosten fallen früh an, die Rückflüsse spät. Deshalb liegt die dynamische Amortisation weit hinter der statischen. Welcher Deckungsbeitrag je Flugzeug wäre nötig, damit der Kapitalwert positiv wird?";
+});
+
+/* Nutzungsdauer */
+var ND = [{ R: [-600, 130, 140, 180, 200, 160, 120, 80], L: [580, 550, 500, 450, 400, 300, 200, 100] }, { R: [-150, 45, 45, 30, 45, 20, 22, 10], L: [135, 110, 85, 60, 40, 20, 15, 2] }];
+bind(["nd_i", "nd_l", "nd_case"], function(){
+  var i = v("nd_i") / 100, lf = v("nd_l") / 100, cs = ND[v("nd_case")]; $("nd_iv").textContent = pct(i); $("nd_lv").textContent = eur(lf * 100, 0) + " %";
+  var kws = cs.R.map(function(_, n){ var s = cs.R[0] + (n === 0 ? cs.L[0] * lf : 0); for (var t = 1; t <= n; t++) s += cs.R[t] / Math.pow(1 + i, t); if (n > 0) s += cs.L[n] * lf / Math.pow(1 + i, n); return s; });
+  var best = kws.indexOf(Math.max.apply(null, kws));
+  $("nd_chart").innerHTML = sbar(kws.map(function(k, n){ return { l: n + " J.", v: k, c: n === best ? "#E2001A" : k < 0 ? "#B3001A" : "#9AA4AA" }; }), { xl: "Nutzungsdauer in Jahren", aria: "Kapitalwert je Nutzungsdauer" });
+  $("nd_aha").innerHTML = "<b>Optimal:</b> " + best + " Jahre mit Kapitalwert " + eur(kws[best], 1) + " Tsd. €. Ein höherer Zins verkürzt die optimale Dauer meist, weil spätere Rückflüsse weniger zählen. Bei nicht monotonen Rückflüssen (Fall Troßmann) gibt es mehrere lokale Maxima.";
+});
+
+/* Steuern und AfA */
+var AFR = [5000, 5000, 4500, 4000, 3800, 3600, 3200, 2800, 2500, 2000];
+bind(["af_s", "af_i", "af_d"], function(){
+  var s = v("af_s") / 100, iv = v("af_i") / 100, d = v("af_d") / 100, inn = iv * (1 - s);
+  $("af_sv").textContent = pct(s, 0); $("af_iv").textContent = pct(iv); $("af_dv").textContent = pct(d, 0);
+  function plan(rate){ var bw = 24000, a = []; for (var t = 0; t < 10; t++) { var lin = bw / (10 - t), x = rate ? Math.max(bw * rate, lin) : 2400; a.push(x); bw -= x; } return a; }
+  function kw(a){ return npv(inn, [-24000].concat(AFR.map(function(r, t){ return r - s * (r - a[t]); }))); }
+  var aL = plan(0), aD = plan(d), kL = kw(aL), kD = kw(aD), kv = npv(iv, [-24000].concat(AFR));
+  $("af_kpi").innerHTML = kpi([[eur(kv, 0) + " €", "KW vor Steuern"], [eur(kL, 0) + " €", "KW nach Steuern, linear"], [eur(kD, 0) + " €", "KW nach Steuern, degressiv", true], [pct(inn, 2), "Zins nach Steuern"]]);
+  var pL = [], pD = [], cl = 0, cd = 0; for (var t = 0; t < 10; t++) { cl += s * aL[t]; cd += s * aD[t]; pL.push([t + 1, cl]); pD.push([t + 1, cd]); }
+  $("af_chart").innerHTML = lc([{ n: "linear", c: "#9AA4AA", at: 6, pts: [[0, 0]].concat(pL) }, { n: "degressiv", c: "#E2001A", at: 3, pts: [[0, 0]].concat(pD) }], { xmax: 10, nt: 10, ymin: 0, xl: "Jahr, kumulierte Steuerersparnis aus der AfA in €", aria: "Kumulierte Steuerersparnis" });
+  $("af_aha").innerHTML = "<b>Beobachten Sie:</b> Beide Linien enden bei " + eur(s * 24000, 0) + " €: Die Steuer fällt nicht weg, sie wird verschoben. Der Zinsvorteil der früheren Ersparnis macht den Unterschied von " + eur(kD - kL, 0) + " € im Kapitalwert.";
+});
+
+/* VoFi */
+bind(["vf_s", "vf_h", "vf_e"], function(){
+  var is = v("vf_s") / 100, ih = v("vf_h") / 100, e = v("vf_e"); $("vf_sv").textContent = pct(is); $("vf_hv").textContent = pct(ih); $("vf_ev").textContent = eur(e, 0);
+  function run(c){ var k = 1100 + c[0] - e, row = [k]; for (var t = 1; t <= 3; t++) { k = k * (1 + (k < 0 ? is : ih)) + c[t] - e; row.push(k); } return row; }
+  var A = run([-1000, 0, 0, 1525]), B = run([-1300, 800, 900, 0]);
+  function tr(n, r){ return "<tr><td>" + n + "</td>" + r.map(function(x){ return '<td class="r' + (x < 0 ? " bad" : "") + '">' + eur(x, 1) + "</td>"; }).join("") + "</tr>"; }
+  $("vf_tab").innerHTML = '<tr><th>Kontostand Tsd. €</th><th class="r">t = 0</th><th class="r">t = 1</th><th class="r">t = 2</th><th class="r">t = 3</th></tr>' + tr("Projekt A", A) + tr("Projekt B", B);
+  var kA = npv(is, [-1000, 0, 0, 1525]), kB = npv(is, [-1300, 800, 900, 0]);
+  $("vf_aha").innerHTML = "<b>Endvermögen:</b> A " + eur(A[3], 1) + ", B " + eur(B[3], 1) + ": " + (A[3] > B[3] ? "A" : "B") + " gewinnt. Zum Vergleich der Kapitalwert beim Sollzins: A " + eur(kA, 1) + ", B " + eur(kB, 1) + ". Senken Sie den Habenzins und erhöhen Sie den Sollzins: Projekte, die Kredit brauchen, verlieren.";
+});
+
+/* Monte-Carlo */
+function mcRun(){
+  var m = v("mc_nd"), sd = v("mc_sd"), N = v("mc_n");
+  $("mc_ndv").textContent = eur(m, 1) + " Jahre"; $("mc_sdv").textContent = eur(sd, 0) + " t"; $("mc_nv").textContent = eur(N, 0);
+  function sim(db, fx, inv, liq){ var out = []; for (var k = 0; k < N; k++) { var M = Math.max(0, 250000 + sd * nrm()), D = tri(db[0], db[1], db[2]), F = tri(fx[0], fx[1], fx[2]), n = Math.max(1, Math.round(tri(Math.max(0.5, m - 4.5), m, m + 4.5))); var cf = M * 0.12 * D / 1e6 - F; out.push(-inv + cf * (1 - Math.pow(1.1, -n)) / 0.1 + liq / Math.pow(1.1, n + 1)); } return out; }
+  var A = sim([130, 140, 210], [0.8, 0.9, 1.3], 15, 2), B = sim([95, 105, 160], [1.2, 1.35, 1.95], 8, 0);
+  function st(a){ var s = a.slice().sort(function(x, y){ return x - y; }); return { mean: a.reduce(function(p, q){ return p + q; }, 0) / a.length, neg: a.filter(function(x){ return x < 0; }).length / a.length, q5: s[Math.floor(0.05 * s.length)], q95: s[Math.floor(0.95 * s.length)] }; }
+  var sa = st(A), sb = st(B);
+  $("mc_kpi").innerHTML = kpi([[eur(sa.mean, 1) + " / " + eur(sb.mean, 1), "erwarteter KW A / B (Mio. €)", true], [pct(sa.neg, 0) + " / " + pct(sb.neg, 0), "Verlustwahrscheinlichkeit A / B"], [eur(sa.q5, 1) + " / " + eur(sb.q5, 1), "5-%-Quantil A / B"], [eur(sa.q95, 1) + " / " + eur(sb.q95, 1), "95-%-Quantil A / B"]]);
+  var bins = []; for (var b = -15; b < 25; b += 2.5) bins.push(b);
+  function hist(a){ var h = bins.map(function(){ return 0; }); a.forEach(function(x){ var k = Math.min(bins.length - 1, Math.max(0, Math.floor((x + 15) / 2.5))); h[k]++; }); return h.map(function(c){ return c / a.length * 100; }); }
+  var hA = hist(A), hB = hist(B);
+  $("mc_chart").innerHTML = lc([{ n: "A", c: "#E2001A", at: 12, pts: bins.map(function(b, k){ return [b + 1.25, hA[k]]; }) }, { n: "B", c: "#5D6971", at: 4, pts: bins.map(function(b, k){ return [b + 1.25, hB[k]]; }) }], { xmin: -15, xmax: 25, nt: 8, ymin: 0, xl: "Kapitalwert in Mio. €", yf: function(y){ return eur(y, 0) + " %"; }, marks: [{ x: 0, t: "KW = 0", c: "#2B3439" }], aria: "Häufigkeitsverteilung der Kapitalwerte" });
+  $("mc_aha").innerHTML = "<b>Lesart:</b> In der sicheren Rechnung mit 10 Jahren hat A 9,05 Mio. € Kapitalwert. Mit unsicherer Nutzungsdauer um " + eur(m, 1) + " Jahre bleiben im Mittel " + eur(sa.mean, 1) + " Mio. €. Schieben Sie die Nutzungsdauer: Sie ist der stärkste Treiber. Werte schwanken je Lauf.";
+}
+["mc_nd", "mc_sd", "mc_n"].forEach(function(id){ $(id).addEventListener("change", mcRun); $(id).addEventListener("input", function(){ $("mc_ndv").textContent = eur(v("mc_nd"), 1) + " Jahre"; $("mc_sdv").textContent = eur(v("mc_sd"), 0) + " t"; $("mc_nv").textContent = eur(v("mc_n"), 0); }); });
+$("mc_go").addEventListener("click", mcRun); mcRun();
+
+/* Nutzwertanalyse */
+(function(){
+  var K = [["Stabilität des Anbieters", 10, [1, 2, 3]], ["Service Level", 20, [2, 3, 1]], ["Anpassbarkeit", 20, [1, 2, 3]], ["Ergonomie", 10, [3, 3, 2]], ["Funktionsumfang", 10, [3, 1, 2]], ["Synergien", 10, [1, 3, 2]], ["Preis", 20, [3, 1, 2]]];
+  $("nwa_f").innerHTML = K.map(function(k, i){ return '<div><label for="nw' + i + '">' + k[0] + " (A " + k[2][0] + ", B " + k[2][1] + ", C " + k[2][2] + '): <b id="nw' + i + 'v"></b></label><input type="range" id="nw' + i + '" min="0" max="50" step="1" value="' + k[1] + '"></div>'; }).join("");
+  bind(K.map(function(_, i){ return "nw" + i; }), function(){
+    var w = K.map(function(_, i){ return v("nw" + i); }), sw = w.reduce(function(a, b){ return a + b; }, 0) || 1;
+    K.forEach(function(_, i){ $("nw" + i + "v").textContent = eur(w[i] / sw * 100, 0) + " %"; });
+    var add = [0, 1, 2].map(function(j){ return K.reduce(function(s, k, i){ return s + w[i] / sw * k[2][j]; }, 0); });
+    var geo = [0, 1, 2].map(function(j){ return K.reduce(function(s, k, i){ return s * Math.pow(k[2][j], w[i] / sw); }, 1); });
+    var items = []; ["A", "B", "C"].forEach(function(n, j){ items.push({ l: n + " additiv", v: add[j], c: "#5D6971" }); items.push({ l: n + " multipl.", v: geo[j], c: "#E2001A" }); });
+    $("nwa_chart").innerHTML = sbar(items, { fmt: function(x){ return eur(x, 2); }, aria: "Nutzwerte" });
+    function win(arr){ var mx = Math.max.apply(null, arr); return ["A", "B", "C"].filter(function(_, j){ return mx - arr[j] < 0.005; }).join(" und "); } var ba = win(add), bg = win(geo);
+    $("nwa_aha").innerHTML = "<b>Sieger:</b> additiv " + ba + ", multiplikativ " + bg + ". Testen Sie, wie wenig sich die Gewichte ändern müssen, damit sich die Rangfolge dreht. Genau das ist die Schwachstelle des Verfahrens.";
+  });
+})();
+
+/* BigBag */
+function bigbag(o){
+  var nd = o.nd, s = 0.4, i = 0.0725, mat = 0.75 * o.hk / 1.85, mt = 600 * o.q, f = [], nwc0 = 0, ebit, ju, nwc;
+  f.push(-50 * (1 - s) - o.inv);
+  for (var t = 1; t <= nd; t++) { var a = t === 1 ? 0.75 : 1, U = a * mt * o.p, K = a * mt * o.hk; ebit = U - K - 28 - o.inv / nd + (o.san && t === 3 ? 150 : 0); ju = ebit * (1 - s); nwc = K * 30 / 360 + U * 45 / 360 - a * mt * mat * 45 / 360; f.push(ju + o.inv / nd - (nwc - nwc0)); nwc0 = nwc; }
+  f.push(nwc0); return f;
+}
+bind(["bb_p", "bb_hk", "bb_q", "bb_inv", "bb_nd", "bb_san"], function(){
+  var o = { p: v("bb_p"), hk: v("bb_hk"), q: v("bb_q") / 100, inv: v("bb_inv"), nd: v("bb_nd"), san: $("bb_san").checked };
+  $("bb_pv").textContent = eur(o.p) + " €"; $("bb_hkv").textContent = eur(o.hk) + " €"; $("bb_qv").textContent = eur(o.q * 100, 0) + " %"; $("bb_invv").textContent = eur(o.inv, 0); $("bb_ndv").textContent = o.nd + " Jahre";
+  var f = bigbag(o), k = npv(0.0725, f), r = irrs(f), cb = 0, dyn = null;
+  f.forEach(function(x, t){ var pb = cb; cb += x / Math.pow(1.0725, t); if (dyn === null && t > 0 && cb >= 0 && pb < 0) dyn = t - 1 + (-pb) / (x / Math.pow(1.0725, t)); });
+  var lo = 1.5, hi = 3; for (var it = 0; it < 50; it++) { var m = (lo + hi) / 2; if (npv(0.0725, bigbag(Object.assign({}, o, { p: m }))) > 0) hi = m; else lo = m; }
+  $("bb_kpi").innerHTML = kpi([[eur(k, 0) + " Tsd. €", "Kapitalwert bei 7,25 %", true], [r.length ? pct(r[0], 1) : "keiner", "interner Zinsfuß"], [dyn === null ? "nicht erreicht" : eur(dyn, 1) + " Jahre", "dynamische Amortisation"], [eur(hi) + " €/kg", "kritischer Preis"]]);
+  var base = k, T = [["Preis −10 %", { p: o.p * 0.9 }], ["Herstellk. +10 %", { hk: o.hk * 1.1 }], ["Menge −10 %", { q: o.q * 0.9 }], ["Invest. +10 %", { inv: o.inv * 1.1 }], ["Dauer −3 J.", { nd: Math.max(2, o.nd - 3) }]];
+  $("bb_chart").innerHTML = sbar([{ l: "aktuell", v: base, c: "#2B3439" }].concat(T.map(function(t){ return { l: t[0], v: npv(0.0725, bigbag(Object.assign({}, o, t[1]))) }; })), { fmt: function(x){ return eur(x, 0); }, xl: "Kapitalwert in Tsd. €, je eine Größe ungünstig verändert", aria: "Sensitivität BigBag" });
+  $("bb_aha").innerHTML = "<b>Lesart:</b> Preis und Herstellkosten liegen nur " + eur(o.p - o.hk) + " € je kg auseinander. Deshalb kippt der Kapitalwert schon bei kleinen Änderungen. Sichern Sie den Preis im Kundenvertrag ab, etwa mit einer Gleitklausel auf den Materialpreis.";
+});
+
+/* Küstenwerkstatt DSCR */
+bind(["ds_x", "ds_p", "ds_m", "ds_ek", "ds_dv", "ds_tf"], function(){
+  var xf = v("ds_x") / 100, p = v("ds_p") / 1000, mt = v("ds_m") / 1000, ek = v("ds_ek"), dv = v("ds_dv"), tf = $("ds_tf").checked;
+  $("ds_xv").textContent = eur(xf * 100, 0) + " %"; $("ds_pv").textContent = eur(p * 1000, 0) + " €"; $("ds_mv").textContent = eur(mt * 1000, 0) + " €"; $("ds_ekv").textContent = eur(ek, 0); $("ds_dvv").textContent = dv + " Tage";
+  var kas = ek + 100 - 120, fk = 100, vv = 0, wc0 = 0, rows = [], minK = kas;
+  [[400, 140], [700, 170], [900, 190]].forEach(function(y, k){ var x = y[0] * xf, U = x * p, M = x * mt, ebitda = U - M - y[1] - 60, zi = 0.06 * fk, ebt = ebitda - 24 - zi, tax = 0.3 * Math.max(0, ebt - vv); vv = Math.max(0, vv - ebt); var ju = ebt - tax, wc = M * 60 / 360 + U * 20 / 360 - M * dv / 360, d = wc - wc0; wc0 = wc; var tl = tf && k === 0 ? 0 : 20; kas += ju + 24 - d - tl; var dscr = (ebitda - tax - d) / (zi + tl); fk -= tl; minK = Math.min(minK, kas); rows.push([U, ebitda, ju, -d, kas, dscr]); });
+  var lab = ["Umsatz", "EBITDA", "Jahresüberschuss", "Veränderung Working Capital", "Kasse am Jahresende", "DSCR"];
+  $("ds_tab").innerHTML = '<tr><th>Tsd. €</th><th class="r">Jahr 1</th><th class="r">Jahr 2</th><th class="r">Jahr 3</th></tr>' + lab.map(function(l, j){ return "<tr><td>" + l + "</td>" + rows.map(function(r){ var x = r[j], bad = (j === 4 && x < 0) || (j === 5 && x < 1.2); return '<td class="r' + (bad ? " bad" : "") + '">' + eur(x, j === 5 ? 2 : 1) + "</td>"; }).join("") + "</tr>"; }).join("");
+  $("ds_kpi").innerHTML = kpi([[eur(minK, 1) + " Tsd. €", "niedrigste Kasse", minK < 0], [minK < 0 ? eur(-minK, 1) + " Tsd. €" : "keine", "Kapitallücke", minK < 0], [eur(Math.min(rows[1][5], rows[2][5]), 2), "niedrigste DSCR ab Jahr 2"]]);
+  $("ds_aha").innerHTML = "<b>Lesart:</b> Im Anlaufjahr kommen Verlust, Aufbau des Working Capital und Tilgung zusammen. " + (minK < 0 ? "Hier fehlen " + eur(-minK, 1) + " Tsd. €: mehr Eigenkapital, ein tilgungsfreies Jahr, längere Lieferantenziele oder eine Kontokorrentlinie schließen die Lücke." : "Die Kasse bleibt positiv; prüfen Sie, wie groß der Puffer im ungünstigen Szenario ist.") + " Banken verlangen eine DSCR deutlich über 1.";
+});
+</script>
+</body>
+</html>

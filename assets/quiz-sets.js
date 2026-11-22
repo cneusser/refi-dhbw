@@ -23,5 +23,29 @@ window.QSETS = {
   {q:"Welche Aussage zu Normwerten wie Current Ratio 2:1 trifft zu?",o:["Gesetzlich vorgeschrieben","Empirisch für alle Branchen belegt","Konvention, nur im Vergleich aussagekräftig","Nur für Banken relevant"],a:2,e:"Branchen- und Zeitvergleich statt pauschaler Normen."},
   {q:"Warum kann Reverse Factoring den opCF eines Käufers schönen?",o:["Es senkt den Umsatz","Es verlängert faktisch das Lieferantenziel","Es erhöht die Abschreibung","Es senkt die Steuern"],a:1,e:"Seit 2024 verlangt IAS 7 Angaben zu Supplier Finance. Fall Greensill 2021."},
   {q:"Nokia 2011: Verlust, aber positiver opCF. Wichtigster Grund?",o:["Höhere Abschreibungen","Abbau von Working Capital","Steuererstattungen","Kapitalerhöhung"],a:1,e:"Schrumpfung setzt Working Capital frei, nicht nachhaltig."}
+ ]},
+ kap2: { title: "Kapitel 2 Investitionsrechnung", qs: [
+  {q:"Was misst der Kapitalwert?",o:["Die Rendite in Prozent", "Den heutigen Wertbeitrag über die geforderte Verzinsung hinaus", "Die Amortisationsdauer", "Den Umsatz"],a:1,e:"KW > 0: Das Projekt schafft Wert über den Kalkulationszins hinaus."},
+  {q:"−100; 5 × 30 bei 10 %: Kapitalwert?",o:["50,0", "13,7", "−13,7", "26,4"],a:1,e:"30 × 3,7908 − 100 = 13,7."},
+  {q:"Der Zins steigt. Welcher Kapitalwert fällt stärker?",o:["Projekt mit frühen Rückflüssen", "Projekt mit späten Rückflüssen", "Beide gleich", "Keiner"],a:1,e:"Späte Rückflüsse werden über mehr Perioden abgezinst."},
+  {q:"E: −10.000; +20.000. F: −20.000; +35.000. i = 10 %. Wahl?",o:["E wegen IRR 100 %", "F wegen höherem Kapitalwert", "Beide", "Keines"],a:1,e:"KW E 8.182, F 11.818; Differenz verzinst sich mit 50 %."},
+  {q:"Excel NBW(10 %; C0:C5) mit Investition in C0 ist",o:["richtig", "zu klein, C0 wird mit abgezinst", "zu groß", "der IRR"],a:1,e:"Richtig: NBW(i; C1:C5) + C0."},
+  {q:"rf 2 %, Beta 1,2, Prämie 6 %: Eigenkapitalkosten?",o:["8,0 %", "9,2 %", "7,2 %", "10,0 %"],a:1,e:"2 + 1,2 × 6 = 9,2 %."},
+  {q:"Wie viele interne Zinsfüße kann −1.000; +3.010; −2.020 haben?",o:["keinen", "einen", "zwei", "unendlich viele"],a:2,e:"Zwei Vorzeichenwechsel: 1 % und 100 %."},
+  {q:"Was erfasst die Amortisationsdauer nicht?",o:["Die Investition", "Zahlungen nach dem Amortisationszeitpunkt", "Frühe Rückflüsse", "Die Laufzeit bis zur Amortisation"],a:1,e:"Sie ist ein Risikomaß, kein Wertmaß."},
+  {q:"Degressive statt lineare AfA: Kapitalwert nach Steuern",o:["sinkt", "steigt, weil Steuern später fallen", "bleibt gleich", "wird null"],a:1,e:"Die Steuer wird verschoben, der Zinsvorteil zählt."},
+  {q:"Farbpigmentanlage unter Unsicherheit: Was treibt den Kapitalwert am stärksten?",o:["Der Zins", "Die Nutzungsdauer", "Der Marktanteil", "Die Steuer"],a:1,e:"Erwartete 6 statt 10 Jahre senken den erwarteten KW von 9 auf etwa 2 Mio. €."}
+ ]},
+ kap3: { title: "Kapitel 3 Business Case", qs: [
+  {q:"Was prüft eine Bank vorrangig?",o:["Exit-Perspektive", "Kapitaldienstfähigkeit und Sicherheiten", "Marktanteil weltweit", "Teamgröße"],a:1,e:"Zinsen und Tilgung müssen aus dem Cashflow kommen."},
+  {q:"DSCR =",o:["EBIT / Umsatz", "Cashflow vor Kapitaldienst / (Zinsen + Tilgung)", "EK / GK", "Schulden / EBITDA"],a:1,e:"Unter 1 reicht das Geld nicht für den Kapitaldienst."},
+  {q:"Wozu dient die Planbilanz im integrierten Plan?",o:["Steuererklärung", "Probe der Konsistenz", "Ersetzt die GuV", "Nur für Investoren"],a:1,e:"Geht sie auf, passen GuV, Kapitalfluss und Bilanz zusammen."},
+  {q:"Warum ist die Kasse im Anlaufjahr knapp, obwohl die AfA keine Zahlung ist?",o:["Wegen der AfA", "Wegen Aufbau Working Capital und Tilgung", "Wegen Steuervorauszahlung", "Wegen der Bilanz"],a:1,e:"Vorräte und Forderungen binden Geld, Tilgung fließt ab."},
+  {q:"BigBag: Kapitalwert bei 7,25 %?",o:["−293 Tsd. €", "293 Tsd. €", "629 Tsd. €", "0"],a:1,e:"KW 293 Tsd. €, IRR 14,0 %."},
+  {q:"BigBag: Was macht den Kapitalwert schon bei 10 % Änderung negativ?",o:["Investition", "Menge", "Preis oder Herstellkosten", "Marketing"],a:2,e:"Die Marge beträgt nur 0,40 € je kg."},
+  {q:"Vermiedene Sanierungskosten im Business Case?",o:["Weglassen", "Als eingesparte Auszahlung nach Steuern ansetzen", "Als Abschreibung", "Nur im Text"],a:1,e:"Inkrementell: mit und ohne Projekt verschieden."},
+  {q:"Welcher Plan bestimmt den Finanzierungsbedarf?",o:["Basisplan", "Ungünstiges Szenario, das man tragen will", "Bester Fall", "Durchschnitt"],a:1,e:"Die Finanzierung muss die Lücke im Stressfall decken."},
+  {q:"Wann schreibt man die Executive Summary?",o:["Zuerst", "Zuletzt", "Nie", "Nur für Banken"],a:1,e:"Sie verdichtet den fertigen Plan."},
+  {q:"Typisches Warnzeichen im Business Plan?",o:["Quellen je Zahl", "Hockeyschläger ohne Begründung", "Stresstest", "Planbilanz"],a:1,e:"Planungsfehlschluss: Optimismus bei Dauer und Wachstum."}
  ]}
 };
