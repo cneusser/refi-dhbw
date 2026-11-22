@@ -1,5 +1,12 @@
 # Änderungen
 
+## v0.7 (22.11.2026)
+
+- Probeklausur zu Hause statt im Hörsaal: Nach Probeklausur und Klausur können Studierende ihr Ergebnis anonym melden (nur Quoten je Kapitel und Abschnitt).
+- Neue Seite statistik.html (PIN): Verteilung der Quoten, Kapitel und schwächste Abschnitte, CSV-Export; Grundlage für die Fragestunde in Teams.
+- Gesamtfall Küstenwerkstatt über ReFi II Kapitel 1 bis 4 (Excel E01) und zwei neue Folien in Kapitel 4; Lösung im Anhang.
+- Firebase-Regel für refi/stats im README ergänzt (lesen offen, Einträge nur anlegen, nicht ändern).
+
 ## v0.6 (22.11.2026)
 
 - ReFi II, Kapitel 4 Finanzierung neu aufgebaut (54 Folien): Ziele und Leverage, Bonität und Rating, Außenfinanzierung, Innenfinanzierung, Klausurübersicht ReFi II; PDF ohne Lösungsfolie unter unterlagen/.

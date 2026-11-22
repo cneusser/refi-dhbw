@@ -48,6 +48,7 @@ window.KURS = {
             { t: "Kapitel 4 Finanzierung (Folien, PDF ohne Lösungsfolien)", href: "unterlagen/261207_REFI_II_Kap4_Finanzierung.pdf" },
             { t: "Tools Kapitel 4: Leverage, Value at Risk, Darlehen, Anleihe, Skonto, Selbstfinanzierung, Lohmann-Ruchti", href: "tools-k4f.html" },
             { t: "Übungsaufgaben Kapitel 4 als Excel (D01 bis D08)", href: "unterlagen/ReFi_II_Kap4_Uebungen_Aufgaben.xlsx" },
+            { t: "Gesamtfall Küstenwerkstatt (Excel E01, Kapitel 1 bis 4)", href: "unterlagen/ReFi_II_Gesamtfall_Aufgabe.xlsx" },
             { t: "Live-Quiz Kapitel 4", href: "live-quiz.html?set=kap4" },
             { t: "Probeklausur und Klausur", href: "pruefung.html" }
           ], quiz: "kap4", refs: "kap4" }

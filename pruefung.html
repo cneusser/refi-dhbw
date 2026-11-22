@@ -299,12 +299,29 @@ function viewResult(){
   h += '<div class="kpis" style="margin-top:12px"><div class="kpi red"><div class="v">' + eur(a.score, 1) + " / " + eur(a.max, 1) + '</div><div class="l">Punkte</div></div><div class="kpi"><div class="v">' + Math.round(q * 100) + ' %</div><div class="l">Quote</div></div><div class="kpi"><div class="v">' + mmss(a.used || 0) + '</div><div class="l">Bearbeitungszeit' + (a.limit ? " (Vorgabe " + a.limit + " Min.)" : "") + "</div></div></div>";
   h += '<div class="panel"><h3 style="margin-top:0">Nach Bereichen</h3><div class="chart">' + (window.hbarMini ? "" : "") + Object.keys(secs).map(function(k){ var s = secs[k], p = s.m ? s.g / s.m : 0; return '<div style="display:grid;grid-template-columns:minmax(0,1.4fr) 2fr 90px;gap:8px;align-items:center;margin:4px 0;font-size:14px"><span>' + esc(k) + '</span><span style="background:var(--panel);height:14px;display:block"><i style="display:block;height:14px;width:' + Math.round(p * 100) + "%;background:" + (p >= 0.7 ? "var(--ok)" : p >= 0.5 ? "#B07A00" : "var(--red)") + '"></i></span><span class="num r">' + eur(s.g, 1) + " / " + eur(s.m, 1) + "</span></div>"; }).join("") + "</div>" +
     '<p class="small muted">Grün ab 70 %, gelb ab 50 %. Wo es rot ist: Im Skript nachlesen, dann diesen Bereich als Selbsttest wiederholen.</p></div>';
+  if (a.mode !== "selbst") h += '<div class="panel" id="statbox"><h3 style="margin-top:0">Anonym für die Kursstatistik melden</h3><p class="small">Gemeldet werden nur Ihre Quoten je Kapitel und Abschnitt, die Art des Tests und das Datum. Kein Name, keine E-Mail, keine Konto-ID. Der Dozent sieht nur die Verteilung im Kurs und plant danach die Fragestunde.</p>' +
+    (a.reported ? '<p class="small"><b>Danke, Ihr Ergebnis ist anonym gemeldet.</b></p>' : '<button id="report">Anonym melden</button> <span class="small muted" id="repmsg"></span>') + "</div>";
   h += "<h2>Aufgaben mit Lösung</h2>" + a.items.map(function(it, k){ var m = meta(it), g = grade(it, a.ans[k]), st = g >= m.pts - 0.001 ? "ok" : g > 0 ? "part" : "bad";
     return '<div class="res-item"><div class="qmeta"><span>' + (it.sec ? '<span class="sec">' + esc(it.sec) + "</span> · " : "") + "Aufgabe " + (k + 1) + ' <span class="pill ' + st + '">' + eur(g, g % 1 ? 1 : 0) + " von " + eur(m.pts, m.pts % 1 ? 1 : 0) + " P.</span></span><span>" + esc(P.CH[m.ch].t) + ", " + esc(m.ref) + "</span></div>" + '<div data-k="' + k + '">' + render(it, a.ans[k], true) + "</div>" + (why(it) ? '<div class="why">' + esc(why(it)) + "</div>" : "") + (st !== "ok" ? '<div class="small" style="margin-top:4px"><a href="' + P.CH[m.ch].link + '" target="_blank" rel="noopener">Im Skript nachlesen: ' + esc(P.CH[m.ch].t) + ", Abschnitt " + esc(m.ref) + "</a></div>" : "") + "</div>"; }).join("");
   app.innerHTML = h; window.scrollTo(0, 0); stopTick();
   document.getElementById("back").onclick = viewDash;
+  var rb = document.getElementById("report"); if (rb) rb.onclick = function(){ reportStats(a); };
   app.querySelectorAll("[data-self]").forEach(function(e){ e.onchange = function(){ var k = +e.closest("[data-k]").dataset.k, v = a.ans[k] || { text: "", self: [] }; v.self = v.self || []; v.self[+e.dataset.self] = e.checked; a.ans[k] = v;
     var score = 0; a.items.forEach(function(it, j){ score += grade(it, a.ans[j]); }); a.score = +score.toFixed(2); STORE.save(AID, a).then(viewResult); }; });
+}
+
+/* ---------- Anonyme Kursstatistik ---------- */
+function reportStats(a){
+  var msg = document.getElementById("repmsg");
+  if (!FB) { msg.textContent = "Keine Verbindung zur Datenbank."; return; }
+  var ch = {}, rf = {};
+  a.items.forEach(function(it, k){ var m = meta(it), g = grade(it, a.ans[k]); ch[m.ch] = ch[m.ch] || [0, 0]; ch[m.ch][0] += g; ch[m.ch][1] += m.pts;
+    var key = (m.ch + " " + m.ref).replace(/[.#$\[\]\/]/g, "_"); rf[key] = rf[key] || [0, 0]; rf[key][0] += g; rf[key][1] += m.pts; });
+  var rec = { mode: a.mode, ts: firebase.database.ServerValue.TIMESTAMP, q: a.max ? +(a.score / a.max).toFixed(3) : 0, min: Math.round((a.used || 0) / 60000), ch: {}, rf: {} };
+  Object.keys(ch).forEach(function(c){ rec.ch[c] = [+ch[c][0].toFixed(2), ch[c][1]]; });
+  Object.keys(rf).forEach(function(c){ rec.rf[c] = [+rf[c][0].toFixed(2), rf[c][1]]; });
+  document.getElementById("report").disabled = true; msg.textContent = "Wird gesendet …";
+  FB.database().ref("refi/stats").push(rec).then(function(){ a.reported = true; STORE.save(AID, a).then(viewResult); }).catch(function(){ msg.textContent = "Senden fehlgeschlagen. Bitte später erneut versuchen."; document.getElementById("report").disabled = false; });
 }
 
 /* ---------- Start ---------- */

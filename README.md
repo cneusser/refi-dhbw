@@ -17,6 +17,7 @@ Statische Seite für GitHub Pages. Live-Funktionen (Live-Quiz, Prozesskosten-Cha
 | `tools-k4.html` | Tools zur Kosten- und Leistungsrechnung (ReFi I, Kapitel 4) |
 | `pruefung.html` | Prüfungsvorbereitung mit Anmeldung: Selbsttest, Probeklausur 60 Min., Klausur 120 Min. |
 | `glossar.html` | Glossar mit Suche |
+| `statistik.html` | Anonyme Kursstatistik aus Probeklausur und Klausur (PIN) |
 | `fragen.html` | Fragen und Antworten mit Unterstützen-Knopf, Dozentenmodus per PIN |
 | `links.html` | Literatur und Praxisquellen je Kapitel |
 
@@ -40,6 +41,7 @@ Eingetragen ist das bestehende Projekt `osnabrueck-quiz`. Empfohlene Regeln (Rea
       "archiv":    { ".read": true, ".write": true },
       "rooms":     { ".read": true, ".write": true },
       "qa":        { ".read": true, ".write": true },
+      "stats":     { ".read": true, "$id": { ".write": "!data.exists()" } },
       "users": {
         "$uid": { ".read": "auth != null && auth.uid === $uid", ".write": "auth != null && auth.uid === $uid" }
       }

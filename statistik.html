@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Kursstatistik ReFi</title>
+<link rel="stylesheet" href="assets/site.css">
+<style>
+.bar{display:grid;grid-template-columns:minmax(0,1.6fr) 2fr 120px;gap:8px;align-items:center;margin:5px 0;font-size:14px}
+.bar span.t{background:var(--panel);height:14px;display:block}
+.bar i{display:block;height:14px}
+.bar .r{text-align:right;font-variant-numeric:tabular-nums}
+.hist{display:flex;align-items:flex-end;gap:6px;height:140px;margin-top:10px}
+.hist div{flex:1;background:var(--grey);position:relative;min-height:1px}
+.hist div b{position:absolute;top:-18px;left:0;right:0;text-align:center;font-size:12px;font-weight:600}
+.hlab{display:flex;gap:6px;font-size:11px;color:var(--grey)}
+.hlab span{flex:1;text-align:center}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>Kursstatistik Probeklausur und Klausur</h1>
+  <p class="lead">Anonyme Meldungen der Studierenden nach Probeklausur und Klausur auf der Webseite: nur Quoten je Kapitel und Abschnitt, ohne Namen und Konto. Grundlage für die Agenda der Fragestunde.</p>
+  <div id="lock" class="panel grey"><div class="row"><label for="pin" style="margin:0">PIN</label><input id="pin" type="password" inputmode="numeric" style="width:120px"><button type="button" id="pinok">Anzeigen</button></div></div>
+  <div id="out" hidden>
+    <div class="fields" style="margin-top:12px">
+      <div><label for="mode">Test</label><select id="mode"><option value="">alle</option><option value="probe">Probeklausur</option><option value="klausur">Klausur</option></select></div>
+      <div><label for="since">Meldungen ab</label><input id="since" type="date" value="2026-12-07"></div>
+    </div>
+    <div class="kpis" id="kpi" style="margin-top:14px"></div>
+    <div class="panel"><h3 style="margin-top:0">Verteilung der Gesamtquoten</h3><div class="hist" id="hist"></div><div class="hlab" id="hlab"></div></div>
+    <div class="panel"><h3 style="margin-top:0">Quote je Kapitel (Punkte gewichtet)</h3><div id="chs"></div></div>
+    <div class="panel"><h3 style="margin-top:0">Die zehn schwächsten Abschnitte</h3><p class="small muted">Nur Abschnitte mit mindestens drei Meldungen. Vorschlag für die Fragestunde: die obersten drei mit je einer Musteraufgabe.</p><div id="rfs"></div></div>
+    <p class="small muted">Rohdaten unter refi/stats in der Firebase-Datenbank. <button class="ghost" id="csv" type="button">CSV herunterladen</button></p>
+  </div>
+</main>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script src="assets/site.js"></script>
+<script src="assets/pool.js"></script>
+<script>
+var PIN = "2311", DATA = {}, db = getDb();
+function col(p){ return p >= 0.7 ? "var(--ok)" : p >= 0.5 ? "#B07A00" : "var(--red)"; }
+function bar(l, g, m, n){ var p = m ? g / m : 0; return '<div class="bar"><span>' + esc(l) + '</span><span class="t"><i style="width:' + Math.round(p * 100) + "%;background:" + col(p) + '"></i></span><span class="r">' + Math.round(p * 100) + " % · n = " + n + "</span></div>"; }
+function draw(){
+  var mode = document.getElementById("mode").value, since = new Date(document.getElementById("since").value || "2000-01-01").getTime();
+  var L = Object.keys(DATA).map(function(k){ return DATA[k]; }).filter(function(r){ return (!mode || r.mode === mode) && (r.ts || 0) >= since; });
+  var qs = L.map(function(r){ return r.q || 0; }).sort(function(a, b){ return a - b; });
+  var mean = qs.length ? qs.reduce(function(a, b){ return a + b; }, 0) / qs.length : 0, med = qs.length ? qs[Math.floor(qs.length / 2)] : 0;
+  document.getElementById("kpi").innerHTML = '<div class="kpi red"><div class="v">' + L.length + '</div><div class="l">Meldungen</div></div><div class="kpi"><div class="v">' + Math.round(mean * 100) + ' %</div><div class="l">mittlere Quote</div></div><div class="kpi"><div class="v">' + Math.round(med * 100) + ' %</div><div class="l">Median</div></div><div class="kpi"><div class="v">' + Math.round(qs.filter(function(q){ return q < 0.5; }).length / (qs.length || 1) * 100) + ' %</div><div class="l">unter 50 %</div></div>';
+  var bins = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]; qs.forEach(function(q){ bins[Math.min(9, Math.floor(q * 10))]++; }); var mx = Math.max.apply(null, bins) || 1;
+  document.getElementById("hist").innerHTML = bins.map(function(b, i){ return '<div style="height:' + Math.round(b / mx * 100) + "%;background:" + (i < 5 ? "var(--red)" : i < 7 ? "#B07A00" : "var(--ok)") + '"><b>' + (b || "") + "</b></div>"; }).join("");
+  document.getElementById("hlab").innerHTML = bins.map(function(_, i){ return "<span>" + i * 10 + "</span>"; }).join("");
+  var ch = {}, rf = {};
+  L.forEach(function(r){ Object.keys(r.ch || {}).forEach(function(c){ ch[c] = ch[c] || [0, 0, 0]; ch[c][0] += r.ch[c][0]; ch[c][1] += r.ch[c][1]; ch[c][2]++; });
+    Object.keys(r.rf || {}).forEach(function(c){ rf[c] = rf[c] || [0, 0, 0]; rf[c][0] += r.rf[c][0]; rf[c][1] += r.rf[c][1]; rf[c][2]++; }); });
+  document.getElementById("chs").innerHTML = Object.keys(POOL.CH).filter(function(c){ return ch[c]; }).map(function(c){ return bar(POOL.CH[c].t, ch[c][0], ch[c][1], ch[c][2]); }).join("") || '<p class="muted">Noch keine Meldungen.</p>';
+  var R = Object.keys(rf).filter(function(k){ return rf[k][2] >= 3; }).sort(function(a, b){ return rf[a][0] / rf[a][1] - rf[b][0] / rf[b][1]; }).slice(0, 10);
+  document.getElementById("rfs").innerHTML = R.map(function(k){ var c = k.split(" ")[0], lab = (POOL.CH[c] ? POOL.CH[c].t + ", " : "") + k.slice(c.length + 1).replace(/_/g, "."); return bar(lab, rf[k][0], rf[k][1], rf[k][2]); }).join("") || '<p class="muted">Noch zu wenige Meldungen je Abschnitt.</p>';
+  window.CSVROWS = L;
+}
+document.getElementById("pinok").onclick = function(){
+  if (document.getElementById("pin").value !== PIN) { document.getElementById("pin").value = ""; return; }
+  document.getElementById("lock").hidden = true; document.getElementById("out").hidden = false;
+  if (!db) { document.getElementById("kpi").innerHTML = '<p class="muted">Keine Verbindung zur Datenbank.</p>'; return; }
+  db.ref("refi/stats").on("value", function(s){ DATA = s.val() || {}; draw(); });
+};
+["mode", "since"].forEach(function(id){ document.getElementById(id).addEventListener("change", draw); });
+document.getElementById("csv").onclick = function(){
+  var rows = [["Zeit", "Test", "Quote", "Minuten"].concat(Object.keys(POOL.CH))].concat((window.CSVROWS || []).map(function(r){ return [new Date(r.ts || 0).toISOString(), r.mode, r.q, r.min].concat(Object.keys(POOL.CH).map(function(c){ return r.ch && r.ch[c] ? (r.ch[c][0] / r.ch[c][1]).toFixed(3) : ""; })); }));
+  var blob = new Blob(["﻿" + rows.map(function(r){ return r.join(";"); }).join("\n")], { type: "text/csv" }), a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = "refi_kursstatistik.csv"; a.click();
+};
+</script>
+</body>
+</html>
