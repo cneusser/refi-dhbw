@@ -1,5 +1,5 @@
 /* Kursstruktur: eine Quelle für Vorlesung, Advance Organizer, Selbsttests und Links.
-   status: "behandelt" (Termin war, Unterlagen in Moodle), "fertig" (überarbeitet, online), "heute", "folgt". Pflege: nur hier ändern. */
+   status: "behandelt" (Termin war, Unterlagen in Teams), "fertig" (überarbeitet, online), "heute", "folgt". Pflege: nur hier ändern. */
 window.KURS = {
   heute: "2026-11-23",
   teile: [

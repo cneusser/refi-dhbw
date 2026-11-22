@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>FAQ Prozesskosten-Challenge</title>
+<link rel="stylesheet" href="assets/site.css">
+<style>
+details.q{border-top:1px solid var(--line);padding:10px 0}
+details.q summary{cursor:pointer;font-weight:700;font-size:16px}
+details.q p,details.q ul,details.q table{margin:8px 0 0;max-width:80ch}
+.f{font-family:Consolas,Menlo,monospace;background:var(--panel);padding:2px 6px}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>Prozesskosten-Challenge: Fragen und Rechenhilfe</h1>
+  <p class="lead">Diese Seite bleibt in einem eigenen Fenster offen, während Sie spielen. Die Rechenhilfe erklärt den Weg, nicht das Ergebnis.</p>
+
+  <h2>Ablauf</h2>
+  <details class="q" open><summary>In welchen Phasen läuft die Challenge?</summary>
+    <ol>
+      <li><b>Beitritt:</b> QR-Code scannen, Spielnamen wählen. Die Seite ordnet Sie automatisch einer von sechs Gruppen zu. Jede Gruppe ist eine Abteilung der Lieferkette eines Abendkleids.</li>
+      <li><b>Einzelphase, 15 Minuten:</b> Sie arbeiten allein und Schritt für Schritt: Daten lesen, Runde 1 Rechnen, Runde 2 Einordnen, Runde 3 Entscheiden, Absenden. Jeder Schritt wird gespeichert.</li>
+      <li><b>Gruppenphase, 15 Minuten:</b> Sobald alle in Ihrer Gruppe abgesendet haben oder die Spielleitung startet, sehen Sie die Ergebnisse aller: Mittelwert, häufigster Wert, Spanne und Abweichung. Sie diskutieren und eine Person gibt das finale Gruppenergebnis ab.</li>
+      <li><b>Auflösung:</b> Die Spielleitung zeigt die Lösung, die Kostenkette des ganzen Unternehmens und den Vergleich mit Zuschlags- und Teilkostenrechnung. Auf Ihrem Handy sehen Sie die Auflösung für Ihre Abteilung.</li>
+    </ol>
+  </details>
+  <details class="q"><summary>Ist Runde 2 auch Einzelarbeit? Und Runde 3?</summary><p>Ja. In der Einzelphase bearbeiten Sie alle drei Runden allein. Erst in der Gruppenphase wird diskutiert. So kommt jede Meinung auf den Tisch, bevor sich die Gruppe einigt.</p></details>
+  <details class="q"><summary>Erfahre ich sofort, ob mein Ergebnis stimmt?</summary><p>Nein. Richtig oder falsch zeigt erst die Auflösung. Ihr Hinweis in der Gruppenphase ist die Streuung: Liegen alle Werte eng beieinander, ist das ein gutes Zeichen. Liegen sie weit auseinander, vergleichen Sie die Rechenwege.</p></details>
+  <details class="q"><summary>Was bedeutet der Timer, und was passiert bei null?</summary><p>Der Timer zeigt die verbleibende Zeit der Phase. Bei null wird nichts gesperrt; die Anzeige springt auf „Zeit um“. Die Spielleitung startet dann die nächste Phase.</p></details>
+  <details class="q"><summary>Ich habe die Seite geschlossen oder das Handy gewechselt.</summary><p>Öffnen Sie den Link oder scannen Sie den QR-Code erneut. Auf demselben Gerät sind Sie sofort wieder in Ihrer Gruppe. Auf einem anderen Gerät wählen Sie unter „Schon beigetreten“ Ihren Spielnamen. Gespeicherte Schritte sind noch da.</p></details>
+  <details class="q"><summary>Wer gibt das Gruppenergebnis ab?</summary><p>Eine Person, auf die sich die Gruppe einigt. Das Formular ist mit den häufigsten Einzelwerten und den Mehrheiten vorbelegt. Die erste Abgabe zählt, danach ist das Formular für alle gesperrt.</p></details>
+
+  <h2>Rechenhilfe Runde 1</h2>
+  <details class="q" open><summary>Die vier Werte und ihr Rechenweg</summary>
+    <p><b>Kapazitätskostensatz</b> in € je Minute: <span class="f">Kapazitätskosten p. a. ÷ praktische Kapazität in Minuten p. a.</span></p>
+    <p><b>Leerkosten</b> in € p. a.: <span class="f">Kapazitätskostensatz × (praktische Kapazität − genutzte Minuten)</span></p>
+    <p><b>Auslastung</b> in %: <span class="f">genutzte Minuten ÷ praktische Kapazität × 100</span></p>
+    <p><b>Prozesskosten je verkauftem Kleid</b> in €: für jede Tätigkeit <span class="f">Minuten je Vorgang × Vorgänge je verkauftem Kleid</span>, alles addieren, dann <span class="f">× Kapazitätskostensatz</span>.</p>
+  </details>
+  <details class="q"><summary>Warum rechnen wir mit der praktischen Kapazität und nicht mit den genutzten Minuten?</summary><p>Teilt man die Kosten durch die genutzten Minuten, landen die Kosten ungenutzter Kapazität im Produkt. Jedes Produkt wird teurer, je weniger los ist. Mit der praktischen Kapazität bleibt der Satz stabil, und die Leerkosten werden als eigene Zahl sichtbar: ein Thema für das Management, nicht für den Produktpreis (Kaplan und Anderson 2004).</p></details>
+  <details class="q"><summary>Was heißt „Vorgänge je verkauftem Kleid“?</summary><p>Wie oft die Tätigkeit anfällt, damit am Ende ein Kleid verkauft bleibt. Bei 65 % Retouren werden je verkauftem Kleid 2,86 Kleider versandt und 1,86 zurückgeschickt. Eine Tätigkeit „je Retoure“ fällt also 1,86-mal an. Eine Tätigkeit „je Bestellung“ mit 200 verkauften Kleidern je Bestellung fällt 0,005-mal an.</p></details>
+  <details class="q"><summary>Wie gebe ich Zahlen ein?</summary><p>Mit Komma oder Punkt, ohne Tausenderpunkte, ohne Einheit. Beispiele: <span class="f">0,75</span> oder <span class="f">48000</span> oder <span class="f">82,5</span>. Runden Sie auf zwei Nachkommastellen; kleine Rundungsdifferenzen werden toleriert.</p></details>
+
+  <h2>Hilfe Runde 2 und 3</h2>
+  <details class="q" open><summary>Die vier Kategorien</summary>
+    <ul>
+      <li><b>W wertschöpfend:</b> Die Kundin würde dafür bezahlen, und es verändert das Produkt oder den Service. Beispiel: Kleid passend auswählen und verhandeln.</li>
+      <li><b>N notwendig, aber nicht wertschöpfend:</b> Ohne geht es heute nicht, der Kunde zahlt dafür aber nicht bewusst. Beispiel: Ware einlagern, Retoure prüfen.</li>
+      <li><b>B Bürokratie, gesetzliche Pflicht:</b> Vorgeschrieben durch Gesetz oder Verordnung. Beispiel: Dokumentation nach Lieferkettengesetz.</li>
+      <li><b>V Verschwendung:</b> Lässt sich vermeiden, ohne dass Kunde oder Gesetz etwas vermissen. Beispiel: Daten doppelt erfassen, Fehler nacharbeiten.</li>
+    </ul>
+    <p>Grundlage: Wertstromdenken nach Ohno (1988) sowie Womack und Jones (1996). Die Kategorie B ist eine Ergänzung für diesen Fall.</p></details>
+  <details class="q"><summary>Worauf kommt es in Runde 3 an?</summary><p>Auf die Wirkung für das ganze Unternehmen. Prüfen Sie für jede Maßnahme: Was spart sie je verkauftem Kleid? Verschiebt sie Arbeit in eine andere Abteilung oder zum Kunden? Ist sie rechtlich zulässig? Wer eine gesetzliche Pflicht streicht, bekommt Minuspunkte.</p></details>
+
+  <h2>Punkte</h2>
+  <details class="q"><summary>Wie werden Punkte vergeben?</summary>
+    <div class="tbl"><table><thead><tr><th>Teil</th><th>Punkte</th></tr></thead><tbody>
+      <tr><td>Runde 1, finale Gruppenabgabe: alle vier Werte richtig</td><td>40, dazu 15, 10 oder 5 für die ersten drei richtigen Gruppen</td></tr>
+      <tr><td>Runde 2, finale Gruppenabgabe</td><td>bis 25 nach Anteil richtiger Zuordnungen</td></tr>
+      <tr><td>Runde 3, finale Gruppenabgabe</td><td>beste Gesamtentscheidung 40, gesetzliche Pflicht streichen minus 20</td></tr>
+      <tr><td>Einzelbonus</td><td>bis 10 nach Anteil richtiger Einzelergebnisse in Runde 1 und 2</td></tr>
+      <tr><td>Kritische Frage an das Plenum</td><td>bis 10, vergibt die Spielleitung</td></tr>
+    </tbody></table></div></details>
+  <details class="q"><summary>Was wird gespeichert?</summary><p>Spielname, Gruppe, Ihre Eingaben und die Gruppenabgabe. Keine Klarnamen, keine E-Mail-Adressen. Die Gruppenergebnisse gehen anonym in eine Rangliste über mehrere Jahrgänge ein.</p></details>
+  <p class="small muted" style="margin-top:20px">Quellen: Kaplan, R. S., und Anderson, S. R. (2004), Time-driven activity-based costing, Harvard Business Review 82(11); Ohno, T. (1988), Toyota Production System; Womack, J. P., und Jones, D. T. (1996), Lean Thinking. Fall Nordstil: Lehrfall mit Größenordnungen aus Branchendaten.</p>
+</main>
+<script src="assets/site.js"></script>
+</body>
+</html>

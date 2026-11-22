@@ -1,3 +1,4 @@
+window.REFI_VERSION='v0.2'; window.REFI_STAND='22.11.2026';
 /* Kopf, Navigation und Fuß für alle Seiten */
 (function(){
   var NAV=[["index.html","Start"],["vorlesung.html","Vorlesung"],["organizer.html","Advance Organizer"],["live-quiz.html","Live-Quiz"],["challenge.html","Challenge"],["tools.html","Tools"],["selbsttest.html","Selbsttests"],["fragen.html","Fragen"],["links.html","Links"]];
@@ -9,7 +10,7 @@
   document.body.insertBefore(n,document.body.firstChild); document.body.insertBefore(h,document.body.firstChild);
   try{ var on=n.querySelector('.on'); var w=n.firstChild; if(on && w.scrollWidth>w.clientWidth) w.scrollLeft=on.offsetLeft-w.offsetLeft-40; }catch(e){}
   var f=document.createElement("footer"); f.className="site";
-  f.innerHTML='<div class="wrap"><span>Modul T3WIW2003 Finanz- und Rechnungswesen · DHBW Stuttgart · Dr. Christian Neusser</span><span>Entwurf · Stand 23.11.2026</span></div>';
+  f.innerHTML='<div class="wrap"><span>Modul T3WIW2003 Finanz- und Rechnungswesen · DHBW Stuttgart · Dr. Christian Neusser</span><span>Entwurf · Version '+(window.REFI_VERSION||'')+' · Stand '+(window.REFI_STAND||'')+'</span></div>';
   document.body.appendChild(f);
 })();
 window.eur=function(v,d){d=(d==null)?2:d;return Number(v).toLocaleString("de-DE",{minimumFractionDigits:d,maximumFractionDigits:d});};
