@@ -34,6 +34,7 @@
 details.panel summary{cursor:pointer;font-weight:700}
 label.opt{cursor:pointer;font-weight:400}
 @media (max-width:640px){table.stack thead{display:none}table.stack,table.stack tbody,table.stack tr,table.stack td{display:block;width:100%}table.stack tr{border-bottom:1px solid var(--line);padding:8px 0}table.stack td{border:none;padding:2px 0;text-align:left}table.stack td.h{font-weight:700;padding-bottom:4px}table.stack td[data-l]{display:flex;justify-content:space-between;gap:10px}table.stack td[data-l]::before{content:attr(data-l);color:var(--grey);font-size:13px;font-weight:400}}
+.casegrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);gap:20px;align-items:start}.casefig{margin:0}.casefig img{width:100%;display:block;aspect-ratio:5/4;object-fit:cover}.casefig figcaption{font-size:11px;color:var(--grey);margin-top:4px}@media(max-width:760px){.casegrid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -155,10 +156,21 @@ function score(st){
   return res;
 }
 
+/* ---------- Fallbeschreibung ---------- */
+function caseHTML(mode){
+  var img='<figure class="casefig"><img src="assets/nordstil.jpg" alt="Messestand der fiktiven Nordstil GmbH auf einer Hamburger Fachmesse" onerror="this.parentNode.parentNode.style.gridTemplateColumns=\'1fr\';this.parentNode.style.display=\'none\'"><figcaption>Nordstil auf der Ordermesse in Hamburg (KI-generiertes Symbolbild; Nordstil ist erfunden)</figcaption></figure>';
+  var txt='<div><h2 style="margin-top:0">Der Fall: Nordstil GmbH</h2>'+
+   '<p>Nordstil ist ein Online-Händler für Abend- und Anlassmode aus Hamburg, gegründet 2016, mit rund 85 Beschäftigten und eigenem Lager samt Retourenzentrum in Neumünster. Bestseller ist das Abendkleid <b>Elbsand</b>: 20.000 verkaufte Kleider im Jahr, Verkaufspreis 90 € netto, Wareneinsatz 32 € beim Partnerbetrieb in Portugal.</p>'+
+   '<p>Kundinnen bestellen gern mehrere Größen zur Auswahl. Deshalb kommen <b>65 % der versandten Kleider zurück</b>: Jedes verkaufte Kleid geht im Mittel 2,86-mal hinaus und 1,86-mal zurück. Die Zuschlagskalkulation mit 80 % Gemeinkosten auf den Wareneinsatz zeigt 57,60 € Selbstkosten, also scheinbar 32,40 € Gewinn je Kleid.</p>'+
+   '<p>Jetzt bietet ein Wettbewerber ein ähnliches Kleid für <b>79 €</b> an. Die Gesellschafter erwarten 10 % Marge; erlaubt sind damit höchstens <b>71,10 €</b> Kosten je Kleid.</p></div>';
+  var q='<div class="note info" style="margin-top:12px"><b>Die Frage von Geschäftsführerin Jana Petersen:</b> Was kostet das Kleid Elbsand entlang der ganzen Kette wirklich? Hält es dem Marktpreis von 79 € stand, und welche Maßnahme bringt die Kosten unter 71,10 €? Ihre Gruppe ist das Projektteam einer der sechs Abteilungen und liefert ihren Teil der Antwort.</div>';
+  if(mode==="short") return '<div class="panel case"><div class="casegrid">'+img+'<div><h3 style="margin-top:0">Nordstil GmbH: Was kostet das Kleid Elbsand wirklich?</h3><p class="small">Online-Händler für Abendmode aus Hamburg. Preis 90 €, Wareneinsatz 32 €, 65 % Retouren, Zuschlagskalkulation 57,60 €. Wettbewerber verlangt 79 €, erlaubt sind 71,10 € Kosten.</p></div></div></div>';
+  return '<div class="panel case"><div class="casegrid">'+img+txt+'</div>'+q+'</div>';
+}
 /* ---------- Ansicht: Einstieg ---------- */
 var FAQ='<a href="challenge-faq.html" target="_blank" rel="noopener">FAQ und Rechenhilfe (neues Fenster)</a>';
 function viewEntry(){
-  app.innerHTML='<h1>Nordstil: Was kostet ein Abendkleid wirklich?</h1><p class="lead">Sechs Gruppen übernehmen je eine Abteilung der Lieferkette. Erst rechnet jede Person allein, dann diskutiert die Gruppe die Verteilung der Ergebnisse und gibt gemeinsam ab. Am Ende setzen wir die Kette zusammen und vergleichen mit Zuschlags- und Teilkostenrechnung.</p>'+
+  app.innerHTML='<h1>Nordstil: Was kostet ein Abendkleid wirklich?</h1><p class="lead">Sechs Gruppen übernehmen je eine Abteilung der Lieferkette. Erst rechnet jede Person allein, dann diskutiert die Gruppe die Verteilung der Ergebnisse und gibt gemeinsam ab. Am Ende setzen wir die Kette zusammen und vergleichen mit Zuschlags- und Teilkostenrechnung.</p>'+caseHTML()+
   '<div class="panel"><h2 style="margin-top:0">Mitspielen</h2><p>Geben Sie den Spielcode vom Beamer ein oder scannen Sie den QR-Code.</p><div class="row"><input id="code" style="max-width:180px;text-transform:uppercase" placeholder="Code" maxlength="6" aria-label="Spielcode"><button class="red" id="go">Weiter</button></div><p class="small" style="margin-top:10px">'+FAQ+'</p></div>'+
   '<div class="panel grey"><h3 style="margin-top:0">Spielleitung</h3><p class="small">Neues Spiel anlegen, Phasen starten, Ergebnisse live auswerten, ewige Rangliste.</p><a class="btn ghost" href="challenge.html#leitung">Zur Spielleitung</a> <a class="btn ghost" href="challenge.html?demo=1#leitung">Demo mit Beispieldaten</a></div>';
   document.getElementById("go").onclick=function(){ var c=document.getElementById("code").value.trim().toUpperCase(); if(c) location.href="challenge.html?code="+encodeURIComponent(c); };
@@ -169,7 +181,7 @@ var me=null;
 function viewJoin(){
   var players=STATE.players||{}; var counts=[0,0,0,0,0,0,0]; Object.keys(players).forEach(function(k){ counts[players[k].group]=(counts[players[k].group]||0)+1; });
   var nm=randName(), names=Object.keys(players).map(function(k){return [k,players[k].name,players[k].group];}).sort(function(a,b){return a[1]<b[1]?-1:1;});
-  app.innerHTML='<h1>Willkommen zur Prozesskosten-Challenge</h1><p class="lead">Spiel '+esc(CODE)+'. Wählen Sie einen Spielnamen. Sie werden danach automatisch einer der sechs Gruppen zugeordnet.</p>'+
+  app.innerHTML='<h1>Willkommen zur Prozesskosten-Challenge</h1><p class="lead">Spiel '+esc(CODE)+'. Wählen Sie einen Spielnamen. Sie werden danach automatisch einer der sechs Gruppen zugeordnet.</p>'+caseHTML("short")+
    '<div class="panel"><label for="nm">Ihr Spielname (bitte keinen Klarnamen)</label><div class="row"><input id="nm" value="'+esc(nm)+'" maxlength="30" style="max-width:320px"><button class="ghost" id="nn">Neuer Vorschlag</button><button class="red" id="join">Beitreten</button></div></div>'+
    (names.length?'<div class="panel grey"><label for="back">Schon beigetreten, aber Handy gewechselt oder Seite geschlossen? Spielnamen wählen</label><div class="row"><select id="back" style="max-width:320px"><option value="">wählen</option>'+names.map(function(n){return '<option value="'+n[0]+'">'+esc(n[1])+' (Gruppe '+n[2]+')</option>';}).join("")+'</select><button id="reclaim">Weiter als dieser Name</button></div></div>':'')+
    '<p class="small muted">Bisher beigetreten: '+Object.keys(players).length+' Personen. '+FAQ+'</p>';
@@ -205,7 +217,7 @@ function viewGroup(){
   var mates=Object.keys(players).filter(function(k){return players[k].group===g;}).map(function(k){return {pid:k,name:players[k].name};});
   var ind=indOf(st,g), mine=ind.filter(function(x){return x.pid===me.pid;})[0]||null;
   var h=headerHTML(d,mates);
-  if(ph==="lobby"){ h+='<h2>Gleich geht es los</h2><p>Lesen Sie schon die Daten Ihrer Abteilung. Die Einzelphase startet, sobald die Spielleitung auf Start drückt.</p>'+dataHTML(d); app.innerHTML=h; tick(); return; }
+  if(ph==="lobby"){ h+='<h2>Gleich geht es los</h2><p>Lesen Sie schon die Daten Ihrer Abteilung. Die Einzelphase startet, sobald die Spielleitung auf Start drückt.</p>'+caseHTML()+dataHTML(d); app.innerHTML=h; tick(); return; }
   if(ph==="ende"){ h+=revealHTML(d,gs,ind); app.innerHTML=h; tick(); return; }
   var allDone=mates.length>0 && mates.every(function(m){ return ind.some(function(x){return x.pid===m.pid&&x.done;}); });
   if(ph==="gruppe" || allDone){ h+=groupPhaseHTML(d,gs,ind,mates,ph); app.innerHTML=h; bindFinal(d,gs,ind); tick(); return; }
@@ -213,7 +225,7 @@ function viewGroup(){
   if(mine&&mine.done){ var nd=ind.filter(function(x){return x.done;}).length; h+=stepper(4)+'<div class="locked"><b>Ihr Einzelergebnis ist abgesendet.</b> '+nd+' von '+mates.length+' in Ihrer Gruppe haben abgesendet. Die Ergebnisse aller erscheinen, sobald alle abgesendet haben oder die Gruppenphase beginnt.</div><p class="small muted">Bis dahin: Daten und Rechenweg noch einmal ansehen, kritische Frage überlegen.</p>'+dataHTML(d); app.innerHTML=h; tick(); return; }
   var dr=draftGet(); if(STEP==null) STEP=Math.min((mine&&mine.step)||0,4);
   h+=stepper(STEP)+'<p class="small muted">Arbeiten Sie allein. Ihre Eingaben werden bei jedem Schritt gespeichert; Sie können zurück und weiter. Richtig oder falsch erfahren Sie erst in der Auflösung.</p>';
-  if(STEP===0) h+='<h2>Schritt 1: Daten Ihrer Abteilung lesen</h2>'+dataHTML(d);
+  if(STEP===0) h+='<h2>Schritt 1: Daten Ihrer Abteilung lesen</h2>'+'<details class="panel grey"><summary>Der Fall Nordstil und die Fragestellung</summary>'+caseHTML()+'</details>'+dataHTML(d);
   if(STEP===1) h+='<h2>Schritt 2: Runde 1 Rechnen</h2><details class="panel grey"><summary>Daten anzeigen</summary>'+dataHTML(d)+'</details><div class="fields">'+R1F.map(function(f){return '<div><label for="i_'+f[0]+'">'+f[1]+' ('+f[2]+')</label><input id="i_'+f[0]+'" inputmode="decimal" value="'+esc(dr.r1[f[0]]||"")+'"></div>';}).join("")+'</div>';
   if(STEP===2) h+='<h2>Schritt 3: Runde 2 Einordnen</h2><div class="legend"><span style="--c:'+CLSCOL.W+'">W wertschöpfend</span><span style="--c:'+CLSCOL.N+'">N notwendig</span><span style="--c:'+CLSCOL.B+'">B Bürokratie, gesetzliche Pflicht</span><span style="--c:'+CLSCOL.V+'">V Verschwendung</span></div><div class="tbl" style="margin-top:8px"><table><tbody>'+d.acts.map(function(a,i){return '<tr><td>'+esc(a.name)+'</td><td style="width:170px"><select id="s'+i+'" aria-label="Kategorie"><option value="">wählen</option>'+["W","N","B","V"].map(function(c){return '<option'+(dr.r2[i]===c?' selected':'')+'>'+c+'</option>';}).join("")+'</select></td></tr>';}).join("")+'</tbody></table></div>';
   if(STEP===3) h+='<h2>Schritt 4: Runde 3 Entscheiden</h2><p>Welche Maßnahme nützt dem ganzen Unternehmen am meisten, nicht nur Ihrer Abteilung?</p>'+d.opts.map(function(o){return '<label class="opt"><input type="radio" name="r3" value="'+o.key+'"'+(dr.r3===o.key?' checked':'')+'><b>'+o.key+'</b><span>'+esc(o.text)+'</span></label>';}).join("")+'<label for="i_text">Begründung in zwei Sätzen</label><textarea id="i_text" rows="2" maxlength="400">'+esc(dr.text||"")+'</textarea>';
@@ -315,7 +327,7 @@ function viewBoard(){
   var T=document.getElementById("tab");
   var byG={}; Object.keys(players).forEach(function(k){ var p=players[k]; (byG[p.group]=byG[p.group]||[]).push(p.name); });
   if(boardTab==="beitritt"){
-    T.innerHTML='<div class="grid2" style="margin-top:16px"><div class="panel" style="text-align:center"><div class="muted">Spielcode</div><div class="codebig">'+esc(CODE)+'</div><div class="qr" id="qr" style="margin-top:12px"></div><p class="small" style="margin-top:8px;word-break:break-all">'+esc(url)+'</p></div><div>'+D.depts.map(function(d){ return '<div class="grp" style="margin-bottom:8px"><h3>Gruppe '+d.id+': '+esc(d.name)+' <span class="muted small">('+((byG[d.id]||[]).length)+')</span></h3><div class="chips">'+(byG[d.id]||[]).map(function(n){return '<span class="chip">'+esc(n)+'</span>';}).join("")+'</div></div>'; }).join("")+'</div></div>';
+    T.innerHTML=caseHTML("short")+'<div class="grid2" style="margin-top:16px"><div class="panel" style="text-align:center"><div class="muted">Spielcode</div><div class="codebig">'+esc(CODE)+'</div><div class="qr" id="qr" style="margin-top:12px"></div><p class="small" style="margin-top:8px;word-break:break-all">'+esc(url)+'</p></div><div>'+D.depts.map(function(d){ return '<div class="grp" style="margin-bottom:8px"><h3>Gruppe '+d.id+': '+esc(d.name)+' <span class="muted small">('+((byG[d.id]||[]).length)+')</span></h3><div class="chips">'+(byG[d.id]||[]).map(function(n){return '<span class="chip">'+esc(n)+'</span>';}).join("")+'</div></div>'; }).join("")+'</div></div>';
     try{ new QRCode(document.getElementById("qr"),{text:url,width:240,height:240,colorDark:"#1F272C",colorLight:"#ffffff"}); }catch(e){ document.getElementById("qr").textContent="QR nicht verfügbar"; }
   }
   if(boardTab==="live"){

@@ -8,6 +8,8 @@
 - Live-Quiz-Sätze r1k1 bis r1k3, Literatur zu Kapitel 1 bis 3, 28 neue Glossarbegriffe.
 - Startseite, Vorlesung und Advance Organizer zeigen den nächsten Termin automatisch aus dem Terminplan (assets/kurs.js); Test mit ?datum=2026-12-08.
 - Vorlesung: Statt „verfügbar“ stehen an jedem Kapitel seine Termine, der nächste rot; vergangene Kapitel zeigen „behandelt“. Behebt, dass der Termin am 23.11. als behandelt erschien.
+- Tools (alle vier Seiten): Die Auswahlleiste bleibt beim Scrollen oben stehen; die Tools sind eingeklappt und öffnen per Klick, ein zweiter Klick schließt.
+- Challenge Nordstil: Fallbeschreibung der Nordstil GmbH mit Fragestellung auf Einstieg, Beitritt, Wartebereich, Datenschritt und Beamer-Ansicht; Platz für ein Symbolbild (assets/nordstil.jpg).
 
 ## v0.8 (22.11.2026)
 

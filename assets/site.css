@@ -78,3 +78,10 @@ svg text{font-family:var(--f);fill:var(--ink)}
 main{min-width:0;width:100%}
 .grid2>*,.grid3>*,.fields>*,.kpis>*,.tiles>*{min-width:0}
 @media (max-width:700px){nav.main .wrap{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}nav.main a{white-space:nowrap}header.site img{height:38px}h1{font-size:24px}}
+/* Tool-Leiste */
+.toolbar{position:sticky;top:0;z-index:20;background:var(--bg,#fff);padding:8px 0 12px;border-bottom:1px solid var(--line);box-shadow:0 6px 10px -10px rgba(0,0,0,.25)}
+.toolbar .blk{margin-top:8px}
+.toolbar .toolnav{margin-top:6px}
+.toolnav a.on{background:var(--red);border-color:var(--red);color:#fff}
+.toolhint{margin-top:18px}
+section.tool[hidden]{display:none!important}
