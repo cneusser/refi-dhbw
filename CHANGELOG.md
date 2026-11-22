@@ -1,5 +1,12 @@
 # Änderungen
 
+## v0.8 (22.11.2026)
+
+- Terminplan Kapitel 4 angepasst: zusätzlicher Termin am 04.12., der Termin am 07.12. entfällt, neuer Abschlusstermin am 10.12.
+- Foliensatz Kapitel 4 heißt jetzt 261204_REFI_II_Kap4_Finanzierung.pdf; der Gesamtfall wird am 08.12. erarbeitet und am 10.12. vor dem Kreditausschuss vorgetragen.
+- Probeklausur zu Hause bis Mittwoch, 09.12., 22 Uhr; die Auswertung der Kursstatistik steuert die Lückenklinik am 10.12. Die Fragestunde in Teams bleibt als Zusatzangebot vor der Klausur.
+- Kursstatistik zählt Meldungen standardmäßig ab dem 08.12.
+
 ## v0.7 (22.11.2026)
 
 - Probeklausur zu Hause statt im Hörsaal: Nach Probeklausur und Klausur können Studierende ihr Ergebnis anonym melden (nur Quoten je Kapitel und Abschnitt).
