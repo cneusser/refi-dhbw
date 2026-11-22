@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tools Kostenrechnung</title>
+<link rel="stylesheet" href="assets/site.css">
+<style>
+.toolnav{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.toolnav a{border:1px solid var(--line);padding:6px 12px;text-decoration:none;color:var(--ink);font-size:14px}
+.toolnav a:hover{border-color:var(--red)}
+.blk{font-size:12px;font-weight:700;color:var(--grey);text-transform:uppercase;letter-spacing:.5px;margin-top:18px}
+section.tool{border-top:1px solid var(--line);margin-top:34px;padding-top:6px;scroll-margin-top:12px}
+.aha{background:var(--panel);padding:12px 14px;margin-top:12px;font-size:14px}
+.out td.r{font-variant-numeric:tabular-nums}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>Tools zur Kosten- und Leistungsrechnung</h1>
+  <p class="lead">ReFi I, Kapitel 4. Jedes Tool rechnet eine Aufgabe aus den Übungen (Excel-Blatt in Klammern). Ziehen Sie an den Reglern und beobachten Sie, welche Größe sich bewegt.</p>
+  <div class="blk">4.2 Kalkulation</div>
+  <div class="toolnav"><a href="#zuschlag">Zuschlagskalkulation (A03)</a><a href="#mss">Maschinenstundensatz (A02)</a><a href="#aequi">Äquivalenzziffern (A01)</a></div>
+  <div class="blk">4.3 Entscheidungsrechnungen</div>
+  <div class="toolnav"><a href="#falle">Vollkostenfalle (A06)</a><a href="#be">Break-even (A07, A08)</a><a href="#prog">Programmplanung (A09)</a><a href="#mob">Make or Buy (A10)</a></div>
+  <div class="blk">4.4 Weiterführende Themen</div>
+  <div class="toolnav"><a href="#tco">TCO (A12)</a><a href="#tc">Target Costing (A14)</a><a href="tools.html#kosten">Drei Kostenrechnungen</a><a href="tools.html#leer">Leerkosten</a></div>
+
+  <section class="tool" id="zuschlag">
+    <h2>Zuschläge vervielfachen kleine Lohnbasen: der Angebotspreis aus Einzelkosten und Zuschlägen</h2>
+    <div class="fields">
+      <div><label for="z_mek">Materialeinzelkosten: <b id="z_mekv"></b></label><input type="range" id="z_mek" min="20" max="300" step="5" value="100"></div>
+      <div><label for="z_mgk">MGK-Zuschlag: <b id="z_mgkv"></b></label><input type="range" id="z_mgk" min="0" max="60" step="5" value="20"></div>
+      <div><label for="z_fek">Fertigungslöhne: <b id="z_fekv"></b></label><input type="range" id="z_fek" min="10" max="200" step="5" value="60"></div>
+      <div><label for="z_fgk">FGK-Zuschlag: <b id="z_fgkv"></b></label><input type="range" id="z_fgk" min="0" max="400" step="10" value="120"></div>
+      <div><label for="z_vw">Verwaltung auf HK: <b id="z_vwv"></b></label><input type="range" id="z_vw" min="0" max="40" step="1" value="20"></div>
+      <div><label for="z_vt">Vertrieb auf HK: <b id="z_vtv"></b></label><input type="range" id="z_vt" min="0" max="40" step="1" value="15"></div>
+      <div><label for="z_g">Gewinnzuschlag: <b id="z_gv"></b></label><input type="range" id="z_g" min="0" max="40" step="1" value="20"></div>
+    </div>
+    <div class="chart" id="z_chart" style="margin-top:12px"></div>
+    <div class="aha" id="z_aha"></div>
+    <p class="small muted">Quelle: Kalkulationsschema nach Coenenberg, Fischer und Günther (2016), Kostenrechnung und Kostenanalyse; Zahlen aus Aufgabe A03.</p>
+  </section>
+
+  <section class="tool" id="mss">
+    <h2>Der Maschinenstundensatz steigt, wenn die Maschine seltener läuft</h2>
+    <div class="fields">
+      <div><label for="m_wbw">Wiederbeschaffungswert: <b id="m_wbwv"></b></label><input type="range" id="m_wbw" min="200000" max="1000000" step="20000" value="600000"></div>
+      <div><label for="m_nd">Nutzungsdauer: <b id="m_ndv"></b></label><input type="range" id="m_nd" min="4" max="15" step="1" value="10"></div>
+      <div><label for="m_z">Kalkulatorischer Zins: <b id="m_zv"></b></label><input type="range" id="m_z" min="0" max="12" step="0.5" value="10"></div>
+      <div><label for="m_h">Maschinenstunden p. a.: <b id="m_hv"></b></label><input type="range" id="m_h" min="400" max="4000" step="100" value="1600"></div>
+      <div><label for="m_sp">Strompreis je kWh: <b id="m_spv"></b></label><input type="range" id="m_sp" min="0.10" max="0.50" step="0.01" value="0.20"></div>
+    </div>
+    <div class="kpis" id="m_kpi" style="margin-top:14px"></div>
+    <div class="chart" id="m_chart" style="margin-top:12px"></div>
+    <div class="aha" id="m_aha"></div>
+    <p class="small muted">Fest: Kaufpreis 500.000 € (Zinsbasis halber Kaufpreis), Instandhaltung 30.000 €, 40 m² zu 10 € je Monat, 20 kW bei 50 % Auslastung. Aufgabe A02.</p>
+  </section>
+
+  <section class="tool" id="aequi">
+    <h2>Äquivalenzziffern verteilen dieselben Kosten je nach Ziffer anders auf die Sorten</h2>
+    <div class="fields">
+      <div><label for="a_z1">Ziffer Sorte a: <b id="a_z1v"></b></label><input type="range" id="a_z1" min="0.8" max="2" step="0.02" value="1.24"></div>
+      <div><label for="a_z3">Ziffer Sorte c: <b id="a_z3v"></b></label><input type="range" id="a_z3" min="0.5" max="1.2" step="0.02" value="0.9"></div>
+      <div><label for="a_m1">Ausstoß Sorte a in hl: <b id="a_m1v"></b></label><input type="range" id="a_m1" min="5000" max="40000" step="1000" value="18000"></div>
+    </div>
+    <div class="chart" id="a_chart" style="margin-top:12px"></div>
+    <div class="aha" id="a_aha"></div>
+    <p class="small muted">Gesamtkosten 5,2 Mio. € je Monat, Sorte b 35.000 hl (Ziffer 1), Sorte c 40.000 hl. Aufgabe A01.</p>
+  </section>
+
+  <section class="tool" id="falle">
+    <h2>Wer Produkte nach Vollkosten streicht, senkt das Ergebnis: vom Regen in die Traufe</h2>
+    <div class="fields">
+      <div><label><input type="checkbox" id="f_c"> Produkt C streichen</label><label><input type="checkbox" id="f_b"> danach auch Produkt B streichen</label></div>
+      <div><label for="f_fix">Davon abbaubare Fixkosten bei Streichung je Produkt (Mio. €): <b id="f_fixv"></b></label><input type="range" id="f_fix" min="0" max="10" step="1" value="0"></div>
+    </div>
+    <div class="tbl" style="margin-top:12px"><table class="out" id="f_tab"></table></div>
+    <div class="chart" id="f_chart" style="margin-top:12px"></div>
+    <div class="aha" id="f_aha"></div>
+    <p class="small muted">Umsatz je Produkt 50, variable Kosten 25, 30 und 45, Fixkosten 44 (20 Fertigung, 24 Overheads), Werte in Mio. €. Aufgabe A06.</p>
+  </section>
+
+  <section class="tool" id="be">
+    <h2>Ab der Break-even-Menge decken die Deckungsbeiträge die Fixkosten</h2>
+    <div class="fields">
+      <div><label for="b_kf">Fixkosten p. a.: <b id="b_kfv"></b></label><input type="range" id="b_kf" min="2000" max="20000" step="500" value="7000"></div>
+      <div><label for="b_kv">Variable Kosten je Tube: <b id="b_kvv"></b></label><input type="range" id="b_kv" min="0.8" max="2.4" step="0.05" value="1.6"></div>
+      <div><label for="b_p">Preis je Tube: <b id="b_pv"></b></label><input type="range" id="b_p" min="1.0" max="3.5" step="0.05" value="2.0"></div>
+      <div><label for="b_x">Erwarteter Absatz: <b id="b_xv"></b></label><input type="range" id="b_x" min="0" max="40000" step="500" value="20000"></div>
+    </div>
+    <div class="kpis" id="b_kpi" style="margin-top:14px"></div>
+    <div class="chart" id="b_chart" style="margin-top:12px"></div>
+    <div class="aha" id="b_aha"></div>
+    <p class="small muted">Ausgangswerte Salbenmaschine Fall A: Investition 20.000 €, 5 Jahre, 10 % Zins, Instandhaltung 2.000 € ergeben 7.000 € Fixkosten. Aufgabe A08.</p>
+  </section>
+
+  <section class="tool" id="prog">
+    <h2>Bei Engpass zählt der Deckungsbeitrag je Kapazitätseinheit, nicht je Stück</h2>
+    <div class="fields">
+      <div><label for="p_cap">Verfügbare Kapazitätseinheiten: <b id="p_capv"></b></label><input type="range" id="p_cap" min="5000" max="45000" step="500" value="20000"></div>
+      <div><label for="p_mode">Rangfolge nach</label><select id="p_mode"><option value="rel">Deckungsbeitrag je Kapazitätseinheit (richtig bei Engpass)</option><option value="abs">Deckungsbeitrag je Stück</option></select></div>
+    </div>
+    <div class="chart" id="p_chart" style="margin-top:12px"></div>
+    <div class="kpis" id="p_kpi" style="margin-top:14px"></div>
+    <div class="aha" id="p_aha"></div>
+    <p class="small muted">Sieben Fenstertypen der Schwarz AG mit Absatzobergrenzen, Fixkosten 1,0 Mio. €. Aufgabe A09.</p>
+  </section>
+
+  <section class="tool" id="mob">
+    <h2>Make or Buy hängt davon ab, welche Fixkosten wirklich wegfallen</h2>
+    <div class="fields">
+      <div><label for="o_buy">Zukaufpreis je Gehäuse: <b id="o_buyv"></b></label><input type="range" id="o_buy" min="40" max="70" step="0.5" value="55"></div>
+      <div><label for="o_m">Menge p. a.: <b id="o_mv"></b></label><input type="range" id="o_m" min="20000" max="300000" step="5000" value="100000"></div>
+      <div><label for="o_ab">Abbaubarer Anteil der Fixkosten bei Zukauf: <b id="o_abv"></b></label><input type="range" id="o_ab" min="0" max="100" step="10" value="0"></div>
+    </div>
+    <div class="kpis" id="o_kpi" style="margin-top:14px"></div>
+    <div class="chart" id="o_chart" style="margin-top:12px"></div>
+    <div class="aha" id="o_aha"></div>
+    <p class="small muted">Getriebegehäuse: Material 20 €, Löhne 20 € je Stück, MGK 100.000 € (25 % variabel), FGK 2.000.000 € (40 % variabel). Aufgabe A10, Fall 3.</p>
+  </section>
+
+  <section class="tool" id="tco">
+    <h2>Der teurere Elektrostapler ist über die Nutzungsdauer günstiger</h2>
+    <div class="fields">
+      <div><label for="t_e">Energie Diesel p. a.: <b id="t_ev"></b></label><input type="range" id="t_e" min="3000" max="10000" step="250" value="6000"></div>
+      <div><label for="t_s">Energie Elektro p. a.: <b id="t_sv"></b></label><input type="range" id="t_s" min="1000" max="6000" step="250" value="2500"></div>
+      <div><label for="t_bat">Batterietausch im Jahr 4: <b id="t_batv"></b></label><input type="range" id="t_bat" min="0" max="15000" step="500" value="6000"></div>
+      <div><label for="t_i">Zins für den Barwert: <b id="t_iv"></b></label><input type="range" id="t_i" min="0" max="12" step="0.5" value="0"></div>
+    </div>
+    <div class="chart" id="t_chart" style="margin-top:12px"></div>
+    <div class="aha" id="t_aha"></div>
+    <p class="small muted">Anschaffung 30.000 und 38.000 €, Wartung 2.000 und 1.000 €, Restwert 4.000 und 6.000 € nach sechs Jahren. Aufgabe A12.</p>
+  </section>
+
+  <section class="tool" id="tc">
+    <h2>Der Zielkostenindex zeigt, welche Komponente zu teuer für ihren Nutzen ist</h2>
+    <div class="fields" id="tc_f"></div>
+    <div class="chart" id="tc_chart" style="margin-top:12px"></div>
+    <div class="aha" id="tc_aha"></div>
+    <p class="small muted">Burger-Beispiel: Funktionen Geschmack, Esskomfort, Design, Sättigung; Kostenanteile 30, 50, 15 und 5 %. Aufgabe A14, Teil 2.</p>
+  </section>
+  <p class="small muted" style="margin-top:24px">Excel mit allen Aufgaben: <a href="unterlagen/ReFi_I_Kap4_Uebungen_Aufgaben.xlsx">ReFi_I_Kap4_Uebungen_Aufgaben.xlsx</a>. Die Lösungen mit Formeln stellt der Dozent nach der Übung im Teams-Kanal bereit.</p>
+</main>
+<script src="assets/site.js"></script>
+<script src="assets/nordstil-data.js"></script>
+<script src="assets/kern.js"></script>
+<script>
+function $(id){ return document.getElementById(id); }
+function v(id){ return +$(id).value; }
+function bind(ids, fn){ ids.forEach(function(id){ $(id).addEventListener("input", fn); $(id).addEventListener("change", fn); }); fn(); }
+function pct(x, d){ return eur(x * 100, d == null ? 0 : d) + " %"; }
+function lineChart(series, o){
+  var W = 760, H = 300, L = 60, B = 40, T = 14, R = 20, xmax = o.xmax, ymax = o.ymax || Math.max.apply(null, series.map(function(s){ return Math.max.apply(null, s.pts.map(function(p){ return p[1]; })); })) * 1.08, ymin = o.ymin || 0;
+  function X(x){ return L + x / xmax * (W - L - R); } function Y(y){ return H - B - (y - ymin) / (ymax - ymin) * (H - B - T); }
+  var s = '<svg viewBox="0 0 ' + W + " " + H + '" width="100%" style="min-width:520px" role="img" aria-label="' + esc(o.aria || "Diagramm") + '">';
+  for (var k = 0; k <= 4; k++) { var yy = ymin + (ymax - ymin) * k / 4; s += '<line x1="' + L + '" x2="' + (W - R) + '" y1="' + Y(yy) + '" y2="' + Y(yy) + '" stroke="#E9ECEE"/><text x="' + (L - 6) + '" y="' + (Y(yy) + 4) + '" font-size="11" text-anchor="end" class="num">' + eur(yy, 0) + "</text>"; }
+  var nt = xmax <= 10 ? xmax : 4; for (var j = 0; j <= nt; j++) { var xx = xmax * j / nt; s += '<text x="' + X(xx) + '" y="' + (H - B + 16) + '" font-size="11" text-anchor="middle" class="num">' + eur(xx, 0) + "</text>"; }
+  s += '<text x="' + (W - R) + '" y="' + (H - 6) + '" font-size="11" text-anchor="end" fill="#5D6971">' + esc(o.xl || "") + "</text>";
+  series.forEach(function(se){ s += '<polyline fill="none" stroke="' + se.c + '" stroke-width="' + (se.w || 2.5) + '"' + (se.dash ? ' stroke-dasharray="6 4"' : "") + ' points="' + se.pts.map(function(p){ return X(p[0]).toFixed(1) + "," + Y(p[1]).toFixed(1); }).join(" ") + '"/>'; var last = se.pts[se.pts.length - 1]; s += '<text x="' + (X(last[0]) - 4) + '" y="' + (Y(last[1]) - 6) + '" font-size="11.5" text-anchor="end" fill="' + se.c + '">' + esc(se.n) + "</text>"; });
+  (o.marks || []).forEach(function(m){ s += '<line x1="' + X(m.x) + '" x2="' + X(m.x) + '" y1="' + T + '" y2="' + (H - B) + '" stroke="' + (m.c || "#E2001A") + '" stroke-dasharray="4 3"/><text x="' + (X(m.x) + 4) + '" y="' + (T + 12) + '" font-size="11" fill="' + (m.c || "#E2001A") + '">' + esc(m.t) + "</text>"; });
+  return s + "</svg>";
+}
+
+/* Zuschlagskalkulation */
+bind(["z_mek", "z_mgk", "z_fek", "z_fgk", "z_vw", "z_vt", "z_g"], function(){
+  var mek = v("z_mek"), mg = v("z_mgk") / 100, fek = v("z_fek"), fg = v("z_fgk") / 100, vw = v("z_vw") / 100, vt = v("z_vt") / 100, g = v("z_g") / 100;
+  [["z_mek", eur(mek) + " €"], ["z_mgk", pct(mg)], ["z_fek", eur(fek) + " €"], ["z_fgk", pct(fg)], ["z_vw", pct(vw)], ["z_vt", pct(vt)], ["z_g", pct(g)]].forEach(function(x){ $(x[0] + "v").textContent = x[1]; });
+  var hk = mek * (1 + mg) + fek * (1 + fg), sk = hk * (1 + vw + vt) + 5, pr = sk * (1 + g);
+  $("z_chart").innerHTML = waterfall([{ s: "MEK", v: mek, c: "#9AA4AA" }, { s: "MGK", v: mek * mg, c: "#5D6971" }, { s: "FEK", v: fek, c: "#9AA4AA" }, { s: "FGK", v: fek * fg, c: "#E2001A" }, { s: "Verw.", v: hk * vw, c: "#5D6971" }, { s: "Vertr.", v: hk * vt, c: "#5D6971" }, { s: "SEKVt", v: 5, c: "#9AA4AA" }, { s: "Gewinn", v: sk * g, c: "#1F7A4D" }], {});
+  $("z_aha").innerHTML = "<b>Herstellkosten " + eur(hk) + " €, Selbstkosten " + eur(sk) + " €, Angebotspreis " + eur(pr) + " €.</b> Die Fertigungsgemeinkosten (rot) machen " + pct(fek * fg / pr) + " des Preises aus. Ziehen Sie den FGK-Zuschlag auf 300 %: So sieht Kalkulation in automatisierten Fertigungen aus, wenn sie noch auf Löhne schlüsselt.";
+});
+
+/* Maschinenstundensatz */
+bind(["m_wbw", "m_nd", "m_z", "m_h", "m_sp"], function(){
+  var wbw = v("m_wbw"), nd = v("m_nd"), z = v("m_z") / 100, h = v("m_h"), sp = v("m_sp");
+  $("m_wbwv").textContent = eur(wbw, 0) + " €"; $("m_ndv").textContent = nd + " Jahre"; $("m_zv").textContent = pct(z, 1); $("m_hv").textContent = eur(h, 0) + " h"; $("m_spv").textContent = eur(sp) + " €";
+  var afa = wbw / nd, kz = 500000 / 2 * z, fix = afa + kz + 30000 + 4800, en = 20 * 0.5 * h * sp, msr = (fix + en) / h;
+  $("m_kpi").innerHTML = '<div class="kpi red"><div class="v">' + eur(msr) + ' €</div><div class="l">Maschinenstundensatz</div></div><div class="kpi"><div class="v">' + eur(fix, 0) + ' €</div><div class="l">fixe Kosten p. a.</div></div><div class="kpi"><div class="v">' + eur(en / h) + ' €</div><div class="l">variable Kosten je Stunde</div></div>';
+  var pts = []; for (var x = 400; x <= 4000; x += 100) pts.push([x, fix / x + 20 * 0.5 * sp]);
+  $("m_chart").innerHTML = lineChart([{ n: "Satz je Stunde", c: "#E2001A", pts: pts }], { xmax: 4000, ymax: Math.max(400, fix / 400 + 10), xl: "Maschinenstunden p. a.", marks: [{ x: h, t: eur(msr) + " € bei " + eur(h, 0) + " h" }], aria: "Maschinenstundensatz nach Auslastung" });
+  $("m_aha").innerHTML = "<b>Beobachten Sie:</b> Die fixen Kosten verteilen sich auf die Stunden. Bei halber Laufzeit verdoppelt sich ihr Anteil am Satz. Welche Stunden legen Sie zugrunde: Plan, Ist oder praktische Kapazität? Siehe auch das Tool Leerkosten.";
+});
+
+/* Äquivalenzziffern */
+bind(["a_z1", "a_z3", "a_m1"], function(){
+  var z = [v("a_z1"), 1, v("a_z3")], m = [v("a_m1"), 35000, 40000], K = 5200000;
+  $("a_z1v").textContent = eur(z[0]); $("a_z3v").textContent = eur(z[2]); $("a_m1v").textContent = eur(m[0], 0);
+  var re = m[0] * z[0] + m[1] * z[1] + m[2] * z[2], k = K / re;
+  $("a_chart").innerHTML = hbar(["a", "b", "c"].map(function(n, i){ return { l: "Sorte " + n + " (Ziffer " + eur(z[i]) + ")", v: k * z[i], c: i === 1 ? "#5D6971" : "#E2001A", note: eur(k * z[i] * m[i], 0) + " € gesamt" }; }), { L: 220, aria: "Stückkosten je Sorte", fmt: function(x){ return eur(x) + " €/hl"; } });
+  $("a_aha").innerHTML = "<b>Kosten je Recheneinheit " + eur(k) + " €.</b> Erhöhen Sie die Ziffer von Sorte a: Sie wird teurer, b und c werden billiger, die Summe bleibt 5,2 Mio. €. Die Ziffer ist eine Annahme mit großer Wirkung auf Preise und Sortiment.";
+});
+
+/* Vollkostenfalle */
+bind(["f_c", "f_b", "f_fix"], function(){
+  var fx = v("f_fix"); $("f_fixv").textContent = eur(fx, 0);
+  var prods = [{ n: "A", u: 50, kv: 25 }, { n: "B", u: 50, kv: 30 }, { n: "C", u: 50, kv: 45 }].filter(function(p){ return !(p.n === "C" && $("f_c").checked) && !(p.n === "B" && $("f_b").checked && $("f_c").checked); });
+  var gone = 3 - prods.length, FK = 44 - gone * fx, perP = FK / prods.length, tot = 0, rows = "";
+  prods.forEach(function(p){ var e = p.u - p.kv - perP; tot += p.u - p.kv; rows += "<tr><td>Produkt " + p.n + '</td><td class="r">' + eur(p.u, 0) + '</td><td class="r">' + eur(p.kv, 0) + '</td><td class="r">' + eur(p.u - p.kv, 0) + '</td><td class="r">' + eur(perP, 1) + '</td><td class="r ' + (e < 0 ? "bad" : "") + '">' + eur(e, 1) + "</td></tr>"; });
+  $("f_tab").innerHTML = '<thead><tr><th>Mio. €</th><th class="r">Umsatz</th><th class="r">variable Kosten</th><th class="r">Deckungsbeitrag</th><th class="r">Fixkosten verteilt</th><th class="r">Ergebnis Vollkosten</th></tr></thead><tbody>' + rows + '<tr><td><b>Unternehmen</b></td><td></td><td></td><td class="r"><b>' + eur(tot, 0) + '</b></td><td class="r"><b>' + eur(FK, 0) + '</b></td><td class="r"><b>' + eur(tot - FK, 1) + "</b></td></tr></tbody>";
+  $("f_chart").innerHTML = hbar([{ l: "Alle drei Produkte", v: 6 }, { l: "Ohne C", v: 50 - 5 - 44 + fx > 0 ? 45 - 44 + fx : 0.01, c: "#9AA4AA", note: eur(45 - 44 + fx, 0) }, { l: "Aktuelle Auswahl", v: Math.max(0.01, tot - FK), c: tot - FK < 0 ? "#E2001A" : "#1F7A4D", note: eur(tot - FK, 1) }], { L: 200, aria: "Betriebsergebnis", fmt: function(x){ return eur(x, 0) + " Mio. €"; } });
+  $("f_aha").innerHTML = "<b>Betriebsergebnis " + eur(tot - FK, 1) + " Mio. €.</b> Ohne abbaubare Fixkosten verliert das Unternehmen mit jedem gestrichenen Produkt dessen Deckungsbeitrag. Ab welchem abbaubaren Fixkostenblock lohnt sich die Streichung von C? Antwort: über 5 Mio. €, dem Deckungsbeitrag von C.";
+});
+
+/* Break-even */
+bind(["b_kf", "b_kv", "b_p", "b_x"], function(){
+  var kf = v("b_kf"), kv = v("b_kv"), p = v("b_p"), x = v("b_x");
+  $("b_kfv").textContent = eur(kf, 0) + " €"; $("b_kvv").textContent = eur(kv) + " €"; $("b_pv").textContent = eur(p) + " €"; $("b_xv").textContent = eur(x, 0);
+  var db = p - kv, be = db > 0 ? kf / db : Infinity, xmax = 40000;
+  $("b_kpi").innerHTML = '<div class="kpi red"><div class="v">' + (isFinite(be) ? eur(be, 0) : "keiner") + '</div><div class="l">Break-even-Menge</div></div><div class="kpi"><div class="v">' + eur(db) + ' €</div><div class="l">Deckungsbeitrag je Tube</div></div><div class="kpi"><div class="v">' + eur(x * db - kf, 0) + ' €</div><div class="l">Ergebnis beim erwarteten Absatz</div></div><div class="kpi"><div class="v">' + (x > 0 && isFinite(be) ? pct((x - be) / x) : "") + '</div><div class="l">Sicherheitsabstand</div></div>';
+  var K = [], U = []; for (var q = 0; q <= xmax; q += 1000) { K.push([q, kf + kv * q]); U.push([q, p * q]); }
+  var mk = [{ x: x, t: "Absatz", c: "#5D6971" }]; if (isFinite(be) && be <= xmax) mk.push({ x: be, t: "Break-even" });
+  $("b_chart").innerHTML = lineChart([{ n: "Erlöse", c: "#1F7A4D", pts: U }, { n: "Gesamtkosten", c: "#E2001A", pts: K }, { n: "Fixkosten", c: "#9AA4AA", w: 1.5, dash: true, pts: [[0, kf], [xmax, kf]] }], { xmax: xmax, xl: "Tuben p. a.", marks: mk, aria: "Break-even-Diagramm" });
+  $("b_aha").innerHTML = "<b>Beobachten Sie:</b> Kleine Preisänderungen verschieben den Break-even stark, weil der Deckungsbeitrag je Tube klein ist. Bei 1,90 € statt 2,00 € steigt der Break-even von 17.500 auf rund 23.300 Tuben. Wie sicher ist Ihr Absatzplan?";
+});
+
+/* Programmplanung */
+var PR = [["S Al 10", 500, 300, 5000, 1.0], ["S Al 20", 700, 400, 3000, 1.2], ["S Ku 10", 200, 180, 10000, 0.6], ["S Ku 20", 250, 200, 10000, 0.7], ["S Ku 30", 300, 220, 10000, 0.8], ["S Ho 20", 500, 320, 3000, 2.1], ["S Ho 30", 800, 400, 1200, 3.0]];
+bind(["p_cap", "p_mode"], function(){
+  var cap = v("p_cap"), mode = $("p_mode").value; $("p_capv").textContent = eur(cap, 0);
+  var ord = PR.map(function(p){ var db = p[1] - p[2]; return { n: p[0], db: db, rel: db / p[4], max: p[3], k: p[4] }; }).sort(function(a, b){ return mode === "rel" ? b.rel - a.rel : b.db - a.db; });
+  var left = cap, DB = 0; ord.forEach(function(o){ o.x = Math.max(0, Math.min(o.max, Math.floor(left / o.k))); left -= o.x * o.k; DB += o.x * o.db; });
+  $("p_chart").innerHTML = hbar(ord.map(function(o, i){ return { l: (i + 1) + ". " + o.n + " (" + eur(o.db, 0) + " €/Stk., " + eur(o.rel, 0) + " €/KE)", v: o.x, max: 10000, c: o.x > 0 ? "#E2001A" : "#D5DADD", note: eur(o.x, 0) + " von " + eur(o.max, 0) }; }), { L: 300, aria: "Produktionsprogramm", fmt: function(x){ return eur(x, 0); } });
+  $("p_kpi").innerHTML = '<div class="kpi red"><div class="v">' + eur(DB, 0) + ' €</div><div class="l">Deckungsbeitrag des Programms</div></div><div class="kpi"><div class="v">' + eur(DB - 1000000, 0) + ' €</div><div class="l">Betriebsergebnis</div></div><div class="kpi"><div class="v">' + eur(cap - left, 0) + '</div><div class="l">genutzte Kapazitätseinheiten</div></div>';
+  function plan(md){ var o2 = PR.map(function(p){ var db = p[1] - p[2]; return { db: db, rel: db / p[4], max: p[3], k: p[4] }; }).sort(function(a, b){ return md === "rel" ? b.rel - a.rel : b.db - a.db; }); var l = cap, d = 0; o2.forEach(function(o){ var x = Math.max(0, Math.min(o.max, Math.floor(l / o.k))); l -= x * o.k; d += x * o.db; }); return d; }
+  var dA = plan("abs"), dR = plan("rel");
+  $("p_aha").innerHTML = "<b>Bei " + eur(cap, 0) + " Kapazitätseinheiten:</b> Rangfolge nach Stückdeckungsbeitrag ergibt " + eur(dA, 0) + " €, nach relativem Deckungsbeitrag " + eur(dR, 0) + " €. " + (dR > dA ? "Der Unterschied von " + eur(dR - dA, 0) + " € ist der Preis der falschen Kennzahl." : "Hier begrenzt der Absatz, nicht die Kapazität: Die Rangfolge spielt keine Rolle.");
+});
+
+/* Make or Buy */
+bind(["o_buy", "o_m", "o_ab"], function(){
+  var buy = v("o_buy"), m = v("o_m"), ab = v("o_ab") / 100; $("o_buyv").textContent = eur(buy) + " €"; $("o_mv").textContent = eur(m, 0); $("o_abv").textContent = pct(ab);
+  var fixG = 100000 * 0.75 + 2000000 * 0.6, varS = 40 + (100000 * 0.25 + 2000000 * 0.4) / 100000, make = varS * m + fixG, bu = buy * m + fixG * (1 - ab);
+  $("o_kpi").innerHTML = '<div class="kpi"><div class="v">' + eur(make, 0) + ' €</div><div class="l">Kosten Eigenfertigung p. a.</div></div><div class="kpi"><div class="v">' + eur(bu, 0) + ' €</div><div class="l">Kosten Zukauf p. a. inklusive verbleibender Fixkosten</div></div><div class="kpi red"><div class="v">' + (make <= bu ? "Make" : "Buy") + '</div><div class="l">Vorteil ' + eur(Math.abs(bu - make), 0) + " €</div></div>";
+  var pts1 = [], pts2 = []; for (var q = 0; q <= 300000; q += 10000) { pts1.push([q, varS * q + fixG]); pts2.push([q, buy * q + fixG * (1 - ab)]); }
+  var be = ab > 0 && buy > varS ? fixG * ab / (buy - varS) : null;
+  $("o_chart").innerHTML = lineChart([{ n: "Eigenfertigung", c: "#5D6971", pts: pts1 }, { n: "Zukauf", c: "#E2001A", pts: pts2 }], { xmax: 300000, xl: "Stück p. a.", marks: [{ x: m, t: "Menge", c: "#5D6971" }].concat(be && be <= 300000 ? [{ x: be, t: "Indifferenz " + eur(be, 0) }] : []), aria: "Make or Buy" });
+  $("o_aha").innerHTML = "<b>Variable Kosten der Eigenfertigung " + eur(varS) + " € je Stück, fixe Kosten " + eur(fixG, 0) + " € p. a.</b> Solange keine Fixkosten wegfallen, gewinnt bei 55 € immer die Eigenfertigung. Ziehen Sie den abbaubaren Anteil auf 100 %: Dann lohnt der Zukauf unterhalb von rund 189.000 Stück.";
+});
+
+/* TCO */
+bind(["t_e", "t_s", "t_bat", "t_i"], function(){
+  var e = v("t_e"), s = v("t_s"), bat = v("t_bat"), i = v("t_i") / 100; $("t_ev").textContent = eur(e, 0) + " €"; $("t_sv").textContent = eur(s, 0) + " €"; $("t_batv").textContent = eur(bat, 0) + " €"; $("t_iv").textContent = pct(i, 1);
+  function cum(a0, run, b4, rw){ var c = a0, pts = [[0, c]]; for (var y = 1; y <= 6; y++) { var d = run + (y === 4 ? b4 : 0) - (y === 6 ? rw : 0); c += d / Math.pow(1 + i, y); pts.push([y, c]); } return pts; }
+  var D = cum(30000, e + 2000, 0, 4000), E = cum(38000, s + 1000, bat, 6000), cross = null;
+  for (var y = 0; y <= 6; y++) if (cross === null && E[y][1] <= D[y][1]) cross = y;
+  $("t_chart").innerHTML = lineChart([{ n: "Diesel", c: "#5D6971", pts: D }, { n: "Elektro", c: "#E2001A", pts: E }], { xmax: 6, ymin: 0, xl: "Jahr", aria: "TCO kumuliert" });
+  $("t_aha").innerHTML = "<b>TCO nach sechs Jahren: Diesel " + eur(D[6][1], 0) + " €, Elektro " + eur(E[6][1], 0) + " €.</b> " + (cross !== null ? "Der Elektrostapler ist ab Jahr " + cross + " kumuliert günstiger." : "Der Elektrostapler holt den Diesel nicht ein.") + " Mit Zins werden spätere Einsparungen weniger wert: Ziehen Sie den Zins hoch und beobachten Sie den Schnittpunkt.";
+});
+
+/* Target Costing */
+(function(){
+  var F = [["Geschmack", 34, [15, 60, 10, 15]], ["Esskomfort", 12, [80, 10, 5, 5]], ["Design", 13, [90, 2, 8, 0]], ["Sättigung", 41, [50, 50, 0, 0]]], KN = ["Semmel", "Brätling", "Salatblatt", "Ketchup"], KA = [0.30, 0.50, 0.15, 0.05];
+  $("tc_f").innerHTML = F.map(function(f, i){ return '<div><label for="tc' + i + '">Gewicht ' + f[0] + ': <b id="tc' + i + 'v"></b></label><input type="range" id="tc' + i + '" min="0" max="60" step="1" value="' + f[1] + '"></div>'; }).join("");
+  bind(F.map(function(_, i){ return "tc" + i; }), function(){
+    var w = F.map(function(_, i){ return v("tc" + i); }), sw = w.reduce(function(a, b){ return a + b; }, 0) || 1;
+    F.forEach(function(f, i){ $("tc" + i + "v").textContent = eur(w[i] / sw * 100, 0) + " %"; });
+    var nu = KN.map(function(_, k){ return F.reduce(function(a, f, i){ return a + w[i] / sw * f[2][k] / 100; }, 0); });
+    $("tc_chart").innerHTML = hbar(KN.map(function(n, k){ var z = nu[k] / KA[k]; return { l: n + " (Nutzen " + eur(nu[k] * 100, 0) + " %, Kosten " + eur(KA[k] * 100, 0) + " %)", v: z, c: z < 0.8 ? "#E2001A" : z > 1.25 ? "#B07A00" : "#1F7A4D" }; }), { L: 300, lines: [{ v: 1, t: "Index 1" }], aria: "Zielkostenindex je Komponente", fmt: function(x){ return eur(x); } });
+    $("tc_aha").innerHTML = "<b>Rot: zu teuer für den Nutzen (Index unter 0,8). Gelb: auffällig günstig (über 1,25).</b> Gewichtet die Kundschaft die Sättigung stärker, gewinnt der Brätling an Berechtigung. Die Gewichte kommen aus Marktforschung, nicht aus der Kostenrechnung.";
+  });
+})();
+</script>
+</body>
+</html>

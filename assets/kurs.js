@@ -13,7 +13,10 @@ window.KURS = {
             { t: "Prozesskostenrechnung entlang der Lieferkette (Folien, PDF ohne Lösungsfolien)", href: "unterlagen/261123_PKR_Challenge_Nordstil.pdf" },
             { t: "Prozesskosten-Challenge Nordstil (online)", href: "challenge.html" },
             { t: "Drei Kostenrechnungen im Vergleich (Tool)", href: "tools.html#kosten" },
-            { t: "Leerkosten-Rechner (Tool)", href: "tools.html#leer" }
+            { t: "Leerkosten-Rechner (Tool)", href: "tools.html#leer" },
+            { t: "Tools Kapitel 4: Kalkulation, Break-even, Programmplanung, Make or Buy, TCO, Target Costing", href: "tools-k4.html" },
+            { t: "Übungsaufgaben Kapitel 4 als Excel (A01 bis A15)", href: "unterlagen/ReFi_I_Kap4_Uebungen_Aufgaben.xlsx" },
+            { t: "Glossar Kapitel 4", href: "glossar.html" }
           ], quiz: "pkr", refs: "pkr" }
       ] },
     { id: "refi2", titel: "ReFi II: Finanzierung und Investition", frage: "Woher kommt das Geld, wohin fließt es, und lohnt sich das?",

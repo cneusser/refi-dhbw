@@ -36,7 +36,7 @@
         '<ul class="inh">'+k.inhalt.map(function(x){return '<li>'+esc(x)+'</li>';}).join("")+'</ul>';
       if(k.material){ h+='<ul class="mat">'+k.material.map(function(m){return '<li><a href="'+m.href+'">'+esc(m.t)+'</a></li>';}).join("")+'</ul>'; }
       else h+='<p class="small muted" style="margin-top:10px">'+(k.status==="behandelt"?'Unterlagen im Teams-Kanal des Kurses. Die überarbeitete Fassung erscheint hier.':'Unterlagen werden vor dem Termin freigeschaltet.')+'</p>';
-      if(k.quiz||k.refs) h+='<div class="acts">'+(k.quiz?'<a href="selbsttest.html?set='+k.quiz+'">Selbsttest</a>':'')+(k.refs?'<a href="links.html#'+k.refs+'">Literatur</a>':'')+'</div>';
+      if(k.quiz||k.refs) h+='<div class="acts">'+(k.quiz?'<a href="pruefung.html">Selbsttest</a>':'')+(k.refs?'<a href="links.html#'+k.refs+'">Literatur</a>':'')+'</div>';
       h+='</div>';
     });
     h+='</div>';

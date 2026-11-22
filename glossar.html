@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Glossar ReFi</title>
+<link rel="stylesheet" href="assets/site.css">
+<style>
+.gl{margin-top:10px}
+.gl dt{font-weight:700;margin-top:14px}
+.gl dd{margin:4px 0 0;max-width:85ch}
+.gl .ref{font-size:12px;color:var(--grey)}
+.letters{display:flex;flex-wrap:wrap;gap:4px;margin-top:10px}
+.letters a{border:1px solid var(--line);padding:3px 8px;text-decoration:none;color:var(--ink);font-size:13px}
+.lt{font-size:22px;font-weight:700;color:var(--red);margin-top:22px;border-bottom:1px solid var(--line);scroll-margin-top:10px}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>Glossar</h1>
+  <p class="lead">Fachbegriffe aus ReFi I und II, kurz erklärt, mit Abschnitt im Foliensatz. Das Glossar wächst mit jedem überarbeiteten Kapitel.</p>
+  <div class="row"><input id="q" placeholder="Begriff suchen, zum Beispiel Deckungsbeitrag" style="max-width:420px" aria-label="Begriff suchen"><select id="ch" style="width:auto"><option value="">alle Kapitel</option></select></div>
+  <div class="letters" id="letters"></div>
+  <div id="list"></div>
+  <p class="small muted" style="margin-top:20px">Grundlagen: Coenenberg, Fischer und Günther (2016), Kostenrechnung und Kostenanalyse; Schweitzer, Küpper u. a. (2016), Systeme der Kosten- und Erlösrechnung; Vorlesungsfolien ReFi I und II.</p>
+</main>
+<script src="assets/site.js"></script>
+<script src="assets/pool.js"></script>
+<script src="assets/glossar.js"></script>
+<script>
+(function(){
+  var CH = POOL.CH, G = GLOSSAR.slice().sort(function(a, b){ return a[0].localeCompare(b[0], "de"); });
+  document.getElementById("ch").innerHTML += Object.keys(CH).map(function(k){ return '<option value="' + k + '">' + esc(CH[k].t) + "</option>"; }).join("");
+  function draw(){
+    var q = document.getElementById("q").value.trim().toLowerCase(), c = document.getElementById("ch").value;
+    var L = G.filter(function(g){ return (!c || g[2] === c) && (!q || (g[0] + " " + g[1]).toLowerCase().indexOf(q) > -1); });
+    var by = {}; L.forEach(function(g){ var l = g[0][0].toUpperCase().replace("Ä", "A"); (by[l] = by[l] || []).push(g); });
+    var ks = Object.keys(by).sort();
+    document.getElementById("letters").innerHTML = ks.map(function(k){ return '<a href="#l' + k + '">' + k + "</a>"; }).join("");
+    document.getElementById("list").innerHTML = L.length ? ks.map(function(k){ return '<div class="lt" id="l' + k + '">' + k + '</div><dl class="gl">' + by[k].map(function(g){ return "<dt>" + esc(g[0]) + "</dt><dd>" + esc(g[1]) + ' <span class="ref"><a href="' + CH[g[2]].link + '">' + esc(CH[g[2]].t) + "</a>, Abschnitt " + esc(g[3]) + "</span></dd>"; }).join("") + "</dl>"; }).join("") : '<p class="muted">Kein Begriff gefunden. Fragen Sie gern im <a href="fragen.html">Fragenkanal</a>.</p>';
+  }
+  document.getElementById("q").oninput = draw; document.getElementById("ch").onchange = draw; draw();
+})();
+</script>
+</body>
+</html>

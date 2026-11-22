@@ -1,5 +1,14 @@
 # Änderungen
 
+## v0.3 (22.11.2026)
+
+- Prüfungsvorbereitung (pruefung.html) mit Anmeldung (Firebase Authentication, E-Mail und Passwort) oder Gastmodus; Stand wird gespeichert und kann fortgesetzt werden.
+- Selbsttest je Kapitel mit Rückmeldung nach jeder Frage; Probeklausur 60 Minuten; Klausur 120 Minuten im Aufbau der Probeklausuren mit großer Buchhaltungsaufgabe. Aufgaben, Zahlen und Reihenfolge werden bei jedem Start neu erzeugt. Timer läuft nach Ablauf ins Minus. Lösungen erst nach Abgabe, mit Verweis auf den Abschnitt im Skript.
+- Fragenpool (assets/pool.js): 57 Multiple-Choice-Fragen, 15 Rechenaufgaben mit Zufallswerten, Ankreuzmatrix Systematik, Buchungssatz-Trainer, Buchhaltungsaufgabe als Generator, offene Fragen mit Musterlösung und Selbstbewertung.
+- Tools zur Kosten- und Leistungsrechnung (tools-k4.html): neun Werkzeuge mit Schiebereglern und Grafiken.
+- Glossar (glossar.html) mit Suche und Kapitelfilter.
+- Selbsttests (selbsttest.html) leiten auf die Prüfungsvorbereitung um.
+
 ## v0.2 (22.11.2026)
 
 - Prozesskosten-Challenge 2.0: Phasen Beitritt, Einzelphase (15 Min.), Gruppenphase (15 Min.), Auflösung, gesteuert aus der Spielleitung mit Countdown.

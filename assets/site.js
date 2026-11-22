@@ -1,7 +1,7 @@
-window.REFI_VERSION='v0.2'; window.REFI_STAND='22.11.2026';
+window.REFI_VERSION='v0.3'; window.REFI_STAND='22.11.2026';
 /* Kopf, Navigation und Fuß für alle Seiten */
 (function(){
-  var NAV=[["index.html","Start"],["vorlesung.html","Vorlesung"],["organizer.html","Advance Organizer"],["live-quiz.html","Live-Quiz"],["challenge.html","Challenge"],["tools.html","Tools"],["selbsttest.html","Selbsttests"],["fragen.html","Fragen"],["links.html","Links"]];
+  var NAV=[["index.html","Start"],["vorlesung.html","Vorlesung"],["organizer.html","Advance Organizer"],["live-quiz.html","Live-Quiz"],["challenge.html","Challenge"],["tools.html","Tools"],["pruefung.html","Prüfung"],["glossar.html","Glossar"],["fragen.html","Fragen"],["links.html","Links"]];
   var here=(location.pathname.split("/").pop()||"index.html");
   var h=document.createElement("header"); h.className="site";
   h.innerHTML='<div class="wrap"><a href="index.html" aria-label="Startseite"><img src="assets/dhbw_logo.png" alt="DHBW Duale Hochschule Baden-Württemberg"></a><div class="t"><b>Finanz- und Rechnungswesen</b><span>DHBW Stuttgart · Wirtschaftsingenieurwesen · Kurs TWIE25A · Dr. Christian Neusser</span></div></div>';

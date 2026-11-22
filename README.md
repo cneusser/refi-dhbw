@@ -14,11 +14,13 @@ Statische Seite für GitHub Pages. Live-Funktionen (Live-Quiz, Prozesskosten-Cha
 | `challenge.html` | Prozesskosten-Challenge Nordstil: Beitritt per QR, Zufallsname, automatische Gruppenzuordnung, Gruppenabgabe, Spielleitung unter `challenge.html#leitung` (PIN) |
 | `live-admin.html`, `live-quiz.html` | Live-Quiz im Kahoot-Stil, Fragensatz über `?set=pkr` oder `?set=kap1` |
 | `tools.html` | Schieberegler: drei Kostenrechnungen, Leerkosten, Working Capital, IFRS 16 |
-| `selbsttest.html` | Selbsttests je Kapitel mit Begründungen |
+| `tools-k4.html` | Tools zur Kosten- und Leistungsrechnung (ReFi I, Kapitel 4) |
+| `pruefung.html` | Prüfungsvorbereitung mit Anmeldung: Selbsttest, Probeklausur 60 Min., Klausur 120 Min. |
+| `glossar.html` | Glossar mit Suche |
 | `fragen.html` | Fragen und Antworten mit Unterstützen-Knopf, Dozentenmodus per PIN |
 | `links.html` | Literatur und Praxisquellen je Kapitel |
 
-Pflege: Kapitelstatus und Material in `assets/kurs.js`, Fragensätze in `assets/quiz-sets.js`, Literatur in `assets/refs.js`, Falldaten in `assets/nordstil-data.js`.
+Pflege: Kapitelstatus und Material in `assets/kurs.js`, Fragenpool der Prüfungsvorbereitung in `assets/pool.js`, Glossar in `assets/glossar.js`, Live-Quiz-Fragen in `assets/quiz-sets.js`, Literatur in `assets/refs.js`, Falldaten in `assets/nordstil-data.js`.
 
 ## Veröffentlichen
 
@@ -33,11 +35,23 @@ Eingetragen ist das bestehende Projekt `osnabrueck-quiz`. Empfohlene Regeln (Rea
 ```json
 {
   "rules": {
-    "refi":  { ".read": true, ".write": true },
+    "refi": {
+      "challenge": { ".read": true, ".write": true },
+      "archiv":    { ".read": true, ".write": true },
+      "rooms":     { ".read": true, ".write": true },
+      "qa":        { ".read": true, ".write": true },
+      "users": {
+        "$uid": { ".read": "auth != null && auth.uid === $uid", ".write": "auth != null && auth.uid === $uid" }
+      }
+    },
     "rooms": { ".read": true, ".write": true }
   }
 }
 ```
+
+Wichtig: Steht auf `refi` selbst `.read: true`, sind auch die Nutzerdaten unter `refi/users` für alle lesbar. Deshalb die Regeln je Unterpfad setzen wie oben.
+
+Für die Anmeldung in der Prüfungsvorbereitung: Firebase-Konsole, Authentication, Sign-in method, E-Mail/Passwort aktivieren; unter Settings, Authorized domains `cneusser.github.io` eintragen.
 
 `rooms` wird von der Osnabrück-Seite genutzt. Sauberer ist ein eigenes Projekt für die DHBW: neues Firebase-Projekt, Realtime Database in `europe-west1`, Werte in `firebase-config.js` ersetzen.
 
