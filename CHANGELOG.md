@@ -6,7 +6,6 @@
 - Foliensatz Kapitel 4 heißt jetzt 261204_REFI_II_Kap4_Finanzierung.pdf; der Gesamtfall wird am 08.12. erarbeitet und am 10.12. vor dem Kreditausschuss vorgetragen.
 - Probeklausur zu Hause bis Mittwoch, 09.12., 22 Uhr; die Auswertung der Kursstatistik steuert die Lückenklinik am 10.12. Die Fragestunde in Teams bleibt als Zusatzangebot vor der Klausur.
 - Kursstatistik zählt Meldungen standardmäßig ab dem 08.12.
-- Klausurtermin Donnerstag, 17.12.2026, auf der Klausurübersicht in Kapitel 4.
 
 ## v0.7 (22.11.2026)
 
