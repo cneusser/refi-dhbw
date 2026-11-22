@@ -48,7 +48,7 @@ td.r,th.r{text-align:right}
 label{display:block;font-size:13px;color:var(--grey);margin-bottom:4px}
 input,select,textarea{font:inherit;color:var(--ink);background:#fff;border:1px solid var(--line);padding:8px 10px;width:100%;min-width:0}
 input[type=range]{padding:0;accent-color:var(--red)}
-input[type=checkbox]{width:auto;accent-color:var(--red)}
+input[type=checkbox],input[type=radio]{width:auto;flex:none;padding:0;accent-color:var(--red)}
 input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible{outline:2px solid var(--red);outline-offset:2px}
 button,.btn{font:inherit;font-weight:700;border:1px solid var(--ink);background:var(--ink);color:#fff;padding:9px 16px;cursor:pointer;text-decoration:none;display:inline-block}
 button.red,.btn.red{background:var(--red);border-color:var(--red)}
