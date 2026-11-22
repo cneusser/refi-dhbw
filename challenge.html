@@ -34,7 +34,7 @@
 details.panel summary{cursor:pointer;font-weight:700}
 label.opt{cursor:pointer;font-weight:400}
 @media (max-width:640px){table.stack thead{display:none}table.stack,table.stack tbody,table.stack tr,table.stack td{display:block;width:100%}table.stack tr{border-bottom:1px solid var(--line);padding:8px 0}table.stack td{border:none;padding:2px 0;text-align:left}table.stack td.h{font-weight:700;padding-bottom:4px}table.stack td[data-l]{display:flex;justify-content:space-between;gap:10px}table.stack td[data-l]::before{content:attr(data-l);color:var(--grey);font-size:13px;font-weight:400}}
-.casegrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);gap:20px;align-items:start}.casefig{margin:0}.casefig img{width:100%;display:block;aspect-ratio:5/4;object-fit:cover}.casefig figcaption{font-size:11px;color:var(--grey);margin-top:4px}@media(max-width:760px){.casegrid{grid-template-columns:1fr}}
+.casegrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);gap:20px;align-items:start}.casefig{margin:0}.casefig img{width:100%;display:block;aspect-ratio:16/9;object-fit:cover}.casefig figcaption{font-size:11px;color:var(--grey);margin-top:4px}@media(max-width:760px){.casegrid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -158,7 +158,7 @@ function score(st){
 
 /* ---------- Fallbeschreibung ---------- */
 function caseHTML(mode){
-  var img='<figure class="casefig"><img src="assets/nordstil.jpg" alt="Messestand der fiktiven Nordstil GmbH auf einer Hamburger Fachmesse" onerror="this.parentNode.parentNode.style.gridTemplateColumns=\'1fr\';this.parentNode.style.display=\'none\'"><figcaption>Nordstil auf der Ordermesse in Hamburg (KI-generiertes Symbolbild; Nordstil ist erfunden)</figcaption></figure>';
+  var img='<figure class="casefig"><img src="assets/nordstil.jpg" alt="Packplatz im Lager der fiktiven Nordstil GmbH: Eine Mitarbeiterin prüft ein zurückgesendetes Abendkleid, daneben Kleiderstangen, Kartons und Retouren" onerror="this.parentNode.parentNode.style.gridTemplateColumns=\'1fr\';this.parentNode.style.display=\'none\'"><figcaption>Packplatz und Retouren im Lager Neumünster (KI-generiertes Symbolbild; Nordstil ist erfunden)</figcaption></figure>';
   var txt='<div><h2 style="margin-top:0">Der Fall: Nordstil GmbH</h2>'+
    '<p>Nordstil ist ein Online-Händler für Abend- und Anlassmode aus Hamburg, gegründet 2016, mit rund 85 Beschäftigten und eigenem Lager samt Retourenzentrum in Neumünster. Bestseller ist das Abendkleid <b>Elbsand</b>: 20.000 verkaufte Kleider im Jahr, Verkaufspreis 90 € netto, Wareneinsatz 32 € beim Partnerbetrieb in Portugal.</p>'+
    '<p>Kundinnen bestellen gern mehrere Größen zur Auswahl. Deshalb kommen <b>65 % der versandten Kleider zurück</b>: Jedes verkaufte Kleid geht im Mittel 2,86-mal hinaus und 1,86-mal zurück. Die Zuschlagskalkulation mit 80 % Gemeinkosten auf den Wareneinsatz zeigt 57,60 € Selbstkosten, also scheinbar 32,40 € Gewinn je Kleid.</p>'+
