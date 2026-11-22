@@ -1,4 +1,4 @@
-/* Glossar Finanz- und Rechnungswesen. [Begriff, Erklärung, Kapitel-ID, Abschnitt]. Entwurf, Version v0.6, Stand 22.11.2026. */
+/* Glossar Finanz- und Rechnungswesen. [Begriff, Erklärung, Kapitel-ID, Abschnitt]. Entwurf, Version v0.9, Stand 22.11.2026. */
 window.GLOSSAR = [
  ["Abweichungsanalyse", "Zerlegung der Differenz zwischen Ist- und Plankosten in Preis-, Verbrauchs- und Beschäftigungsabweichung, um Ursachen und Verantwortliche zu finden.", "r1k4", "4.4.2"],
  ["Äquivalenzziffernkalkulation", "Kalkulation für Sortenfertigung: Ähnliche Produkte werden über feste Verhältniszahlen auf eine Einheitssorte umgerechnet, die Kosten je Recheneinheit dann zurückverteilt.", "r1k4", "4.2.4"],
@@ -114,5 +114,33 @@ window.GLOSSAR = [
  ["Green Bond", "Anleihe, deren Erlöse in ökologische Projekte fließen; EU Green Bond Standard nach Verordnung (EU) 2023/2631.", "r2k4", "4.3"],
  ["Selbstfinanzierung", "Finanzierung durch einbehaltene Gewinne: offen über Gewinnrücklagen, still über stille Reserven.", "r2k4", "4.4"],
  ["Lohmann-Ruchti-Effekt", "Kapazitätserweiterung durch sofortige Reinvestition der Abschreibungen; Grenze 2n / (n + 1) des Anfangsbestands.", "r2k4", "4.4"],
- ["Sale-and-lease-back", "Verkauf eines Vermögenswerts mit anschließender Rückmiete; bringt Liquidität, schafft aber dauerhafte Fixkosten.", "r2k4", "4.4"]
+ ["Sale-and-lease-back", "Verkauf eines Vermögenswerts mit anschließender Rückmiete; bringt Liquidität, schafft aber dauerhafte Fixkosten.", "r2k4", "4.4"],
+ ["Aktivtausch", "Buchung, bei der ein Aktivposten zu- und ein anderer abnimmt, etwa Kauf einer Maschine gegen Bankguthaben. Die Bilanzsumme bleibt gleich.", "r1k3", "3.2"],
+ ["Passivtausch", "Buchung, bei der ein Passivposten zu- und ein anderer abnimmt, etwa Umwandlung einer Lieferantenschuld in einen Bankkredit.", "r1k3", "3.2"],
+ ["Bilanzverlängerung", "Aktiv-Passiv-Mehrung: Aktiva und Passiva steigen gleich stark, etwa beim Kauf von Rohstoffen auf Ziel.", "r1k3", "3.2"],
+ ["Bilanzverkürzung", "Aktiv-Passiv-Minderung: Aktiva und Passiva sinken gleich stark, etwa bei der Tilgung eines Kredits.", "r1k3", "3.2"],
+ ["Buchungssatz", "Anweisung zum Buchen in der Form Sollkonto an Habenkonto, Betrag. Soll und Haben sind betragsgleich, jede Buchung braucht einen Beleg.", "r1k3", "3.2"],
+ ["Bestandskonto", "Konto für eine Bilanzposition mit Anfangsbestand. Aktivkonten nehmen im Soll zu, Passivkonten im Haben; der Saldo ist der Schlussbestand.", "r1k3", "3.2"],
+ ["Erfolgskonto", "Aufwands- oder Ertragskonto ohne Anfangsbestand. Aufwand im Soll, Ertrag im Haben; der Saldo geht in das GuV-Konto.", "r1k3", "3.2"],
+ ["Grundsätze ordnungsmäßiger Buchführung (GoB)", "Teils kodifizierte, teils aus Praxis und Rechtsprechung abgeleitete Regeln, nach denen Bücher zu führen sind, damit ein sachverständiger Dritter sie in angemessener Zeit versteht (§ 238 HGB).", "r1k3", "3.1"],
+ ["Imparitätsprinzip", "Ungleichbehandlung: Unrealisierte Verluste werden gezeigt, unrealisierte Gewinne nicht (§ 252 Abs. 1 Nr. 4 HGB).", "r1k3", "3.1"],
+ ["Realisationsprinzip", "Gewinne gelten erst mit erbrachter Lieferung oder Leistung als realisiert, meist mit Gefahrübergang.", "r1k3", "3.1"],
+ ["Niederstwertprinzip", "Vermögen wird mit dem niedrigeren von Anschaffungskosten und Stichtagswert angesetzt: streng im Umlaufvermögen, gemildert im Anlagevermögen (§ 253 HGB).", "r1k3", "3.1"],
+ ["Wertaufhellung", "Information nach dem Stichtag über Verhältnisse, die am Stichtag schon bestanden. Sie wird im Abschluss berücksichtigt; wertbegründende Ereignisse nach dem Stichtag nicht.", "r1k3", "3.1"],
+ ["Herstellungskosten (§ 255 HGB)", "Bilanzieller Wertansatz selbst erstellter Güter: Einzelkosten und angemessene Material- und Fertigungsgemeinkosten Pflicht, Verwaltung Wahlrecht, Vertrieb und Forschung Verbot.", "r1k3", "3.3"],
+ ["Umsatzkostenverfahren", "GuV-Gliederung nach Funktionen: Umsatz minus Herstellungskosten der verkauften Leistungen, Vertriebs- und Verwaltungskosten. Führt zum selben Ergebnis wie das Gesamtkostenverfahren.", "r1k3", "3.3"],
+ ["Anhang", "Pflichtbestandteil des Abschlusses von Kapitalgesellschaften, der Bilanz und GuV erläutert, etwa Bewertungsmethoden und Restlaufzeiten (§§ 284 bis 288 HGB).", "r1k3", "3.3"],
+ ["Lagebericht", "Bericht über Geschäftsverlauf, Lage, Prognose, Chancen und Risiken; Pflicht für mittelgroße und große Kapitalgesellschaften (§ 289 HGB).", "r1k3", "3.3"],
+ ["BWA", "Betriebswirtschaftliche Auswertung: monatliche Ergebnisrechnung aus der Buchhaltung, oft im DATEV-Schema; Banken verlangen sie unterjährig.", "r1k3", "3.3"],
+ ["Inventur", "Tätigkeit der Bestandsaufnahme aller Vermögensgegenstände und Schulden nach Art, Menge und Wert zum Stichtag (§ 240 HGB).", "r1k2", "2.2"],
+ ["Inventar", "Ergebnis der Inventur: ausführliches Verzeichnis aller Vermögensgegenstände und Schulden mit dem Eigenkapital als Saldo.", "r1k2", "2.2"],
+ ["Rechnungsabgrenzungsposten", "Bilanzposten für transitorische Vorgänge: Zahlung im alten Jahr, Aufwand oder Ertrag im neuen Jahr (§ 250 HGB).", "r1k2", "2.2"],
+ ["Latente Steuern", "Ausgleichsposten für Unterschiede zwischen Handels- und Steuerbilanz, die sich später umkehren; passive Pflicht, aktive Wahlrecht (§ 274 HGB).", "r1k2", "2.2"],
+ ["Größenklassen", "Einteilung der Kapitalgesellschaften in kleinst, klein, mittelgroß und groß nach Bilanzsumme, Umsatz und Beschäftigten (§§ 267, 267a HGB); bestimmt Anhang, Lagebericht, Prüfung und Offenlegung.", "r1k2", "2.1"],
+ ["Maßgeblichkeit", "Die Handelsbilanz ist Ausgangspunkt der Steuerbilanz, soweit das Steuerrecht nichts anderes vorschreibt (§ 5 Abs. 1 EStG).", "r1k2", "2.1"],
+ ["Neutraler Aufwand", "Aufwand, der keine Kosten ist: betriebsfremd, periodenfremd, außerordentlich oder bewertungsbedingt.", "r1k2", "2.3"],
+ ["Grundkosten", "Kosten, denen Aufwand in gleicher Höhe gegenübersteht (Zweckaufwand), etwa Löhne und Materialverbrauch.", "r1k2", "2.3"],
+ ["Betriebsergebnis", "Leistungen minus Kosten der Periode in der Kosten- und Leistungsrechnung; enthält kalkulatorische Kosten und unterscheidet sich deshalb vom EBIT.", "r1k2", "2.3"],
+ ["Kalkulationsschema", "Aufbau der Selbstkosten aus Material- und Fertigungseinzel- und -gemeinkosten (Herstellkosten) plus Forschung, Vertrieb und Verwaltung.", "r1k1", "1.2"],
+ ["Finanzrechnung", "Rechnung über Ein- und Auszahlungen einer Periode; zeigt die Veränderung des Zahlungsmittelbestands und damit die Liquidität.", "r1k1", "1.2"]
 ];

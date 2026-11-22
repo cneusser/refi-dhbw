@@ -1,11 +1,21 @@
 # Änderungen
 
+## v0.9 (22.11.2026)
+
+- ReFi I, Kapitel 1 bis 3 überarbeitet: drei neue Foliensätze im DHBW-Layout (Begriffe und Fallstudie Supercomputer AG, Systematik, Externes Rechnungswesen) mit Übungen, Peer Instruction, kritischen Folien, Selbstlernfragen und Lösungen im Anhang. PDFs ohne Lösungsfolien unter unterlagen/.
+- Excel-Übungen F01 bis F11, darunter die Buchhaltungsaufgabe im Klausurformat mit automatisch rechnenden Konten.
+- Prüfungspool: 41 neue Fragen zu Kapitel 1 bis 3, sechs neue Rechenaufgaben (Überleitung Gewinn zu Kasse, Kalkulationsschema, Abgrenzungsrechnung, gewogener Durchschnitt, Bestandsveränderung im GKV, Rückstellung), zwei offene Fragen. Probeklausur und Klausur gewichten ReFi I, Kapitel 1 bis 3 stärker.
+- Live-Quiz-Sätze r1k1 bis r1k3, Literatur zu Kapitel 1 bis 3, 28 neue Glossarbegriffe.
+- Startseite, Vorlesung und Advance Organizer zeigen den nächsten Termin automatisch aus dem Terminplan (assets/kurs.js); Test mit ?datum=2026-12-08.
+- Vorlesung: Statt „verfügbar“ stehen an jedem Kapitel seine Termine, der nächste rot; vergangene Kapitel zeigen „behandelt“. Behebt, dass der Termin am 23.11. als behandelt erschien.
+
 ## v0.8 (22.11.2026)
 
 - Terminplan Kapitel 4 angepasst: zusätzlicher Termin am 04.12., der Termin am 07.12. entfällt, neuer Abschlusstermin am 10.12.
 - Foliensatz Kapitel 4 heißt jetzt 261204_REFI_II_Kap4_Finanzierung.pdf; der Gesamtfall wird am 08.12. erarbeitet und am 10.12. vor dem Kreditausschuss vorgetragen.
 - Probeklausur zu Hause bis Mittwoch, 09.12., 22 Uhr; die Auswertung der Kursstatistik steuert die Lückenklinik am 10.12. Die Fragestunde in Teams bleibt als Zusatzangebot vor der Klausur.
 - Kursstatistik zählt Meldungen standardmäßig ab dem 08.12.
+- Klausurtermin Donnerstag, 17.12.2026, auf der Klausurübersicht in Kapitel 4.
 
 ## v0.7 (22.11.2026)
 

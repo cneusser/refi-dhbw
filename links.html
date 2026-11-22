@@ -36,7 +36,7 @@ section.ch{scroll-margin-top:12px;border-top:1px solid var(--line);margin-top:28
 <script src="assets/refs.js"></script>
 <script>
 (function(){
-  var CH=[["r1k4","ReFi I, Kapitel 4: Kosten- und Leistungsrechnung"],["pkr","ReFi I, Kapitel 4: Prozesskostenrechnung"],["kap1","ReFi II, Kapitel 1: Cashflow und Liquidität"],["kap2","ReFi II, Kapitel 2: Investitionsrechnung"],["kap3","ReFi II, Kapitel 3: Business Case"],["kap4","ReFi II, Kapitel 4: Finanzierung"]];
+  var CH=[["r1k1","ReFi I, Kapitel 1: Begriffe und Zusammenhänge"],["r1k2","ReFi I, Kapitel 2: Systematik"],["r1k3","ReFi I, Kapitel 3: Externes Rechnungswesen"],["r1k4","ReFi I, Kapitel 4: Kosten- und Leistungsrechnung"],["pkr","ReFi I, Kapitel 4: Prozesskostenrechnung"],["kap1","ReFi II, Kapitel 1: Cashflow und Liquidität"],["kap2","ReFi II, Kapitel 2: Investitionsrechnung"],["kap3","ReFi II, Kapitel 3: Business Case"],["kap4","ReFi II, Kapitel 4: Finanzierung"]];
   document.getElementById("nav").innerHTML=CH.map(function(c){return '<a class="btn ghost" href="#'+c[0]+'">'+esc(c[1])+'</a>';}).join("");
   function linkify(s){ return esc(s).replace(/((?:https?:\/\/)?(?:www\.)?[a-z0-9-]+(?:\.[a-z0-9-]+)*\.(?:de|com|org|co\.uk|bund\.de)(?:\/[\w\-./]*)?)/gi,function(m){ var u=/^https?:/.test(m)?m:"https://"+m; return '<a href="'+u+'" target="_blank" rel="noopener">'+m+'</a>'; }); }
   document.getElementById("refs").innerHTML=CH.map(function(c){ var R=REFS[c[0]]||[];

@@ -31,10 +31,10 @@
   <p class="lead">Die Karte wird nach jedem Termin fortgeschrieben. Grau ist behandelt, rot umrandet ist der aktuelle Termin, gestrichelt folgt noch. Die Leitfrage je Kapitel ist zugleich die Prüfungsfrage, auf die Sie am Ende eine begründete Antwort geben können sollten.</p>
   <div id="map"></div>
 
-  <h2>Was heute zusammenkommt</h2>
+  <h2>Was beim nächsten Termin zusammenkommt</h2>
   <div class="grid3">
     <div class="panel"><h3 style="margin-top:0">Was Sie schon können</h3><p class="small">Kosten nach Arten, Stellen und Trägern gliedern. Gemeinkosten per Zuschlag verteilen. Bilanz, GuV und die Idee der Kapitalflussrechnung lesen.</p></div>
-    <div class="panel"><h3 style="margin-top:0">Was heute dazukommt</h3><p class="small">Vormittag: Gemeinkosten nach Tätigkeiten statt nach Wert verteilen, Leerkosten sichtbar machen, Kostenkette gegen Marktpreis und Zielkosten halten. Danach: warum Gewinn und Liquidität auseinanderlaufen, Working Capital und Kapitalflussrechnung als Werkzeug.</p></div>
+    <div class="panel" id="dazu"><h3 style="margin-top:0">Was dazukommt</h3><p class="small">Siehe Startseite.</p></div>
     <div class="panel"><h3 style="margin-top:0">Wohin es führt</h3><p class="small">Die Prozesskosten liefern die Kostenbasis für den Business Case (ReFi II, Kapitel 3). Die Cashflows aus Kapitel 1 sind die Rechengröße der Investitionsrechnung (Kapitel 2). Working Capital ist ein Finanzierungsbedarf (Kapitel 4).</p></div>
   </div>
 
@@ -64,6 +64,7 @@
     h+='</div></section>';
   });
   document.getElementById("map").innerHTML=h;
+  if(KURS.next) document.getElementById("dazu").innerHTML='<h3 style="margin-top:0">'+esc(KURS.fmt(KURS.next))+'</h3>'+KURS.next.items.map(function(x){return '<p class="small"><b>'+esc(x[0])+'.</b> '+esc(x[1])+'</p>';}).join("");
 })();
 </script>
 </body>

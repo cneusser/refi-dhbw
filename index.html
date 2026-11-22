@@ -12,21 +12,12 @@
   <h1>Finanz- und Rechnungswesen I und II</h1>
   <p class="lead">Begleitseite zur Vorlesung im Modul T3WIW2003, Wirtschaftsingenieurwesen, Kurs TWIE25A. Hier finden Sie Unterlagen, Live-Quiz, die Prozesskosten-Challenge, Rechentools, Prüfungsvorbereitung, Glossar, Literatur und einen Fragenkanal.</p>
 
-  <div class="panel grey" id="heute">
-    <div class="row" style="justify-content:space-between">
-      <div><span class="badge red">Nächster Termin</span> <b style="margin-left:6px">Montag, 23.11.2026</b></div>
-      <a class="btn red" href="challenge.html">Zur Challenge</a>
-    </div>
-    <div class="grid2" style="margin-top:12px">
-      <div><h3 style="margin-top:0">ReFi I: Prozesskostenrechnung</h3><p class="small">Impuls zu Nutz- und Leerkosten, danach die Prozesskosten-Challenge Nordstil in sechs Gruppen. Auswertung gegen Marktpreis und Zielkosten, Vergleich mit Zuschlagskalkulation und Grenzplankostenrechnung.</p></div>
-      <div><h3 style="margin-top:0">ReFi II: Einstieg und Kapitel 1</h3><p class="small">Cashflow und Liquidität: Wachstumsfall, Kapitalflussrechnung, Working Capital, EBITDA und IFRS 16, Supplier Finance kritisch, Gruppenpuzzle Siemens und Telekom, Live-Quiz.</p></div>
-    </div>
-  </div>
+  <div class="panel grey" id="heute"></div>
 
   <div class="tiles">
     <a class="tile" href="vorlesung.html"><span class="k">Unterlagen</span><span class="h">Vorlesung</span><span class="d">Foliensätze je Kapitel als PDF, Arbeitsaufträge und Selbstlernphasen.</span><span class="go">Öffnen</span></a>
     <a class="tile" href="organizer.html"><span class="k">Überblick</span><span class="h">Advance Organizer</span><span class="d">Wo wir im Semester stehen und wie die Kapitel zusammenhängen.</span><span class="go">Öffnen</span></a>
-    <a class="tile today" href="challenge.html"><span class="k">Heute</span><span class="h">Prozesskosten-Challenge</span><span class="d">Gruppenwettbewerb entlang der Lieferkette eines Abendkleids: erst allein rechnen, dann in der Gruppe einigen. Beitritt per QR-Code.</span><span class="go">Mitspielen</span></a>
+    <a class="tile" href="challenge.html"><span class="k">Gruppenspiel</span><span class="h">Prozesskosten-Challenge</span><span class="d">Gruppenwettbewerb entlang der Lieferkette eines Abendkleids: erst allein rechnen, dann in der Gruppe einigen. Beitritt per QR-Code.</span><span class="go">Mitspielen</span></a>
     <a class="tile" href="live-quiz.html"><span class="k">Interaktiv</span><span class="h">Live-Quiz</span><span class="d">Quiz im Kahoot-Stil auf dem Handy. Raumcode steht am Beamer.</span><span class="go">Beitreten</span></a>
     <a class="tile" href="tools.html"><span class="k">Ausprobieren</span><span class="h">Tools mit Schiebereglern</span><span class="d">Drei Kostenrechnungen im Vergleich, Leerkosten, Working Capital, Leasing nach IFRS 16.</span><span class="go">Öffnen</span></a>
     <a class="tile" href="pruefung.html"><span class="k">Prüfungsvorbereitung</span><span class="h">Selbsttest und Probeklausur</span><span class="d">Selbsttests je Kapitel, Probeklausur 60 Minuten, Klausur 120 Minuten. Mit Anmeldung, Ihr Stand bleibt gespeichert.</span><span class="go">Üben</span></a>
@@ -36,5 +27,15 @@
   </div>
 </main>
 <script src="assets/site.js"></script>
+<script src="assets/kurs.js"></script>
+<script>
+(function(){
+  var n = KURS.next, el = document.getElementById("heute");
+  if (!n) { el.innerHTML = '<b>Alle Termine sind vorbei.</b> <span class="small">Die Unterlagen bleiben online.</span>'; return; }
+  var isToday = n.d === KURS.today;
+  el.innerHTML = '<div class="row" style="justify-content:space-between"><div><span class="badge red">' + (isToday ? "Heute" : "Nächster Termin") + '</span> <b style="margin-left:6px">' + esc(KURS.fmt(n)) + '</b></div><a class="btn red" href="' + n.link[0] + '">' + esc(n.link[1]) + '</a></div>' +
+    '<div class="grid2" style="margin-top:12px">' + n.items.map(function(x){ return '<div><h3 style="margin-top:0">' + esc(x[0]) + '</h3><p class="small">' + esc(x[1]) + '</p></div>'; }).join("") + '</div>';
+})();
+</script>
 </body>
 </html>

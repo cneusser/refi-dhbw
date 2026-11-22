@@ -16,7 +16,7 @@
 <body>
 <main class="wrap">
   <h1>Vorlesungsunterlagen</h1>
-  <p class="lead">Je Kapitel die Foliensätze als PDF, die passenden Tools, ein Selbsttest und die Literatur. Überarbeitete Kapitel werden freigeschaltet, sobald sie in der Vorlesung behandelt sind.</p>
+  <p class="lead">Je Kapitel die Foliensätze als PDF, die passenden Tools, ein Selbsttest und die Literatur. Rechts neben der Kapitelnummer stehen die Termine; rot ist der nächste Termin.</p>
   <div id="list"></div>
   <div class="panel grey">
     <h3 style="margin-top:0">Selbstlernphasen</h3>
@@ -27,12 +27,12 @@
 <script src="assets/kurs.js"></script>
 <script>
 (function(){
-  var B={fertig:'<span class="badge ok">verfügbar</span>',heute:'<span class="badge red">23.11.2026</span>',folgt:'<span class="badge grey">folgt</span>',behandelt:'<span class="badge grey">behandelt</span>'};
+  var B={fertig:'<span class="badge ok">verfügbar</span>',heute:'<span class="badge red">'+(KURS.next?esc(KURS.next.d.split("-").reverse().join(".")):'aktuell')+'</span>',folgt:'<span class="badge grey">folgt</span>',behandelt:'<span class="badge grey">behandelt</span>'};
   var h="";
   KURS.teile.forEach(function(t){
     h+='<h2>'+esc(t.titel)+'</h2><div class="tiles">';
     t.kapitel.forEach(function(k){
-      h+='<div class="tile chap'+(k.status==="heute"?' today':'')+'" id="'+k.id+'"><span class="k">Kapitel '+k.nr+' '+B[k.status]+'</span><span class="h">'+esc(k.titel)+'</span><span class="d">'+esc(k.leit)+'</span>'+
+      h+='<div class="tile chap'+(k.status==="heute"?' today':'')+'" id="'+k.id+'"><span class="k">Kapitel '+k.nr+' '+KURS.badge(k)+'</span><span class="h">'+esc(k.titel)+'</span><span class="d">'+esc(k.leit)+'</span>'+
         '<ul class="inh">'+k.inhalt.map(function(x){return '<li>'+esc(x)+'</li>';}).join("")+'</ul>';
       if(k.material){ h+='<ul class="mat">'+k.material.map(function(m){return '<li><a href="'+m.href+'">'+esc(m.t)+'</a></li>';}).join("")+'</ul>'; }
       else h+='<p class="small muted" style="margin-top:10px">'+(k.status==="behandelt"?'Unterlagen im Teams-Kanal des Kurses. Die überarbeitete Fassung erscheint hier.':'Unterlagen werden vor dem Termin freigeschaltet.')+'</p>';

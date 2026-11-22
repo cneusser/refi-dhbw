@@ -351,3 +351,154 @@ window.REFS["kap4"] = [
   "note": "Webquellen abgerufen bis November 2026; Marktdaten vor dem Einsatz prüfen."
  }
 ];
+window.REFS["r1k1"] = [
+ {
+  "title": "Lehrbücher und Gesetze zu Kapitel 1",
+  "groups": [
+   [
+    "Grundlagen",
+    [
+     "Vahs, D.; Schäfer-Kunz, J. (2021): Einführung in die Betriebswirtschaftslehre, 8. Aufl., Stuttgart: Schäffer-Poeschel, Teil III Rechnungs- und Finanzwesen."
+    ]
+   ],
+   [
+    "Buchführung und Jahresabschluss",
+    [
+     "Schäfer-Kunz, J.: Buchführung und Jahresabschluss, Stuttgart: Schäffer-Poeschel (aktuelle Auflage).",
+     "Deitermann, M.; Flader, B.; Rückwart, W.-D.; Stobbe, S.: Industrielles Rechnungswesen IKR, Braunschweig: Westermann (aktuelle Auflage).",
+     "Coenenberg, A. G.; Haller, A.; Schultze, W.: Jahresabschluss und Jahresabschlussanalyse, Stuttgart: Schäffer-Poeschel (aktuelle Auflage)."
+    ]
+   ],
+   [
+    "Kosten- und Leistungsrechnung",
+    [
+     "Macha, R.: Grundlagen der Kosten- und Leistungsrechnung, München: Vahlen (aktuelle Auflage).",
+     "Schweitzer, M.; Küpper, H.-U.; Friedl, G.; Hofmann, C.; Pedell, B. (2016): Systeme der Kosten- und Erlösrechnung, 11. Aufl., München: Vahlen."
+    ]
+   ],
+   [
+    "Gesetze und Standards",
+    [
+     "Handelsgesetzbuch (HGB), insbesondere §§ 238 bis 289, § 315e, aktuelle Fassung, gesetze-im-internet.de.",
+     "IASB (2024): IFRS 18 Presentation and Disclosure in Financial Statements, London: IFRS Foundation."
+    ]
+   ]
+  ],
+  "note": "Auflagen im Bibliothekskatalog der DHBW Stuttgart prüfen; viele Titel als E-Book im Hochschulnetz."
+ },
+ {
+  "title": "Lernforschung und Praxisquellen zu Kapitel 1",
+  "groups": [
+   [
+    "Lehren und Lernen",
+    [
+     "Ausubel, D. P. (1960): The use of advance organizers in the learning and retention of meaningful verbal material, Journal of Educational Psychology 51(5), S. 267 bis 272.",
+     "Biggs, J. (1996): Enhancing teaching through constructive alignment, Higher Education 32(3), S. 347 bis 364.",
+     "Crouch, C. H.; Mazur, E. (2001): Peer instruction: Ten years of experience and results, American Journal of Physics 69(9), S. 970 bis 977.",
+     "Roediger, H. L.; Karpicke, J. D. (2006): Test-enhanced learning, Psychological Science 17(3), S. 249 bis 255."
+    ]
+   ],
+   [
+    "Praxis und Daten",
+    [
+     "Creditreform Wirtschaftsforschung (2025): Insolvenzen in Deutschland, Jahr 2025, Neuss.",
+     "unternehmeredition.de (10.12.2025): Firmeninsolvenzen steigen auf höchsten Stand seit elf Jahren.",
+     "Statistisches Bundesamt: Gewerbliche Unternehmensinsolvenzen, destatis.de."
+    ]
+   ]
+  ],
+  "note": "Webquellen abgerufen im Oktober und November 2026."
+ }
+];
+window.REFS["r1k2"] = [
+ {
+  "title": "Lehrbücher, Gesetze und Quellen zu Kapitel 2",
+  "groups": [
+   [
+    "Lehrbücher",
+    [
+     "Coenenberg, A. G.; Haller, A.; Schultze, W.: Jahresabschluss und Jahresabschlussanalyse, Stuttgart: Schäffer-Poeschel (aktuelle Auflage).",
+     "Schweitzer, M.; Küpper, H.-U.; Friedl, G.; Hofmann, C.; Pedell, B. (2016): Systeme der Kosten- und Erlösrechnung, 11. Aufl., München: Vahlen.",
+     "Vahs, D.; Schäfer-Kunz, J. (2021): Einführung in die Betriebswirtschaftslehre, 8. Aufl., Stuttgart: Schäffer-Poeschel.",
+     "Schäfer-Kunz, J.: Buchführung und Jahresabschluss, Stuttgart: Schäffer-Poeschel (aktuelle Auflage)."
+    ]
+   ],
+   [
+    "Gesetze und Standards",
+    [
+     "Handelsgesetzbuch (HGB), §§ 240 bis 274a, 315e, 325; Einkommensteuergesetz (EStG), § 5; aktuelle Fassung.",
+     "Verordnung (EG) Nr. 1606/2002 betreffend die Anwendung internationaler Rechnungslegungsstandards.",
+     "IASB (2024): IFRS 18 Presentation and Disclosure in Financial Statements."
+    ]
+   ],
+   [
+    "Praxis",
+    [
+     "IHK Hannover (2024): Neue Schwellenwerte für Unternehmensgrößen im HGB in Kraft, ihk.de/hannover.",
+     "IHK Hannover (2022): Änderungen bei der Offenlegung (DiRUG), ihk.de/hannover.",
+     "Unternehmensregister: unternehmensregister.de."
+    ]
+   ],
+   [
+    "Lernforschung",
+    [
+     "Roediger, H. L.; Karpicke, J. D. (2006): Test-enhanced learning, Psychological Science 17(3), S. 249 bis 255."
+    ]
+   ]
+  ],
+  "note": "Webquellen abgerufen im Oktober und November 2026."
+ }
+];
+window.REFS["r1k3"] = [
+ {
+  "title": "Lehrbücher, Gesetze und Standards zu Kapitel 3",
+  "groups": [
+   [
+    "Lehrbücher",
+    [
+     "Coenenberg, A. G.; Haller, A.; Schultze, W.: Jahresabschluss und Jahresabschlussanalyse, Stuttgart: Schäffer-Poeschel (aktuelle Auflage).",
+     "Schäfer-Kunz, J.: Buchführung und Jahresabschluss, Stuttgart: Schäffer-Poeschel (aktuelle Auflage).",
+     "Deitermann, M.; Flader, B.; Rückwart, W.-D.; Stobbe, S.: Industrielles Rechnungswesen IKR, Braunschweig: Westermann (aktuelle Auflage).",
+     "Vahs, D.; Schäfer-Kunz, J. (2021): Einführung in die Betriebswirtschaftslehre, 8. Aufl., Stuttgart: Schäffer-Poeschel."
+    ]
+   ],
+   [
+    "Gesetze",
+    [
+     "Handelsgesetzbuch (HGB), §§ 238 bis 289, 316, 325; Aktiengesetz (AktG), §§ 58, 91, 158, 175; Abgabenordnung (AO), §§ 140, 141, 147; Einkommensteuergesetz (EStG), § 5; jeweils aktuelle Fassung."
+    ]
+   ],
+   [
+    "Standards",
+    [
+     "IASB (2024): IFRS 18 Presentation and Disclosure in Financial Statements, London: IFRS Foundation.",
+     "DRSC: DRS 20 Konzernlagebericht; IDW PS 270 n. F. Fortführung der Unternehmenstätigkeit.",
+     "BMF (2019): Grundsätze zur ordnungsmäßigen Führung und Aufbewahrung von Büchern (GoBD), Schreiben vom 28.11.2019."
+    ]
+   ]
+  ],
+  "note": "Auflagen im Bibliothekskatalog der DHBW Stuttgart prüfen; Gesetzestexte unter gesetze-im-internet.de."
+ },
+ {
+  "title": "Forschung und Praxisquellen zu Kapitel 3",
+  "groups": [
+   [
+    "Forschung",
+    [
+     "Healy, P. M.; Wahlen, J. M. (1999): A review of the earnings management literature and its implications for standard setting, Accounting Horizons 13(4), S. 365 bis 383.",
+     "Dechow, P. M.; Ge, W.; Schrand, C. (2010): Understanding earnings quality, Journal of Accounting and Economics 50(2-3), S. 344 bis 401.",
+     "Deutscher Bundestag (2021): Beschlussempfehlung und Bericht des 3. Untersuchungsausschusses (Wirecard), Drucksache 19/30900."
+    ]
+   ],
+   [
+    "Praxis und Daten",
+    [
+     "BDO (20.2.2026): The European Union endorses IFRS 18; DRSC (1.4.2026): CSRD-Umsetzungsgesetz.",
+     "ETL Prüfung & Beratung (26.1.2026): Statusbericht CSRD; Haufe: Viertes Bürokratieentlastungsgesetz.",
+     "IHK Schwerin: E-Rechnung ab 2025 verpflichtend; DATEV: BWA Form 01."
+    ]
+   ]
+  ],
+  "note": "Webquellen abgerufen im Oktober und November 2026; Drucksachennummer vor dem Einsatz prüfen."
+ }
+];

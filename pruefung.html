@@ -102,9 +102,10 @@ function makeSelbst(ch){
 }
 function makeProbe(){
   var r = mul(seed()), it = [];
-  [["r1k1", 2], ["r1k2", 2], ["r1k3", 3], ["r1k4", 6], ["r2k1", 2], ["r2k2", 2], ["r2k3", 1], ["r2k4", 2]].forEach(function(x){ pick(mcIdx(x[0]), x[1], r).forEach(function(i){ it.push(itMC(i, r, P.CH[x[0]].t)); }); });
+  [["r1k1", 3], ["r1k2", 3], ["r1k3", 4], ["r1k4", 6], ["r2k1", 2], ["r2k2", 2], ["r2k3", 1], ["r2k4", 2]].forEach(function(x){ pick(mcIdx(x[0]), x[1], r).forEach(function(i){ it.push(itMC(i, r, P.CH[x[0]].t)); }); });
   it.push(itMx(4, r, P.CH.r1k2.t));
   var s = seed(); pick([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17], 3, r).forEach(function(l){ it.push(itBl(s, l, P.CH.r1k3.t)); });
+  pick(genIdx("r1k1").concat(genIdx("r1k2")).concat(genIdx("r1k3")), 1, r).forEach(function(g){ it.push(itGen(g, P.CH[P.GEN[g].ch].t)); });
   pick(genIdx("r1k4"), 3, r).forEach(function(g){ it.push(itGen(g, P.CH.r1k4.t)); });
   pick(genIdx("r2k1"), 1, r).forEach(function(g){ it.push(itGen(g, P.CH.r2k1.t)); });
   pick(genIdx("r2k2").concat(genIdx("r2k3")).concat(genIdx("r2k4")), 1, r).forEach(function(g){ it.push(itGen(g, P.CH[P.GEN[g].ch].t)); });
@@ -113,9 +114,9 @@ function makeProbe(){
 function makeKlausur(){
   var r = mul(seed());
   var secs = [
-    { t: "Grundbegriffe", it: [itTxt(txtIdx("r1k1")[0])].concat(pick(mcIdx("r1k1"), 2, r).map(function(i){ return itMC(i, r); })) },
-    { t: "Systematik", it: [itMx(8, r)].concat(pick(mcIdx("r1k2"), 2, r).map(function(i){ return itMC(i, r); })) },
-    { t: "Finanzbuchhaltung", it: [itBook(), itTxt(txtIdx("r1k3")[0])] },
+    { t: "Grundbegriffe", it: [itTxt(txtIdx("r1k1")[0]), itGen(pick(["ueber", "skal"], 1, r)[0])].concat(pick(mcIdx("r1k1"), 1, r).map(function(i){ return itMC(i, r); })) },
+    { t: "Systematik", it: [itMx(8, r), itGen("abgr")].concat(pick(mcIdx("r1k2"), 1, r).map(function(i){ return itMC(i, r); })) },
+    { t: "Finanzbuchhaltung", it: [itBook(), itTxt(pick(txtIdx("r1k3"), 1, r)[0])] },
     { t: "Kalkulation", it: pick(["zuschlag", "mss", "aequi", "pkr"], 2, r).map(function(g){ return itGen(g); }) },
     { t: "Entscheidungsrechnungen", it: pick(["bem", "bep", "krit", "mob", "prog"], 2, r).map(function(g){ return itGen(g); }).concat([itTxt(pick(txtIdx("r1k4"), 1, r)[0])]) },
     { t: "Weiterführende Kostenrechnung", it: pick(["tco", "abw", "zki"], 1, r).map(function(g){ return itGen(g); }).concat(pick(mcIdx("r1k4"), 4, r).map(function(i){ return itMC(i, r); })) },
@@ -231,7 +232,7 @@ function viewDash(){
       '<p class="lead">Jeder Start stellt Aufgaben und Reihenfolge neu zusammen. Rechenaufgaben bekommen jedes Mal neue Zahlen.</p>';
     if (open.length) h += '<div class="panel grey"><h3 style="margin-top:0">Angefangen</h3>' + open.map(function(k){ var x = all[k], n = Object.keys(x.ans || {}).length; return '<div class="row" style="justify-content:space-between;border-top:1px solid var(--line);padding:6px 0"><span>' + MODE[x.mode] + (x.ch ? ": " + esc(P.CH[x.ch].t) : "") + ' <span class="muted small">· begonnen ' + fmtDate(x.started) + " · " + n + " von " + x.items.length + ' bearbeitet</span></span><span><button data-go="' + k + '">Weiter</button> <button class="ghost" data-del="' + k + '">Verwerfen</button></span></div>'; }).join("") + "</div>";
     h += '<div class="modes"><div class="mode"><h3>Selbsttest je Kapitel</h3><p class="small">Fragen einzeln, nach jeder Antwort Rückmeldung mit Begründung. Ohne Zeitlimit.</p><div class="chips">' + Object.keys(P.CH).map(function(c){ return '<button class="chip" data-s="' + c + '">' + esc(P.CH[c].t) + (best[c] != null ? " · " + Math.round(best[c] * 100) + " %" : "") + "</button>"; }).join("") + "</div></div>" +
-      '<div class="mode"><h3>Probeklausur, 60 Minuten</h3><p class="small">Rund 25 Aufgaben aus allen Kapiteln, Multiple Choice und Rechenaufgaben. Lösungen erst nach dem Abgeben. Die Uhr läuft nach Ablauf weiter ins Minus.</p><button class="red" id="probe">Probeklausur starten</button></div>' +
+      '<div class="mode"><h3>Probeklausur, 60 Minuten</h3><p class="small">Rund 30 Aufgaben aus allen Kapiteln, Multiple Choice und Rechenaufgaben. Lösungen erst nach dem Abgeben. Die Uhr läuft nach Ablauf weiter ins Minus.</p><button class="red" id="probe">Probeklausur starten</button></div>' +
       '<div class="mode"><h3>Klausur, 120 Minuten</h3><p class="small">Aufbau wie die Probeklausuren: Grundbegriffe, Systematik, Buchhaltungsaufgabe als großer Teil, Kalkulation, Entscheidungsrechnungen, weiterführende Kostenrechnung, Cashflow. Offene Fragen bewerten Sie nach der Abgabe mit der Musterlösung selbst.</p><button class="red" id="klausur">Klausur starten</button></div></div>';
     if (done.length) h += '<h2>Bisherige Ergebnisse</h2><div class="tbl"><table><thead><tr><th>Datum</th><th>Art</th><th class="r">Punkte</th><th class="r">Quote</th><th class="r">Zeit</th><th></th></tr></thead><tbody>' + done.slice(0, 30).map(function(k){ var x = all[k]; return "<tr><td>" + fmtDate(x.started) + "</td><td>" + MODE[x.mode] + (x.ch ? ": " + esc(P.CH[x.ch].t) : "") + '</td><td class="r num">' + eur(x.score, 1) + " / " + eur(x.max, 1) + '</td><td class="r num">' + Math.round(x.score / x.max * 100) + ' %</td><td class="r num">' + (x.used ? mmss(x.used) : "") + '</td><td><button class="ghost" data-view="' + k + '">Ansehen</button></td></tr>'; }).join("") + "</tbody></table></div>";
     app.innerHTML = h;
