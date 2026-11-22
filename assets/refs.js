@@ -297,3 +297,57 @@ window.REFS["kap3"] = [
   "note": "Webquellen abgerufen im November 2026; Förderkonditionen ändern sich."
  }
 ];
+window.REFS["kap4"] = [
+ {
+  "title": "Lehrbücher und Grundlagen zu Kapitel 4",
+  "groups": [
+   [
+    "Lehrbücher",
+    [
+     "Perridon, L.; Steiner, M.; Rathgeber, A. (2022): Finanzwirtschaft der Unternehmung, 18. Aufl., München: Vahlen.",
+     "Brealey, R. A.; Myers, S. C.; Allen, F. (2023): Principles of Corporate Finance, 14. Aufl., New York: McGraw-Hill.",
+     "Schneck, O. (2019): Finanzierung, 5. Aufl., München: Vahlen.",
+     "Coenenberg, A. G.; Haller, A.; Schultze, W. (2021): Jahresabschluss und Jahresabschlussanalyse, 26. Aufl., Stuttgart: Schäffer-Poeschel.",
+     "Jorion, P. (2007): Value at Risk, 3. Aufl., New York: McGraw-Hill."
+    ]
+   ],
+   [
+    "Klassiker der Forschung",
+    [
+     "Modigliani, F.; Miller, M. H. (1958): The cost of capital, corporation finance and the theory of investment, American Economic Review 48(3), S. 261 bis 297.",
+     "Jensen, M. C. (1986): Agency costs of free cash flow, corporate finance, and takeovers, American Economic Review 76(2), S. 323 bis 329.",
+     "Crouch, C. H.; Mazur, E. (2001): Peer instruction, American Journal of Physics 69(9), S. 970 bis 977."
+    ]
+   ]
+  ],
+  "note": "Bestand der Bibliothek DHBW Stuttgart prüfen; viele Titel als E-Book im Hochschulnetz."
+ },
+ {
+  "title": "Regulierung, Daten und Fälle zu Kapitel 4",
+  "groups": [
+   [
+    "Regulierung",
+    [
+     "Verordnung (EU) 2023/2631 (EU Green Bond Standard); Verordnung (EU) 2024/1623 (CRR III); Verordnung (EG) Nr. 1060/2009 (Ratingagenturen).",
+     "§ 4h EStG, § 8a KStG (Zinsschranke); § 6a EStG (Pensionsrückstellungen); § 266 HGB (Gliederung der Bilanz)."
+    ]
+   ],
+   [
+    "Daten",
+    [
+     "BDL (2026): Leasing-Markt 2025; Deutscher Factoring-Verband (2026): Branchenzahlen 2025.",
+     "BMF: Steuereinnahmen 2025; Creditreform: Jahresbilanz Insolvenzen Dezember 2025.",
+     "EY: IPO-Barometer 2025; WTW: Pensionswerke im DAX 2025."
+    ]
+   ],
+   [
+    "Fälle",
+    [
+     "Die ZEIT 25/1994 (Balsam); Süddeutsche Zeitung, 11.5.2010 (Flowtex); fixed-income.org, 2.12.2016 und 6.9.2018.",
+     "Clariant, Medienmitteilung vom 27.12.2012; Continental, Pressemitteilung vom 21.12.2012; Detroit Free Press, 12.1.2011."
+    ]
+   ]
+  ],
+  "note": "Webquellen abgerufen bis November 2026; Marktdaten vor dem Einsatz prüfen."
+ }
+];

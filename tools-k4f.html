@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tools Finanzierung</title>
+<link rel="stylesheet" href="assets/site.css">
+<style>
+.toolnav{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.toolnav a{border:1px solid var(--line);padding:6px 12px;text-decoration:none;color:var(--ink);font-size:14px}
+.toolnav a:hover{border-color:var(--red)}
+.blk{font-size:12px;font-weight:700;color:var(--grey);text-transform:uppercase;letter-spacing:.5px;margin-top:18px}
+section.tool{border-top:1px solid var(--line);margin-top:34px;padding-top:6px;scroll-margin-top:12px}
+.aha{background:var(--panel);padding:12px 14px;margin-top:12px;font-size:14px}
+.chart{overflow-x:auto}
+input.cf{width:100%;font:inherit;padding:6px 8px;border:1px solid var(--line)}
+button.b{font:inherit;padding:6px 14px;border:1px solid var(--ink);background:var(--panel);color:var(--ink);cursor:pointer;margin-top:18px}
+table.out td.r,table.out th.r{text-align:right;font-variant-numeric:tabular-nums}
+table.out td.bad{color:var(--red);font-weight:700}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>Tools zur Finanzierung</h1>
+  <p class="lead">ReFi II, Kapitel 4. Jedes Tool rechnet eine Aufgabe aus den Übungen (Excel-Blatt in Klammern). Verändern Sie Zins, Laufzeit oder Verschuldung und beobachten Sie die Wirkung.</p>
+  <div class="blk">4.1 Ziele und Leverage</div>
+  <div class="toolnav"><a href="#lev">Leverage (D01)</a><a href="#var">Value at Risk (D02)</a></div>
+  <div class="blk">4.3 Außenfinanzierung</div>
+  <div class="toolnav"><a href="#dar">Darlehen (D03)</a><a href="#anl">Anleihe (D04)</a><a href="#sk">Skonto (D05)</a></div>
+  <div class="blk">4.4 Innenfinanzierung</div>
+  <div class="toolnav"><a href="#sf">Selbstfinanzierung (D06)</a><a href="#lr">Lohmann-Ruchti (D07)</a></div>
+
+  <section class="tool" id="lev">
+    <h2>Der Hebel vergrößert die Eigenkapitalrendite, solange die Gesamtkapitalrendite über dem Zins liegt</h2>
+    <div class="fields">
+      <div><label for="lv_g">Gesamtkapitalrendite: <b id="lv_gv"></b></label><input type="range" id="lv_g" min="0" max="15" step="0.25" value="10"></div>
+      <div><label for="lv_i">Fremdkapitalzins: <b id="lv_iv"></b></label><input type="range" id="lv_i" min="1" max="14" step="0.25" value="8"></div>
+      <div><label for="lv_q">Fremdkapitalanteil: <b id="lv_qv"></b></label><input type="range" id="lv_q" min="0" max="95" step="1" value="50"></div>
+      <div><label for="lv_sd">Schwankung der Gesamtkapitalrendite (±): <b id="lv_sdv"></b></label><input type="range" id="lv_sd" min="0" max="8" step="0.5" value="3"></div>
+    </div>
+    <div class="kpis" id="lv_kpi" style="margin-top:14px"></div>
+    <div class="chart" id="lv_chart" style="margin-top:12px"></div>
+    <div class="aha" id="lv_aha"></div>
+    <p class="small muted">EKR = GKR + (GKR − i) × FK / EK, vor Steuern. Das Band zeigt die EKR bei ungünstiger und günstiger Gesamtkapitalrendite. Aufgabe D01.</p>
+  </section>
+
+  <section class="tool" id="var">
+    <h2>Der Value at Risk einer Fremdwährungsforderung wächst mit der Kursschwankung</h2>
+    <div class="fields">
+      <div><label for="va_f">Forderung (Mio. USD): <b id="va_fv"></b></label><input type="range" id="va_f" min="10" max="300" step="10" value="100"></div>
+      <div><label for="va_k">Kurs heute (USD je EUR): <b id="va_kv"></b></label><input type="range" id="va_k" min="0.9" max="1.4" step="0.01" value="1.10"></div>
+      <div><label for="va_u">Ungünstiger Kurs (Perzentil): <b id="va_uv"></b></label><input type="range" id="va_u" min="0.9" max="1.6" step="0.01" value="1.25"></div>
+    </div>
+    <div class="kpis" id="va_kpi" style="margin-top:14px"></div>
+    <div class="aha" id="va_aha"></div>
+    <p class="small muted">Aufgabe D02. Ein steigender Kurs in USD je EUR macht die Dollarforderung in Euro weniger wert.</p>
+  </section>
+
+  <section class="tool" id="dar">
+    <h2>Annuitätendarlehen und Abzahlungsdarlehen im Vergleich</h2>
+    <div class="fields">
+      <div><label for="dr_k">Darlehen: <b id="dr_kv"></b></label><input type="range" id="dr_k" min="10000" max="1000000" step="10000" value="100000"></div>
+      <div><label for="dr_i">Zins: <b id="dr_iv"></b></label><input type="range" id="dr_i" min="0.5" max="12" step="0.25" value="5"></div>
+      <div><label for="dr_n">Laufzeit (Jahre): <b id="dr_nv"></b></label><input type="range" id="dr_n" min="2" max="20" step="1" value="5"></div>
+    </div>
+    <div class="kpis" id="dr_kpi" style="margin-top:14px"></div>
+    <div class="chart" id="dr_chart" style="margin-top:12px"></div>
+    <div class="aha" id="dr_aha"></div>
+    <p class="small muted">Rate des Annuitätendarlehens = Darlehen × Wiedergewinnungsfaktor. Aufgabe D03.</p>
+  </section>
+
+  <section class="tool" id="anl">
+    <h2>Steigt der Marktzins, fällt der Kurs der Anleihe, bei langer Laufzeit stärker</h2>
+    <div class="fields">
+      <div><label for="an_c">Kupon: <b id="an_cv"></b></label><input type="range" id="an_c" min="0" max="8" step="0.25" value="3"></div>
+      <div><label for="an_n">Restlaufzeit (Jahre): <b id="an_nv"></b></label><input type="range" id="an_n" min="1" max="30" step="1" value="5"></div>
+      <div><label for="an_m">Marktzins: <b id="an_mv"></b></label><input type="range" id="an_m" min="0" max="10" step="0.1" value="4"></div>
+    </div>
+    <div class="kpis" id="an_kpi" style="margin-top:14px"></div>
+    <div class="chart" id="an_chart" style="margin-top:12px"></div>
+    <div class="aha" id="an_aha"></div>
+    <p class="small muted">Kurs = Barwert von Kupons und Rückzahlung, Nennwert 100. Aufgabe D04.</p>
+  </section>
+
+  <section class="tool" id="sk">
+    <h2>Skonto verschenken ist fast immer der teuerste Kredit</h2>
+    <div class="fields">
+      <div><label for="sk_s">Skonto: <b id="sk_sv"></b></label><input type="range" id="sk_s" min="0.5" max="5" step="0.25" value="2"></div>
+      <div><label for="sk_t">Skontofrist (Tage): <b id="sk_tv"></b></label><input type="range" id="sk_t" min="0" max="30" step="1" value="10"></div>
+      <div><label for="sk_z">Zahlungsziel (Tage): <b id="sk_zv"></b></label><input type="range" id="sk_z" min="10" max="120" step="1" value="30"></div>
+      <div><label for="sk_k">Kontokorrentzins: <b id="sk_kv"></b></label><input type="range" id="sk_k" min="2" max="18" step="0.5" value="11"></div>
+      <div><label for="sk_r">Rechnungsbetrag: <b id="sk_rv"></b></label><input type="range" id="sk_r" min="1000" max="500000" step="1000" value="50000"></div>
+    </div>
+    <div class="kpis" id="sk_kpi" style="margin-top:14px"></div>
+    <div class="aha" id="sk_aha"></div>
+    <p class="small muted">Näherung: Skonto / (1 − Skonto) × 360 / (Ziel − Skontofrist). Aufgabe D05.</p>
+  </section>
+
+  <section class="tool" id="sf">
+    <h2>Höhere Abschreibungen senken den Gewinn, erhöhen aber den Cashflow um die gestundete Steuer</h2>
+    <div class="fields">
+      <div><label for="sf_d">Degressiver AfA-Satz: <b id="sf_dv"></b></label><input type="range" id="sf_d" min="10" max="30" step="1" value="20"></div>
+      <div><label for="sf_s">Steuersatz: <b id="sf_sv"></b></label><input type="range" id="sf_s" min="0" max="45" step="1" value="25"></div>
+    </div>
+    <div class="tbl" style="margin-top:12px"><table class="out" id="sf_tab"></table></div>
+    <div class="aha" id="sf_aha"></div>
+    <p class="small muted">Maschine 100.000 €, Umsatz 90.000 €, Kosten vor AfA 60.000 €, Zinsen 5.000 €, Vergleich mit linearer AfA 10 % im Jahr 1. Aufgabe D06.</p>
+  </section>
+
+  <section class="tool" id="lr">
+    <h2>Reinvestierte Abschreibungen erweitern die Kapazität ohne frisches Kapital</h2>
+    <div class="fields">
+      <div><label for="lr_n">Nutzungsdauer (Jahre): <b id="lr_nv"></b></label><input type="range" id="lr_n" min="2" max="10" step="1" value="5"></div>
+      <div><label for="lr_m">Anfangsbestand: <b id="lr_mv"></b></label><input type="range" id="lr_m" min="5" max="50" step="1" value="10"></div>
+      <div><label for="lr_j">Betrachtete Jahre: <b id="lr_jv"></b></label><input type="range" id="lr_j" min="5" max="30" step="1" value="15"></div>
+    </div>
+    <div class="chart" id="lr_chart" style="margin-top:12px"></div>
+    <div class="aha" id="lr_aha"></div>
+    <p class="small muted">Preis 10.000 € je Maschine, lineare AfA, Käufe in ganzen Maschinen am Jahresende, Rest in der Kasse. Aufgabe D07.</p>
+  </section>
+
+  <p class="small muted" style="margin-top:24px">Excel mit allen Aufgaben: <a href="unterlagen/ReFi_II_Kap4_Uebungen_Aufgaben.xlsx">ReFi_II_Kap4_Uebungen_Aufgaben.xlsx</a>. Die Lösungen mit Formeln stellt der Dozent nach der Übung im Teams-Kanal bereit.</p>
+</main>
+<script src="assets/site.js"></script>
+<script src="assets/nordstil-data.js"></script>
+<script src="assets/kern.js"></script>
+<script>
+function $(id){ return document.getElementById(id); }
+function v(id){ return +$(id).value; }
+function bind(ids, fn){ ids.forEach(function(id){ $(id).addEventListener("input", fn); $(id).addEventListener("change", fn); }); fn(); }
+function pct(x, d){ return eur(x * 100, d == null ? 1 : d) + " %"; }
+function kpi(items){ return items.map(function(k){ return '<div class="kpi' + (k[2] ? " red" : "") + '"><div class="v">' + k[0] + '</div><div class="l">' + k[1] + "</div></div>"; }).join(""); }
+function npv(i, c){ return c.reduce(function(s, x, t){ return s + x / Math.pow(1 + i, t); }, 0); }
+function irrs(c){ var out = [], lo = -0.95, step = 0.005, prev = npv(lo, c); for (var r = lo + step; r <= 3; r += step) { var cur = npv(r, c); if (prev === 0) out.push(r - step); else if (prev * cur < 0) { var a = r - step, b = r; for (var k = 0; k < 60; k++) { var m = (a + b) / 2; if (npv(a, c) * npv(m, c) <= 0) b = m; else a = m; } out.push((a + b) / 2); } prev = cur; } return out; }
+function wgf(i, n){ return i === 0 ? 1 / n : i * Math.pow(1 + i, n) / (Math.pow(1 + i, n) - 1); }
+function tri(a, m, b){ var u = Math.random(), f = (m - a) / (b - a); return u < f ? a + Math.sqrt(u * (b - a) * (m - a)) : b - Math.sqrt((1 - u) * (b - a) * (b - m)); }
+function nrm(){ var u = 1 - Math.random(), w = Math.random(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * w); }
+/* Liniendiagramm mit negativen Werten */
+function lc(series, o){
+  var W = 760, H = 300, L = 64, B = 40, T = 14, R = 20;
+  var all = []; series.forEach(function(s){ s.pts.forEach(function(p){ all.push(p[1]); }); });
+  var ymax = o.ymax != null ? o.ymax : Math.max.apply(null, all.concat([0])), ymin = o.ymin != null ? o.ymin : Math.min.apply(null, all.concat([0]));
+  var pad = (ymax - ymin) * 0.08 || 1; ymax += pad; if (ymin < 0) ymin -= pad;
+  var xmin = o.xmin || 0, xmax = o.xmax;
+  function X(x){ return L + (x - xmin) / (xmax - xmin) * (W - L - R); } function Y(y){ return H - B - (y - ymin) / (ymax - ymin) * (H - B - T); }
+  var s = '<svg viewBox="0 0 ' + W + " " + H + '" width="100%" style="min-width:520px" role="img" aria-label="' + esc(o.aria || "Diagramm") + '">';
+  for (var k = 0; k <= 4; k++) { var yy = ymin + (ymax - ymin) * k / 4; s += '<line x1="' + L + '" x2="' + (W - R) + '" y1="' + Y(yy) + '" y2="' + Y(yy) + '" stroke="#E9ECEE"/><text x="' + (L - 6) + '" y="' + (Y(yy) + 4) + '" font-size="11" text-anchor="end">' + (o.yf ? o.yf(yy) : eur(yy, 0)) + "</text>"; }
+  if (ymin < 0 && ymax > 0) s += '<line x1="' + L + '" x2="' + (W - R) + '" y1="' + Y(0) + '" y2="' + Y(0) + '" stroke="#2B3439"/>';
+  var nt = o.nt || 5; for (var j = 0; j <= nt; j++) { var xx = xmin + (xmax - xmin) * j / nt; s += '<text x="' + X(xx) + '" y="' + (H - B + 16) + '" font-size="11" text-anchor="middle">' + (o.xf ? o.xf(xx) : eur(xx, 0)) + "</text>"; }
+  s += '<text x="' + (W - R) + '" y="' + (H - 6) + '" font-size="11" text-anchor="end" fill="#5D6971">' + esc(o.xl || "") + "</text>";
+  series.forEach(function(se){ s += '<polyline fill="none" stroke="' + se.c + '" stroke-width="' + (se.w || 2.5) + '"' + (se.dash ? ' stroke-dasharray="6 4"' : "") + ' points="' + se.pts.map(function(p){ return X(p[0]).toFixed(1) + "," + Y(p[1]).toFixed(1); }).join(" ") + '"/>'; var last = se.pts[se.at != null ? se.at : se.pts.length - 1]; s += '<text x="' + (X(last[0]) - 4) + '" y="' + (Y(last[1]) - 6) + '" font-size="11.5" text-anchor="end" fill="' + se.c + '">' + esc(se.n) + "</text>"; });
+  (o.marks || []).forEach(function(m, q){ s += '<line x1="' + X(m.x) + '" x2="' + X(m.x) + '" y1="' + T + '" y2="' + (H - B) + '" stroke="' + (m.c || "#E2001A") + '" stroke-dasharray="4 3"/><text x="' + (X(m.x) + 4) + '" y="' + (T + 12 + q * 14) + '" font-size="11" fill="' + (m.c || "#E2001A") + '">' + esc(m.t) + "</text>"; });
+  (o.dots || []).forEach(function(d){ s += '<circle cx="' + X(d.x) + '" cy="' + Y(d.y) + '" r="5" fill="' + (d.c || "#E2001A") + '"/><text x="' + (X(d.x) + 8) + '" y="' + (Y(d.y) - 8) + '" font-size="11.5" fill="' + (d.c || "#E2001A") + '">' + esc(d.t || "") + "</text>"; });
+  return s + "</svg>";
+}
+/* Säulen mit Vorzeichen */
+function sbar(items, o){
+  o = o || {}; var W = 760, H = 280, L = 56, B = 46, T = 18, n = items.length, vals = items.map(function(i){ return i.v; });
+  var ymax = Math.max.apply(null, vals.concat([0])), ymin = Math.min.apply(null, vals.concat([0])), pad = (ymax - ymin) * 0.12 || 1; ymax += pad; if (ymin < 0) ymin -= pad;
+  function Y(y){ return H - B - (y - ymin) / (ymax - ymin) * (H - B - T); }
+  var step = (W - L - 10) / n, bw = step * 0.62, s = '<svg viewBox="0 0 ' + W + " " + H + '" width="100%" style="min-width:520px" role="img" aria-label="' + esc(o.aria || "Säulendiagramm") + '">';
+  s += '<line x1="' + L + '" x2="' + (W - 10) + '" y1="' + Y(0) + '" y2="' + Y(0) + '" stroke="#2B3439"/>';
+  items.forEach(function(it, k){ var x = L + k * step + (step - bw) / 2, y0 = Y(0), y1 = Y(it.v); s += '<rect x="' + x + '" y="' + Math.min(y0, y1) + '" width="' + bw + '" height="' + Math.max(1, Math.abs(y1 - y0)) + '" fill="' + (it.c || (it.v < 0 ? "#E2001A" : "#5D6971")) + '"/><text x="' + (x + bw / 2) + '" y="' + (it.v < 0 ? y1 + 13 : y1 - 4) + '" font-size="11" text-anchor="middle">' + (o.fmt ? o.fmt(it.v) : eur(it.v, 1)) + '</text><text x="' + (x + bw / 2) + '" y="' + (H - B + 16) + '" font-size="11" text-anchor="middle">' + esc(it.l) + "</text>"; });
+  if (o.xl) s += '<text x="' + (W - 10) + '" y="' + (H - 8) + '" font-size="11" text-anchor="end" fill="#5D6971">' + esc(o.xl) + "</text>";
+  return s + "</svg>";
+}
+
+
+/* Leverage */
+bind(["lv_g", "lv_i", "lv_q", "lv_sd"], function(){
+  var g = v("lv_g") / 100, i = v("lv_i") / 100, q = v("lv_q") / 100, sd = v("lv_sd") / 100;
+  $("lv_gv").textContent = pct(g, 2); $("lv_iv").textContent = pct(i, 2); $("lv_qv").textContent = pct(q, 0); $("lv_sdv").textContent = pct(sd, 1);
+  function ekr(gg, qq){ return gg + (gg - i) * qq / (1 - qq); }
+  var e = ekr(g, q), lo = ekr(g - sd, q), hi = ekr(g + sd, q);
+  $("lv_kpi").innerHTML = kpi([[pct(e, 1), "Eigenkapitalrendite", true], [pct(g - i, 2), "Differenz GKR − Zins"], [pct(lo, 1) + " bis " + pct(hi, 1), "Bandbreite der EKR"], [eur(q / (1 - q), 2), "Verschuldungsgrad FK / EK"]]);
+  var p1 = [], p2 = [], p3 = []; for (var x = 0; x <= 90; x += 2) { p1.push([x, ekr(g, x / 100) * 100]); p2.push([x, ekr(g - sd, x / 100) * 100]); p3.push([x, ekr(g + sd, x / 100) * 100]); }
+  $("lv_chart").innerHTML = lc([{ n: "EKR erwartet", c: "#E2001A", pts: p1 }, { n: "ungünstig", c: "#9AA4AA", dash: true, pts: p2 }, { n: "günstig", c: "#5D6971", dash: true, pts: p3 }], { xmax: 90, nt: 9, xf: function(x){ return eur(x, 0) + " %"; }, yf: function(y){ return eur(y, 0) + " %"; }, xl: "Fremdkapitalanteil", marks: [{ x: q * 100, t: "aktuell", c: "#2B3439" }], aria: "Eigenkapitalrendite nach Verschuldung" });
+  $("lv_aha").innerHTML = "<b>Beobachten Sie:</b> " + (g > i ? "Der Hebel wirkt positiv; mit jedem Prozentpunkt Fremdkapital steigt die erwartete EKR." : "Die Gesamtkapitalrendite liegt unter dem Zins: Der Hebel vernichtet Eigenkapitalrendite.") + " Zugleich öffnet sich das Band: Mehr Fremdkapital macht die EKR riskanter. Genau deshalb verlangen Eigentümer bei höherer Verschuldung mehr Rendite.";
+});
+/* VaR */
+bind(["va_f", "va_k", "va_u"], function(){
+  var f = v("va_f"), k = v("va_k"), u = v("va_u"); $("va_fv").textContent = eur(f, 0); $("va_kv").textContent = eur(k, 2); $("va_uv").textContent = eur(u, 2);
+  var w0 = f / k, w1 = f / u;
+  $("va_kpi").innerHTML = kpi([[eur(w0, 1) + " Mio. €", "Wert heute"], [eur(w1, 1) + " Mio. €", "Wert im ungünstigen Fall"], [eur(w0 - w1, 1) + " Mio. €", "Value at Risk", true]]);
+  $("va_aha").innerHTML = "<b>Lesart:</b> Mit der gewählten Wahrscheinlichkeit verliert die Forderung nicht mehr als " + eur(w0 - w1, 1) + " Mio. €. Ein Devisentermingeschäft schaltet das Risiko gegen eine Prämie aus. Was in den übrigen Fällen passiert, sagt der VaR nicht.";
+});
+/* Darlehen */
+bind(["dr_k", "dr_i", "dr_n"], function(){
+  var k = v("dr_k"), i = v("dr_i") / 100, n = v("dr_n"); $("dr_kv").textContent = eur(k, 0) + " €"; $("dr_iv").textContent = pct(i, 2); $("dr_nv").textContent = n;
+  var a = k * wgf(i, n), r = k, za = 0, zb = 0, pa = [], pb = [];
+  for (var t = 1; t <= n; t++) { var z = r * i; za += z; r -= a - z; pa.push([t, a]); var rb = k - (t - 1) * k / n, z2 = rb * i; zb += z2; pb.push([t, k / n + z2]); }
+  $("dr_kpi").innerHTML = kpi([[eur(a, 0) + " €", "Rate Annuitätendarlehen", true], [eur(za, 0) + " €", "Zinsen gesamt Annuität"], [eur(zb, 0) + " €", "Zinsen gesamt Abzahlung"], [eur(pb[0][1], 0) + " €", "erste Rate Abzahlung"]]);
+  $("dr_chart").innerHTML = lc([{ n: "Annuität", c: "#E2001A", pts: pa }, { n: "Abzahlung", c: "#5D6971", pts: pb }], { xmin: 1, xmax: n, nt: Math.min(n - 1, 10), ymin: 0, xl: "Jahr, Rate in €", aria: "Raten nach Jahren" });
+  $("dr_aha").innerHTML = "<b>Lesart:</b> Das Annuitätendarlehen belastet die Liquidität gleichmäßig, kostet aber " + eur(za - zb, 0) + " € mehr Zinsen, weil es anfangs langsamer tilgt. Für ein Anlaufjahr mit wenig Cashflow (Kapitel 3) passt die Annuität besser.";
+});
+/* Anleihe */
+bind(["an_c", "an_n", "an_m"], function(){
+  var c = v("an_c"), n = v("an_n"), m = v("an_m") / 100; $("an_cv").textContent = eur(c, 2) + " %"; $("an_nv").textContent = n; $("an_mv").textContent = pct(m, 1);
+  function kurs(mm, nn){ return mm === 0 ? c * nn + 100 : c * (1 - Math.pow(1 + mm, -nn)) / mm + 100 / Math.pow(1 + mm, nn); }
+  var p = kurs(m, n), d = (kurs(m + 0.0001, n) - kurs(m - 0.0001, n)) / 0.0002 / p * -1;
+  $("an_kpi").innerHTML = kpi([[eur(p, 2), "Kurs in % vom Nennwert", true], [eur(d, 2), "modifizierte Duration (Jahre)"], [eur(-d, 2) + " %", "Kursänderung je Prozentpunkt Zins"]]);
+  var s1 = [], s2 = []; for (var z = 0; z <= 10.001; z += 0.25) { s1.push([z, kurs(z / 100, n)]); s2.push([z, kurs(z / 100, Math.max(1, Math.round(n / 3)))]); }
+  $("an_chart").innerHTML = lc([{ n: "Restlaufzeit " + n + " J.", c: "#E2001A", pts: s1 }, { n: "Restlaufzeit " + Math.max(1, Math.round(n / 3)) + " J.", c: "#9AA4AA", pts: s2 }], { xmax: 10, nt: 10, xf: function(x){ return eur(x, 0) + " %"; }, xl: "Marktzins", marks: [{ x: m * 100, t: "Kurs " + eur(p, 2), c: "#2B3439" }], aria: "Kurs nach Marktzins" });
+  $("an_aha").innerHTML = "<b>Beobachten Sie:</b> Liegt der Marktzins über dem Kupon, notiert die Anleihe unter 100. Je länger die Restlaufzeit, desto steiler die Kurve: Das Zinsänderungsrisiko wächst mit der Laufzeit.";
+});
+/* Skonto */
+bind(["sk_s", "sk_t", "sk_z", "sk_k", "sk_r"], function(){
+  var s = v("sk_s") / 100, t = v("sk_t"), z = Math.max(v("sk_z"), t + 1), k = v("sk_k") / 100, r = v("sk_r");
+  $("sk_sv").textContent = pct(s, 2); $("sk_tv").textContent = t; $("sk_zv").textContent = z; $("sk_kv").textContent = pct(k, 1); $("sk_rv").textContent = eur(r, 0) + " €";
+  var na = s / (1 - s) * 360 / (z - t), ex = Math.pow(1 + s / (1 - s), 360 / (z - t)) - 1, kk = r * (1 - s) * k * (z - t) / 360;
+  $("sk_kpi").innerHTML = kpi([[pct(na, 1), "Jahreszins Skontoverzicht (Näherung)", true], [pct(ex, 1), "exakt mit Zinseszins"], [eur(kk, 0) + " €", "Kontokorrentzinsen für die Frist"], [eur(r * s - kk, 0) + " €", "Ersparnis durch Skonto"]]);
+  $("sk_aha").innerHTML = "<b>Lesart:</b> " + (na > k ? "Skonto ziehen lohnt sich, auch wenn dafür der Kontokorrent genutzt wird." : "Hier ist der Kontokorrent teurer als der Lieferantenkredit; Skonto lohnt nicht.") + " Je kürzer die Differenz zwischen Skontofrist und Zahlungsziel, desto teurer ist der Verzicht.";
+});
+/* Selbstfinanzierung */
+bind(["sf_d", "sf_s"], function(){
+  var d = v("sf_d") / 100, s = v("sf_s") / 100; $("sf_dv").textContent = pct(d, 0); $("sf_sv").textContent = pct(s, 0);
+  function row(a){ var ebit = 90000 - 60000 - a, st = (ebit - 5000) * s, ju = ebit - 5000 - st; return [a, ebit, st, ju, ju + a]; }
+  var L = row(10000), D = row(100000 * d), lab = ["AfA", "EBIT", "Steuern", "Jahresüberschuss", "Cashflow (JÜ + AfA)"];
+  $("sf_tab").innerHTML = '<tr><th>€, Jahr 1</th><th class="r">linear 10 %</th><th class="r">degressiv</th><th class="r">Differenz</th></tr>' + lab.map(function(l, j){ return "<tr><td>" + l + '</td><td class="r">' + eur(L[j], 0) + '</td><td class="r">' + eur(D[j], 0) + '</td><td class="r">' + eur(D[j] - L[j], 0) + "</td></tr>"; }).join("");
+  $("sf_aha").innerHTML = "<b>Lesart:</b> Die stille Reserve beträgt " + eur(D[0] - L[0], 0) + " €. Der Jahresüberschuss sinkt um " + eur(L[3] - D[3], 0) + " €, der Cashflow steigt um " + eur(D[4] - L[4], 0) + " €: genau die gestundete Steuer.";
+});
+/* Lohmann-Ruchti */
+bind(["lr_n", "lr_m", "lr_j"], function(){
+  var n = v("lr_n"), m0 = v("lr_m"), J = v("lr_j"); $("lr_nv").textContent = n; $("lr_mv").textContent = m0; $("lr_jv").textContent = J;
+  var ages = []; for (var k = 0; k < m0; k++) ages.push(0); var cash = 0, items = [{ l: "0", v: m0, c: "#9AA4AA" }];
+  for (var y = 1; y <= J; y++) { cash += ages.length * 10000 / n; ages = ages.map(function(a){ return a + 1; }).filter(function(a){ return a < n; }); var b = Math.floor(cash / 10000); cash -= b * 10000; for (var q = 0; q < b; q++) ages.push(0); items.push({ l: String(y), v: ages.length, c: "#5D6971" }); }
+  var lim = 2 * n / (n + 1) * m0;
+  $("lr_chart").innerHTML = sbar(items, { fmt: function(x){ return eur(x, 0); }, xl: "Jahr, Maschinen am Jahresende", aria: "Maschinenbestand" });
+  $("lr_aha").innerHTML = "<b>Lesart:</b> Der Bestand nähert sich der Grenze von " + eur(lim, 1) + " Maschinen, dem " + eur(2 * n / (n + 1), 2) + "-Fachen des Anfangsbestands (2n / (n + 1)); wegen ganzer Maschinen schwankt er darum. Die Periodenkapazität wächst, die Gesamtkapazität (Restnutzung) nicht. Und: Mit der Kapazität wachsen Vorräte und Forderungen, die ebenfalls finanziert werden müssen.";
+});
+</script>
+</body>
+</html>

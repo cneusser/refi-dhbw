@@ -47,5 +47,17 @@ window.QSETS = {
   {q:"Welcher Plan bestimmt den Finanzierungsbedarf?",o:["Basisplan", "Ungünstiges Szenario, das man tragen will", "Bester Fall", "Durchschnitt"],a:1,e:"Die Finanzierung muss die Lücke im Stressfall decken."},
   {q:"Wann schreibt man die Executive Summary?",o:["Zuerst", "Zuletzt", "Nie", "Nur für Banken"],a:1,e:"Sie verdichtet den fertigen Plan."},
   {q:"Typisches Warnzeichen im Business Plan?",o:["Quellen je Zahl", "Hockeyschläger ohne Begründung", "Stresstest", "Planbilanz"],a:1,e:"Planungsfehlschluss: Optimismus bei Dauer und Wachstum."}
+ ]},
+ kap4: { title: "Kapitel 4 Finanzierung", qs: [
+  {q:"Pensionsrückstellungen sind",o:["Außen- und Eigenfinanzierung", "Innen- und Fremdfinanzierung", "Außen- und Fremdfinanzierung", "Innen- und Eigenfinanzierung"],a:1,e:"Mittel aus dem Umsatz, Verpflichtung ist Fremdkapital."},
+  {q:"GKR 10 %, Zins 8 %, FK 50 %: EKR?",o:["10 %", "12 %", "14 %", "8 %"],a:1,e:"10 + 2 × 50 / 50 = 12 %."},
+  {q:"GKR 6 %, Zins 8 %: Was macht mehr Fremdkapital?",o:["EKR steigt", "EKR sinkt", "nichts", "GKR steigt"],a:1,e:"Negativer Hebel."},
+  {q:"Wo endet der Investment Grade bei S&P?",o:["A−", "BBB−", "BB+", "B"],a:1,e:"BBB− ist die letzte Stufe."},
+  {q:"Marktzins steigt von 3 auf 4 %: Kurs der 3-%-Anleihe (5 Jahre)?",o:["104,71", "100,00", "95,55", "90,00"],a:2,e:"Barwert sinkt auf 95,55."},
+  {q:"2 % Skonto, 10 Tage, netto 30: Jahreszins des Verzichts?",o:["2 %", "rund 37 %", "rund 10 %", "rund 20 %"],a:1,e:"2 / 98 × 360 / 20."},
+  {q:"Annuitätendarlehen gegenüber Abzahlungsdarlehen:",o:["mehr Zinsen, gleiche Rate", "weniger Zinsen", "höhere erste Rate", "keine Tilgung"],a:0,e:"Langsamere Tilgung am Anfang."},
+  {q:"Degressive statt linearer AfA im Jahr 1:",o:["Gewinn und Cashflow steigen", "Gewinn sinkt, Cashflow steigt", "beide sinken", "nichts"],a:1,e:"Gestundete Steuer."},
+  {q:"Lohmann-Ruchti bei 5 Jahren Nutzungsdauer: maximale Erweiterung?",o:["2-fach", "1,67-fach", "1,2-fach", "5-fach"],a:1,e:"2n / (n + 1) = 10 / 6."},
+  {q:"Echtes Factoring heißt:",o:["Factor trägt Ausfallrisiko", "Verkäufer trägt Ausfallrisiko", "nur Inkasso", "Kredit gegen Aktien"],a:0,e:"Delkredere beim Factor."}
  ]}
 };

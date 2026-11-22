@@ -10,7 +10,8 @@ var CH = {
   r1k4: { t: "ReFi I, Kap. 4 Kosten- und Leistungsrechnung", link: "vorlesung.html#r1k4" },
   r2k1: { t: "ReFi II, Kap. 1 Cashflow und Liquidität", link: "vorlesung.html#r2k1" },
   r2k2: { t: "ReFi II, Kap. 2 Investitionsrechnung", link: "vorlesung.html#r2k2" },
-  r2k3: { t: "ReFi II, Kap. 3 Business Case", link: "vorlesung.html#r2k3" }
+  r2k3: { t: "ReFi II, Kap. 3 Business Case", link: "vorlesung.html#r2k3" },
+  r2k4: { t: "ReFi II, Kap. 4 Finanzierung", link: "vorlesung.html#r2k4" }
 };
 function mc(ch, ref, q, o, a, e){ return { type: "mc", ch: ch, ref: ref, q: q, o: o, a: a, e: e, pts: 1 }; }
 var MC = [
@@ -114,7 +115,34 @@ var MC = [
  mc("r2k3","3.3 Business Case","Im BigBag-Fall liegen Preis und Herstellkosten nur 0,40 € je kg auseinander. Was folgt daraus?",["Das Projekt ist sicher","Kleine Änderungen von Preis oder Kosten drehen den Kapitalwert; Preisgleitklausel verhandeln","Die Menge ist unwichtig","Der Zins ist entscheidend"],1,"Schon 10 % weniger Preis oder 10 % höhere Herstellkosten machen den Kapitalwert negativ."),
  mc("r2k3","3.4 Stresstest","Welcher Plan bestimmt den Finanzierungsbedarf?",["Der Basisplan","Das ungünstige Szenario, das man noch tragen will","Der beste Fall","Der Durchschnitt aller Szenarien"],1,"Die Finanzierung muss auch die Lücke im ungünstigen Fall decken."),
  mc("r2k3","3.4 Stresstest","Was ist ein typisches Warnzeichen in einem Business Plan?",["Quellen zu jeder Zahl","Ein Hockeyschläger: steiles Wachstum ohne Begründung","Ein Stresstest","Eine Planbilanz"],1,"Planungsfehlschluss: Dauer und Kosten werden unterschätzt, Wachstum überschätzt."),
+ // ---------- ReFi II Kapitel 4: Finanzierung ----------
+ mc("r2k4","4.1 Finanzierungsarten","Wie ordnet man Pensionsrückstellungen ein?",["Außen- und Eigenfinanzierung","Innen- und Fremdfinanzierung","Außen- und Fremdfinanzierung","Innen- und Eigenfinanzierung"],1,"Die Mittel stammen aus dem Umsatz (innen), die Verpflichtung ist Fremdkapital."),
+ mc("r2k4","4.1 Finanzierungsarten","Eine Kapitalerhöhung gegen Bareinlage ist",["Innen- und Eigenfinanzierung","Außen- und Eigenfinanzierung","Außen- und Fremdfinanzierung","Innen- und Fremdfinanzierung"],1,"Neues Geld von außen, das Eigenkapital wird."),
+ mc("r2k4","4.1 Eigen- und Fremdkapital","Was spricht steuerlich für Fremdkapital?",["Dividenden sind abzugsfähig","Zinsen mindern die Bemessungsgrundlage (innerhalb der Zinsschranke)","Fremdkapital ist steuerfrei","Eigenkapital wird doppelt besteuert"],1,"Tax Shield; die Zinsschranke begrenzt den Abzug auf 30 % des steuerlichen EBITDA über der Freigrenze."),
+ mc("r2k4","4.1 Ziele","Die goldene Bilanzregel verlangt",["Eigenkapital gleich Fremdkapital","langfristig gebundenes Vermögen langfristig zu finanzieren","nur Eigenkapital für Investitionen","kurzfristige Kredite für Anlagen"],1,"Fristenkongruenz vermeidet Refinanzierungsrisiken."),
+ mc("r2k4","4.1 Leverage","Wann steigt die Eigenkapitalrendite mit zusätzlichem Fremdkapital?",["Immer","Wenn die Gesamtkapitalrendite über dem Fremdkapitalzins liegt","Wenn der Zins über der Gesamtkapitalrendite liegt","Nie"],1,"EKR = GKR + (GKR − i) × FK / EK."),
+ mc("r2k4","4.1 Leverage","GKR 10 %, Zins 8 %, FK-Anteil 80 %. Eigenkapitalrendite vor Steuern?",["10 %","18 %","26 %","12 %"],1,"10 + (10 − 8) × 80 / 20 = 18 %."),
+ mc("r2k4","4.1 Leverage","Was blendet die Leverage-Formel aus?",["Den Zins","Das steigende Risiko und die Schwankung der Eigenkapitalrendite","Die Gesamtkapitalrendite","Den Verschuldungsgrad"],1,"Der Hebel vergrößert auch die Streuung; Eigentümer verlangen dann mehr Rendite."),
+ mc("r2k4","4.1 Value at Risk","Ein VaR von 10,9 Mio. € (95 %, 6 Monate) bedeutet:",["Der Verlust beträgt sicher 10,9 Mio. €","Mit 95 % Wahrscheinlichkeit ist der Verlust in 6 Monaten nicht größer als 10,9 Mio. €","Der maximale Verlust ist 10,9 Mio. €","Mit 5 % Wahrscheinlichkeit gewinnt man 10,9 Mio. €"],1,"Über die übrigen 5 % sagt der VaR nichts."),
+ mc("r2k4","4.2 Rating","Wo endet der Investment Grade bei S&P?",["A−","BBB−","BB+","B"],1,"AAA bis BBB−; darunter Non-Investment Grade."),
+ mc("r2k4","4.2 Rating","Warum zählt das Rating auch für Mittelständler ohne externes Rating?",["Es zählt nicht","Weil jede Bank intern ratet und die Note Eigenkapitalunterlegung und Zins bestimmt","Weil die Börse es verlangt","Weil das Finanzamt es prüft"],1,"Basel III und CRR III verbinden Bonität und Eigenkapitalbedarf der Bank."),
+ mc("r2k4","4.2 Rating","Was ist der Kern der Kritik an Ratingagenturen?",["Sie sind staatlich","Oligopol und Interessenkonflikt durch issuer pays","Sie bewerten nur Staaten","Sie veröffentlichen nichts"],1,"Der Bewertete bezahlt; drei Agenturen dominieren."),
+ mc("r2k4","4.3 Darlehen","Was unterscheidet das Annuitätendarlehen vom Abzahlungsdarlehen?",["Höhere Rate am Anfang","Gleichbleibende Rate, anfangs geringe Tilgung, mehr Zinsen insgesamt","Keine Zinsen","Endfällige Tilgung"],1,"Beim Abzahlungsdarlehen ist die Tilgung konstant, die Rate sinkt."),
+ mc("r2k4","4.3 Anleihe","Der Marktzins steigt. Was passiert mit dem Kurs einer festverzinslichen Anleihe?",["Er steigt","Er fällt","Er bleibt bei 100","Er hängt nur vom Rating ab"],1,"Der Kurs ist der Barwert der festen Zahlungen; höherer Zins, niedrigerer Barwert."),
+ mc("r2k4","4.3 Anleihe","Wovon hängt das Zinsänderungsrisiko einer Anleihe vor allem ab?",["Vom Emittenten","Von der Restlaufzeit (Duration)","Vom Nennwert","Von der Börse"],1,"Je länger die Laufzeit, desto stärker reagiert der Kurs."),
+ mc("r2k4","4.3 Kurzfristig","2 % Skonto bei 10 Tagen, netto 30 Tage. Jahreszins des Skontoverzichts (Näherung)?",["2 %","36,7 %","24 %","10 %"],1,"2 / 98 × 360 / 20 = 36,7 %."),
+ mc("r2k4","4.3 Schuldschein","Was kennzeichnet ein Schuldscheindarlehen?",["Börsennotierung mit Prospekt","Großvolumig, ohne Börsenzulassung und meist ohne externes Rating","Nur für Privatpersonen","Ein Kontokorrentkredit"],1,"Typisch deutsches Instrument zwischen Kredit und Anleihe."),
+ mc("r2k4","4.3 Mezzanine","Warum nutzen Unternehmen Mezzanine-Kapital?",["Weil es billiger als jeder Kredit ist","Weil es als wirtschaftliches Eigenkapital zählen kann, ohne Stimmrechte abzugeben","Weil es steuerfrei ist","Weil es nie zurückgezahlt wird"],1,"Nachrang und Gewinnabhängigkeit stärken das Rating."),
+ mc("r2k4","4.3 Factoring","Echtes Factoring bedeutet:",["Der Factor übernimmt das Ausfallrisiko (Delkredere)","Der Verkäufer behält das Ausfallrisiko","Nur Debitorenmanagement","Kredit gegen Wertpapiere"],0,"In Deutschland fast nur echtes Factoring."),
+ mc("r2k4","4.3 Factoring","Was lehren die Fälle Balsam und Flowtex?",["Factoring ist verboten","Forderungen und Vermögen müssen tatsächlich existieren; Plausibilisierung gegen Umsatz und Kapazität","Leasing ist immer günstiger","Ratings verhindern Betrug"],1,"Fingierte Forderungen und Phantommaschinen; Prüfung vor Ort ist Pflicht."),
+ mc("r2k4","4.3 Green Finance","Was unterscheidet einen Sustainability-Linked Bond vom Green Bond?",["Nichts","Beim SLB hängt der Zins an Nachhaltigkeitszielen, die Mittel sind frei verwendbar","Beim SLB gibt es keine Zinsen","Der Green Bond ist immer teurer"],1,"Green Bond: Mittelverwendung gebunden; SLB: Zins an Ziele gekoppelt."),
+ mc("r2k4","4.4 Selbstfinanzierung","Wie wirkt eine höhere Abschreibung im Jahr der Anschaffung?",["Gewinn und Cashflow steigen","Gewinn sinkt, Cashflow steigt um die gestundete Steuer","Gewinn und Cashflow sinken","Nur die Bilanzsumme steigt"],1,"Stille Selbstfinanzierung: Steuer wird verschoben."),
+ mc("r2k4","4.4 Abschreibungen","Wann finanzieren Abschreibungen überhaupt?",["Immer","Wenn die Preise die AfA decken, die Erlöse eingehen und die Mittel nicht ausgeschüttet werden","Nur bei degressiver AfA","Nie"],1,"Abschreibungen selbst sind keine Zahlung; der Rückfluss kommt über den Umsatz."),
+ mc("r2k4","4.4 Lohmann-Ruchti","Der Kapazitätserweiterungseffekt erreicht höchstens",["das Doppelte","2n / (n + 1) des Anfangsbestands","das Zehnfache","keine Erweiterung"],1,"Bei 5 Jahren das 1,67-Fache; Working Capital wächst in der Realität mit."),
+ mc("r2k4","4.4 Rückstellungen","Warum sind Pensionsrückstellungen aus Sicht der Bank Schulden?",["Weil sie Eigenkapital sind","Weil sie künftige Zahlungsverpflichtungen gegenüber Rentnern darstellen","Weil sie steuerfrei sind","Weil sie nie fällig werden"],1,"Doppelcharakter: Finanzierungsquelle und Verschuldung."),
+ mc("r2k4","4.4 Vermögensumschichtung","Was war das Problem beim Sale-and-lease-back von Karstadt?",["Zu niedrige Verkaufspreise","Mieten von 16 bis 18 % vom Umsatz über 15 Jahre","Fehlende Käufer","Steuerfreiheit"],1,"Die Liquidität von heute wurde mit untragbaren Fixkosten von morgen bezahlt.")
 ];
+
 
 /* ---------- Zufallsgeneratoren für Rechenaufgaben ---------- */
 function rnd(r, a, b, step){ step = step || 1; var n = Math.floor((b - a) / step + 1); return +(a + Math.floor(r() * n) * step).toFixed(6); }
@@ -239,8 +267,32 @@ var GEN = {
    var ebit = U*m, ju = ebit*(1-s), wc = U*dso/360 + U*hk*dio/360, f = ju + afa - wc;
    return { q: "Erstes Jahr eines Projekts: Umsatz " + eur(U,0) + " Tsd. €, EBIT-Marge " + eur(m*100,0) + " %, Abschreibung " + eur(afa,0) + ", Steuersatz " + eur(s*100,0) + " %. Forderungen " + dso + " Tage auf Umsatz, Vorräte " + dio + " Tage auf Herstellkosten (" + eur(hk*100,0) + " % vom Umsatz), keine Lieferantenkredite, Start bei null.",
      ans: [{ l: "Aufbau Working Capital in Tsd. €", v: wc, tol: 0.5 }, { l: "Free Cashflow Jahr 1 in Tsd. € (ohne Investition)", v: f, tol: 0.5 }],
-     e: "JÜ = " + eur(ebit,1) + " × " + eur(1-s,2) + " = " + eur(ju,1) + ". WC = " + eur(U*dso/360,1) + " + " + eur(U*hk*dio/360,1) + " = " + eur(wc,1) + ". FCF = JÜ + AfA − ΔWC = " + eur(f,1) + " Tsd. €." }; } }
+     e: "JÜ = " + eur(ebit,1) + " × " + eur(1-s,2) + " = " + eur(ju,1) + ". WC = " + eur(U*dso/360,1) + " + " + eur(U*hk*dio/360,1) + " = " + eur(wc,1) + ". FCF = JÜ + AfA − ΔWC = " + eur(f,1) + " Tsd. €." }; } },
+ lev: { ch: "r2k4", ref: "4.1 Leverage", pts: 2, make: function(r){
+   var g = rnd(r,0.05,0.14,0.005), i = rnd(r,0.03,0.11,0.005), q = rnd(r,0.3,0.85,0.05);
+   return { q: "Gesamtkapitalrendite " + eur(g*100,1) + " %, Fremdkapitalzins " + eur(i*100,1) + " %, Fremdkapitalanteil " + eur(q*100,0) + " %. Berechnen Sie die Eigenkapitalrendite vor Steuern.",
+     ans: [{ l: "Eigenkapitalrendite in %", v: (g + (g-i)*q/(1-q))*100, tol: 0.05 }], e: "EKR = " + eur(g*100,1) + " + (" + eur(g*100,1) + " − " + eur(i*100,1) + ") × " + eur(q*100,0) + " / " + eur((1-q)*100,0) + " = " + eur((g + (g-i)*q/(1-q))*100,2) + " %." + (g < i ? " Negativer Hebel." : "") }; } },
+ ann: { ch: "r2k4", ref: "4.3 Darlehen", pts: 3, make: function(r){
+   var K = rnd(r,50,500,10)*1000, i = rnd(r,0.03,0.09,0.005), n = rnd(r,4,10,1), w = i*Math.pow(1+i,n)/(Math.pow(1+i,n)-1), a = K*w, t1 = a - K*i;
+   return { q: "Annuitätendarlehen über " + eur(K,0) + " €, Zins " + eur(i*100,1) + " %, Laufzeit " + n + " Jahre, jährliche Raten.",
+     ans: [{ l: "Jährliche Rate in €", v: a, tol: 2 }, { l: "Tilgung im ersten Jahr in €", v: t1, tol: 2 }, { l: "Zinsen gesamt in €", v: a*n - K, tol: 5 }],
+     e: "WGF = " + eur(w,5) + ", Rate = " + eur(a,0) + " €. Zins Jahr 1 = " + eur(K*i,0) + ", Tilgung = " + eur(t1,0) + " €. Zinsen gesamt = " + eur(a*n,0) + " − " + eur(K,0) + " = " + eur(a*n-K,0) + " €." }; } },
+ bond: { ch: "r2k4", ref: "4.3 Anleihe", pts: 2, make: function(r){
+   var c = rnd(r,1,6,0.5), n = rnd(r,2,8,1), m = rnd(r,1,8,0.25)/100, p = c*(1-Math.pow(1+m,-n))/m + 100/Math.pow(1+m,n);
+   return { q: "Anleihe mit Nennwert 100, Kupon " + eur(c,1) + " %, Restlaufzeit " + n + " Jahre, jährliche Kupons. Der Marktzins beträgt " + eur(m*100,2) + " %. Wie hoch ist der faire Kurs?",
+     ans: [{ l: "Kurs in % vom Nennwert", v: p, tol: 0.05 }], e: "Kurs = " + eur(c,1) + " × RBF(" + eur(m*100,2) + " %, " + n + ") + 100 / " + eur(1+m,4) + "^" + n + " = " + eur(p,2) + (p < 100 ? ": unter pari, weil der Marktzins über dem Kupon liegt." : ".") }; } },
+ skonto: { ch: "r2k4", ref: "4.3 Kurzfristige Finanzierung", pts: 2, make: function(r){
+   var s = rnd(r,1,4,0.5)/100, t = rnd(r,7,14,1), z = t + rnd(r,10,50,5), k = rnd(r,6,14,0.5)/100, na = s/(1-s)*360/(z-t);
+   return { q: "Zahlungsbedingung: " + eur(s*100,1) + " % Skonto bei Zahlung innerhalb von " + t + " Tagen, netto " + z + " Tage. Ihr Kontokorrent kostet " + eur(k*100,1) + " % p. a.",
+     ans: [{ l: "Jahreszins des Skontoverzichts in % (Näherung)", v: na*100, tol: 0.1 }, { l: "Skonto ziehen? 1 = ja, 2 = nein", v: na > k ? 1 : 2, tol: 0 }],
+     e: "Zins = " + eur(s*100,1) + " / " + eur((1-s)*100,1) + " × 360 / " + (z-t) + " = " + eur(na*100,1) + " %. " + (na > k ? "Höher als der Kontokorrent: Skonto ziehen." : "Niedriger als der Kontokorrent: nicht lohnend.") }; } },
+ sfin: { ch: "r2k4", ref: "4.4 Selbstfinanzierung", pts: 2, make: function(r){
+   var A = rnd(r,50,300,10)*1000, l = rnd(r,0.1,0.2,0.05), d = l*2, s = rnd(r,0.25,0.35,0.01), extra = A*(d-l);
+   return { q: "Maschine " + eur(A,0) + " €. Statt " + eur(l*100,0) + " % linear wird im ersten Jahr " + eur(d*100,0) + " % degressiv abgeschrieben. Steuersatz " + eur(s*100,0) + " %. Wie verändern sich Jahresüberschuss und Cashflow im ersten Jahr?",
+     ans: [{ l: "Veränderung Jahresüberschuss in € (negativ = sinkt)", v: -extra*(1-s), tol: 1 }, { l: "Veränderung Cashflow in €", v: extra*s, tol: 1 }],
+     e: "Mehr-AfA " + eur(extra,0) + " €. JÜ sinkt um " + eur(extra*(1-s),0) + " €, Cashflow steigt um die gestundete Steuer " + eur(extra*s,0) + " €." }; } }
 };
+
 
 /* ---------- Ankreuzmatrix Systematik ---------- */
 var CATS = ["Auszahlung", "Ausgabe", "Aufwand", "Kosten", "Einzahlung", "Einnahme", "Ertrag", "Erlös"];
@@ -290,6 +342,9 @@ function bookCase1(r){
 window.POOL = { CH: CH, MC: MC, GEN: GEN, CATS: CATS, GV: GV, KONTEN: KONTEN, bookCase: bookCase, rnd: rnd };
 /* ---------- Offene Fragen mit Musterlösung und Selbstbewertung ---------- */
 var TXT = [
+ { ch: "r2k4", ref: "4.1 Leverage", q: "Erläutern Sie den Leverage-Effekt mit Formel. Wann wirkt er positiv, wann negativ, und warum ist mehr Fremdkapital trotzdem nicht immer besser?",
+   m: "EKR = GKR + (GKR − i) × FK / EK. Positiv, solange die Gesamtkapitalrendite über dem Fremdkapitalzins liegt; negativ, wenn sie darunter fällt. Grenzen: steigendes Risiko und Streuung der EKR, Zinsänderungs- und Refinanzierungsrisiko, schlechteres Rating und höhere Zinsen, Abhängigkeit von Gläubigern (Covenants), höhere geforderte Eigenkapitalrendite.",
+   k: [["Formel korrekt", 1], ["Bedingung positiv und negativ", 1], ["Zwei Grenzen begründet", 2]] },
  { ch: "r2k2", ref: "2.3 Interner Zinsfuß", q: "Zwei Projekte schließen sich aus. Projekt X hat den höheren internen Zinsfuß, Projekt Y den höheren Kapitalwert. Welches wählen Sie? Begründen Sie und nennen Sie die Prüfrechnung.",
    m: "Y, weil der Kapitalwert den Wertbeitrag in Euro misst; der IRR misst nur die Rendite und unterstellt Wiederanlage zum IRR. Prüfrechnung: Differenzinvestition Y − X; verzinst sie sich über dem Kalkulationszins, lohnt die Mehrinvestition. Ursachen des Konflikts: unterschiedliche Größe oder zeitliche Struktur.",
    k: [["Entscheidung für den Kapitalwert", 1], ["Begründung Wertbeitrag gegen Rendite oder Wiederanlageprämisse", 1], ["Differenzinvestition als Prüfrechnung", 1]] },

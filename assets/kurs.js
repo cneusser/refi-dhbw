@@ -43,7 +43,14 @@ window.KURS = {
             { t: "Übungsaufgaben B17 und C01 (Excel)", href: "unterlagen/ReFi_II_Kap2_3_Uebungen_Aufgaben.xlsx" },
             { t: "Live-Quiz Kapitel 3", href: "live-quiz.html?set=kap3" }
           ], quiz: "kap3", refs: "kap3" },
-        { id: "r2k4", nr: "4", titel: "Finanzierung", leit: "Wer gibt das Geld, zu welchen Bedingungen, und was folgt daraus?", inhalt: ["Eigen- und Fremdkapital", "Kredit, Anleihe, Leasing, Factoring", "Kapitalstruktur und Rating"], status: "folgt" }
+        { id: "r2k4", nr: "4", titel: "Finanzierung", leit: "Wer gibt das Geld, zu welchen Bedingungen, und was folgt daraus?", inhalt: ["4.1 Finanzierungsarten, Ziele, Leverage, Value at Risk", "4.2 Bonität und Rating", "4.3 Außenfinanzierung: Eigenkapital, Darlehen, Anleihe, Skonto, Mezzanine, Factoring, Leasing", "4.4 Innenfinanzierung: Selbstfinanzierung, Abschreibungen, Rückstellungen, Umschichtung"], status: "fertig",
+          material: [
+            { t: "Kapitel 4 Finanzierung (Folien, PDF ohne Lösungsfolien)", href: "unterlagen/261207_REFI_II_Kap4_Finanzierung.pdf" },
+            { t: "Tools Kapitel 4: Leverage, Value at Risk, Darlehen, Anleihe, Skonto, Selbstfinanzierung, Lohmann-Ruchti", href: "tools-k4f.html" },
+            { t: "Übungsaufgaben Kapitel 4 als Excel (D01 bis D08)", href: "unterlagen/ReFi_II_Kap4_Uebungen_Aufgaben.xlsx" },
+            { t: "Live-Quiz Kapitel 4", href: "live-quiz.html?set=kap4" },
+            { t: "Probeklausur und Klausur", href: "pruefung.html" }
+          ], quiz: "kap4", refs: "kap4" }
       ] }
   ]
 };

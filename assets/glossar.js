@@ -1,4 +1,4 @@
-/* Glossar Finanz- und Rechnungswesen. [Begriff, Erklärung, Kapitel-ID, Abschnitt]. Entwurf, Version v0.5, Stand 22.11.2026. */
+/* Glossar Finanz- und Rechnungswesen. [Begriff, Erklärung, Kapitel-ID, Abschnitt]. Entwurf, Version v0.6, Stand 22.11.2026. */
 window.GLOSSAR = [
  ["Abweichungsanalyse", "Zerlegung der Differenz zwischen Ist- und Plankosten in Preis-, Verbrauchs- und Beschäftigungsabweichung, um Ursachen und Verantwortliche zu finden.", "r1k4", "4.4.2"],
  ["Äquivalenzziffernkalkulation", "Kalkulation für Sortenfertigung: Ähnliche Produkte werden über feste Verhältniszahlen auf eine Einheitssorte umgerechnet, die Kosten je Recheneinheit dann zurückverteilt.", "r1k4", "4.2.4"],
@@ -94,5 +94,25 @@ window.GLOSSAR = [
  ["DSCR", "Debt Service Coverage Ratio: Cashflow vor Kapitaldienst / (Zinsen + Tilgung); Banken verlangen deutlich über 1.", "r2k3", "3.2"],
  ["Stresstest", "Durchrechnen ungünstiger Szenarien, um Kapitalbedarf und Puffer zu bestimmen.", "r2k3", "3.4"],
  ["Business Model Canvas", "Strukturhilfe in neun Feldern nach Osterwalder und Pigneur; Kosten und Einnahmen bilden die Brücke zur Finanzplanung.", "r2k3", "3.1"],
- ["Covenant", "Auflage im Kreditvertrag, etwa eine Mindest-DSCR oder Höchstverschuldung; bei Verstoß kann die Bank nachverhandeln oder kündigen.", "r2k3", "3.2"]
+ ["Covenant", "Auflage im Kreditvertrag, etwa eine Mindest-DSCR oder Höchstverschuldung; bei Verstoß kann die Bank nachverhandeln oder kündigen.", "r2k3", "3.2"],
+ ["Leverage-Effekt", "Hebelwirkung des Fremdkapitals: EKR = GKR + (GKR − i) × FK / EK. Positiv, solange die Gesamtkapitalrendite über dem Fremdkapitalzins liegt.", "r2k4", "4.1"],
+ ["Goldene Bilanzregel", "Fristenkongruenz: Langfristig gebundenes Vermögen wird mit langfristigem Kapital finanziert.", "r2k4", "4.1"],
+ ["Value at Risk", "Verlust, der mit einer gegebenen Wahrscheinlichkeit (etwa 95 %) in einem Zeitraum nicht überschritten wird. Sagt nichts über die Verluste darüber hinaus.", "r2k4", "4.1"],
+ ["Außenfinanzierung", "Kapital fließt von außen zu: Einlagen, Beteiligungen (Eigenkapital) oder Kredite, Anleihen (Fremdkapital).", "r2k4", "4.1"],
+ ["Innenfinanzierung", "Mittel aus dem Umsatzprozess: einbehaltene Gewinne, Abschreibungen, Rückstellungen, Vermögensumschichtung.", "r2k4", "4.4"],
+ ["Zinsschranke", "Begrenzung des steuerlichen Zinsabzugs auf 30 % des steuerlichen EBITDA, Freigrenze 3 Mio. € (§ 4h EStG, § 8a KStG).", "r2k4", "4.1"],
+ ["Rating", "Bonitätsurteil über einen Schuldner oder eine Anleihe, extern (S&P, Moody's, Fitch) oder intern bei Banken.", "r2k4", "4.2"],
+ ["Investment Grade", "Ratingbereich AAA bis BBB− (Moody's Aaa bis Baa3); darunter beginnt der spekulative Bereich.", "r2k4", "4.2"],
+ ["Annuitätendarlehen", "Darlehen mit gleichbleibender Rate aus Zins und steigender Tilgung; Rate = Darlehen × Wiedergewinnungsfaktor.", "r2k4", "4.3"],
+ ["Abzahlungsdarlehen", "Darlehen mit konstanter Tilgung und sinkender Rate.", "r2k4", "4.3"],
+ ["Schuldscheindarlehen", "Großvolumiger Kredit ohne Börsenzulassung und Prospekt, meist ohne externes Rating; typisch für den deutschen Mittelstand.", "r2k4", "4.3"],
+ ["Anleihe", "Verbriefte Schuldverschreibung mit Nennwert, Kupon und Laufzeit; der Kurs ist der Barwert der Zahlungen zum Marktzins.", "r2k4", "4.3"],
+ ["Lieferantenkredit", "Finanzierung über das Zahlungsziel des Lieferanten; wer Skonto verschenkt, zahlt einen hohen impliziten Zins.", "r2k4", "4.3"],
+ ["Mezzanine", "Mischform zwischen Eigen- und Fremdkapital, etwa Nachrangdarlehen oder stille Beteiligung; kann als wirtschaftliches Eigenkapital zählen.", "r2k4", "4.3"],
+ ["Factoring", "Verkauf von Forderungen an einen Factor; echtes Factoring mit Übernahme des Ausfallrisikos (Delkredere).", "r2k4", "4.3"],
+ ["Leasing", "Nutzungsüberlassung gegen Raten; nach IFRS 16 beim Leasingnehmer bilanziert, nach HGB häufig außerbilanziell.", "r2k4", "4.3"],
+ ["Green Bond", "Anleihe, deren Erlöse in ökologische Projekte fließen; EU Green Bond Standard nach Verordnung (EU) 2023/2631.", "r2k4", "4.3"],
+ ["Selbstfinanzierung", "Finanzierung durch einbehaltene Gewinne: offen über Gewinnrücklagen, still über stille Reserven.", "r2k4", "4.4"],
+ ["Lohmann-Ruchti-Effekt", "Kapazitätserweiterung durch sofortige Reinvestition der Abschreibungen; Grenze 2n / (n + 1) des Anfangsbestands.", "r2k4", "4.4"],
+ ["Sale-and-lease-back", "Verkauf eines Vermögenswerts mit anschließender Rückmiete; bringt Liquidität, schafft aber dauerhafte Fixkosten.", "r2k4", "4.4"]
 ];

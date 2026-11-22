@@ -1,5 +1,13 @@
 # Änderungen
 
+## v0.6 (22.11.2026)
+
+- ReFi II, Kapitel 4 Finanzierung neu aufgebaut (54 Folien): Ziele und Leverage, Bonität und Rating, Außenfinanzierung, Innenfinanzierung, Klausurübersicht ReFi II; PDF ohne Lösungsfolie unter unterlagen/.
+- Excel-Übungen Kapitel 4 (D01 bis D08), alle Ergebnisse nachgerechnet.
+- Tools zur Finanzierung (tools-k4f.html): Leverage mit Risikoband, Value at Risk, Darlehen, Anleihe mit Duration, Skonto, Selbstfinanzierung, Lohmann-Ruchti.
+- Prüfungsvorbereitung: 25 Fragen und 5 Rechenaufgaben zu Kapitel 4; Probeklausur und Klausur enthalten Finanzierung.
+- Glossar um 20 Begriffe erweitert, Live-Quiz Kapitel 4, Literatur Kapitel 4.
+
 ## v0.5 (22.11.2026)
 
 - ReFi II, Kapitel 2 Investitionsrechnung (64 Folien) und Kapitel 3 Business Case (31 Folien) neu aufgebaut, mit Advance Organizer, Peer Instruction, Gruppenübungen, kritischen Folien, Selbstlernfragen und Literatur; PDFs unter unterlagen/.
