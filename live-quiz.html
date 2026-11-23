@@ -349,7 +349,7 @@ function renderCodeEntry(){
       '<input id="codeIn" placeholder="z. B. 7K9Q" maxlength="4" autocapitalize="characters" autocomplete="off" style="text-transform:uppercase;text-align:center;letter-spacing:.3em;font-weight:700">'+
       '<button class="btn" id="codeGo">Weiter</button>'+
     '</div>'+
-    '<div class="card"><h2 class="serif" style="color:var(--navy)">Allein üben</h2><p class="muted" style="margin:6px 0 12px">Dieselben Fragen ohne Raum, im eigenen Tempo, mit Erklärung nach jeder Frage.</p>'+
+    '<div class="card"><h2 class="serif" style="color:var(--navy)">Allein üben</h2><p class="muted" style="margin:6px 0 12px">Dieselben Fragen ohne Raum, im eigenen Tempo, mit Erklärung nach jeder Frage. Das Live-Quiz ist ein Verständnischeck, nicht das Klausurformat: Die Klausur fragt Rechnungen und Begründungen. Die üben Sie im <a href="pruefung.html">Prüfungsbereich</a>.</p>'+
       '<div class="setlist">'+keys.map(function(k){ return '<a class="setbtn" href="live-quiz.html?solo='+k+'">'+esc(window.QSETS[k].title)+'</a>'; }).join("")+'</div></div>'+
     '<p class="muted center" style="margin-top:18px;font-size:.9rem">Lehrende: <a href="live-admin.html'+(getParam("set")?'?set='+encodeURIComponent(getParam("set")):'')+'">Quiz am Beamer starten (Spielleitung mit QR-Code)</a></p>')) return;
   var go=function(){ var v=(document.getElementById("codeIn").value||"").toUpperCase().replace(/[^A-Z0-9]/g,""); if(v.length>0){ attachRoom(v); } };
@@ -449,7 +449,7 @@ function soloStart(set, timed){
 }
 function soloPick(set){
   var t=window.QSETS[set]?window.QSETS[set].title:"";
-  show("spick",'<div class="card center"><h2 class="serif" style="color:var(--navy)">Allein üben: '+esc(t)+'</h2><p class="muted" style="margin-top:8px">'+LQ.questions(set).length+' Fragen in zufälliger Reihenfolge. Nach jeder Frage sehen Sie die Erklärung.</p>'+
+  show("spick",'<div class="card center"><h2 class="serif" style="color:var(--navy)">Allein üben: '+esc(t)+'</h2><p class="muted" style="margin-top:8px">'+LQ.questions(set).length+' Fragen in zufälliger Reihenfolge. Nach jeder Frage sehen Sie die Erklärung.</p><p class="muted" style="margin-top:6px;font-size:.95rem">Verständnischeck, nicht Klausurformat. Klausuraufgaben mit Rechnungen üben Sie im <a href="pruefung.html">Prüfungsbereich</a>.</p>'+
     '<button class="btn green" id="sT">Mit Zeitlimit wie im Hörsaal</button><button class="btn" id="sF" style="margin-top:10px;background:var(--navy)">Ohne Zeitlimit</button>'+
     (lsGet("plb_"+set)?'<p class="muted" style="margin-top:14px">Ihr bestes Ergebnis bisher: '+lsGet("plb_"+set).right+' von '+lsGet("plb_"+set).n+' richtig, '+lsGet("plb_"+set).pts+' Punkte</p>':'')+
     '<p style="margin-top:14px"><a href="live-quiz.html">Anderes Quiz wählen</a></p></div>');

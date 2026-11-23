@@ -1,5 +1,15 @@
 # Änderungen
 
+## v0.10 (23.11.2026)
+
+Prüfungsbereich:
+- Statt fester Probeklausur und Klausur gibt es „Klausur zusammenstellen“: ReFi I + II, ReFi I oder ReFi II, 60 oder 120 Minuten, jedes Kapitel aus, normal oder Schwerpunkt (doppelte Zeit). Damit sind die sechs Klausuren und jede Kapitelauswahl abgedeckt.
+- Zufallsgenerator: Die Zeit wird gleichmäßig auf die gewählten Kapitel verteilt; je Kapitel zieht er Rechenaufgaben, Buchungssätze, Zuordnungen und offene Fragen, Multiple Choice nur zum Auffüllen und höchstens zwei je Kapitel. Je Kapitel enthält der Pool mindestens 1,4-mal so viele Aufgaben, wie gezogen werden; reicht er nicht, wird die Zeit gedeckelt und die Klausur kürzer angezeigt.
+- Pool erweitert: zwölf neue offene Fragen mit Musterlösung und Bewertungskriterien (ReFi I Kapitel 1 und 2, ReFi II Kapitel 1 bis 4) und eine neue Rechenaufgabe Kapitalflussrechnung mit Free Cashflow.
+- Neue Verwaltung pruefung-admin.html (PIN der Spielleitung): Teilnahmen mit Name, Fortschritt, letzter Aktivität, Stelle des Abbruchs, Antworten und Lösungen; alle Aufgaben mit Lösungen je Kapitel; Tabelle zu Abdeckung und Gewichtung.
+- Versuche speichern jetzt die zuletzt geöffnete Aufgabe und die letzte Aktivität; Weiter setzt an dieser Stelle fort. Datenschutzhinweis angepasst: Der Dozent sieht Anzeigename, Antworten und Ergebnisse angemeldeter Studierender, keine E-Mail-Adressen.
+- Live-Quiz als Verständnischeck gekennzeichnet, mit Verweis auf den Prüfungsbereich.
+
 ## v0.9.9 (23.11.2026)
 
 Live-Quiz, Rückmeldungen aus dem Einsatz am 23.11.:

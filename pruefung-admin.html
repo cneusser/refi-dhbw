@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Prüfung Admin</title>
+<link rel="stylesheet" href="assets/site.css">
+<style>
+.tabs2{display:flex;gap:4px;border-bottom:1px solid var(--line);margin:12px 0;flex-wrap:wrap}
+.tabs2 button{background:#fff;color:var(--ink);border:none;border-bottom:3px solid transparent;padding:8px 12px;font-weight:700}
+.tabs2 button.on{border-bottom-color:var(--red)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--line);background:#fff;color:var(--ink);padding:6px 10px;font-weight:400;font-size:14px}
+.chip.on{border-color:var(--red);font-weight:700}
+.qbox{border:1px solid var(--line);background:#fff;padding:14px;margin-top:10px}
+.qmeta{font-size:12px;color:var(--grey);display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.qtext{font-size:16px;margin:8px 0 12px;max-width:85ch}
+.opt{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);padding:8px 10px;margin-bottom:6px;font-weight:400}
+.opt.right{background:var(--okbg);border-color:var(--ok)}
+.opt.wrong{background:var(--badbg);border-color:var(--bad)}
+.mx{border-collapse:collapse;font-size:13px}
+.mx th{writing-mode:vertical-rl;transform:rotate(180deg);padding:6px 2px;font-weight:700;height:96px;text-align:left}
+.mx td{border-top:1px solid var(--line);padding:5px 4px;text-align:center}
+.mx td:first-child{text-align:left;min-width:220px}
+.mx td.hit{background:var(--okbg)} .mx td.miss{background:var(--badbg)}
+.bk{width:100%;border-collapse:collapse;font-size:13px}
+.bk td,.bk th{border-top:1px solid var(--line);padding:5px 4px;vertical-align:top}
+.bk select{font-size:13px;padding:4px;width:100%}
+.bk input{width:110px;font-size:13px;padding:4px}
+.bal{display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:13px}
+.why{font-size:14px;color:var(--grey);margin-top:6px;max-width:85ch}
+.pill{display:inline-block;font-size:12px;font-weight:700;padding:2px 8px}
+.pill.ok{background:var(--okbg);color:var(--ok)} .pill.bad{background:var(--badbg);color:var(--bad)} .pill.part{background:#FFF4D6;color:#8A6100} .pill.grey{background:var(--panel);color:var(--grey)}
+.sec{font-size:12px;font-weight:700;color:var(--red);text-transform:uppercase;letter-spacing:.5px}
+tr.click{cursor:pointer} tr.click:hover td{background:var(--panel)}
+.stop{outline:3px solid var(--red)}
+@media (max-width:640px){.bal{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main class="wrap" id="app"><p class="muted">Lade ...</p></main>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script src="assets/site.js"></script>
+<script src="assets/pool.js"></script>
+<script src="assets/exam.js"></script>
+<script>
+var app = document.getElementById("app"), TAB = "teil", USERS = null, POOLCH = "r1k1", FILTER = { mode: "alle", open: false };
+var DB = null; try { if (!firebase.apps.length) firebase.initializeApp(window.FIREBASE_CONFIG); DB = firebase.database(); } catch (e) {}
+function pinOk(){ try { return localStorage.getItem("lq_pin") === "ok" || localStorage.getItem("ch_pin") === "ok"; } catch (e) { return false; } }
+function gate(){
+  app.innerHTML = '<h1>Prüfungsbereich: Verwaltung</h1><div class="panel" style="max-width:420px"><label for="pin">PIN der Spielleitung</label><input id="pin" type="password" inputmode="numeric"><div class="row" style="margin-top:10px"><button class="red" id="ok">Weiter</button></div><div class="fb bad" id="fb"></div></div>';
+  var go = function(){ if (document.getElementById("pin").value.trim() === "2311") { try { localStorage.setItem("lq_pin", "ok"); } catch (e) {} view(); } else document.getElementById("fb").textContent = "PIN falsch."; };
+  document.getElementById("ok").onclick = go; document.getElementById("pin").onkeydown = function(e){ if (e.key === "Enter") go(); };
+}
+function head(){
+  return '<div class="row" style="justify-content:space-between"><h1 style="margin:0">Prüfungsbereich: Verwaltung</h1><a href="pruefung.html">Zum Prüfungsbereich</a></div>' +
+    '<div class="tabs2">' + [["teil", "Teilnahmen"], ["pool", "Aufgaben und Lösungen"], ["abd", "Abdeckung und Gewichtung"]].map(function(t){ return '<button data-tab="' + t[0] + '" class="' + (TAB === t[0] ? "on" : "") + '">' + t[1] + "</button>"; }).join("") + "</div>";
+}
+function bindTabs(){ app.querySelectorAll("[data-tab]").forEach(function(b){ b.onclick = function(){ TAB = b.dataset.tab; view(); }; }); }
+function view(){ if (!pinOk()) return gate(); if (TAB === "teil") viewTeil(); else if (TAB === "pool") viewPool(); else viewAbd(); }
+
+/* ---------- Teilnahmen ---------- */
+function progress(a){
+  var n = 0, maxk = -1; a.items.forEach(function(it, k){ if (answered(it, (a.ans || {})[k])) { n++; maxk = k; } });
+  var at = typeof a.cur === "number" ? a.cur : Math.max(0, maxk);
+  return { n: n, at: at, last: a.last || a.ended || a.started };
+}
+function rows(){
+  var out = [];
+  Object.keys(USERS || {}).forEach(function(uid){ var u = USERS[uid] || {}, nm = (u.profile && u.profile.name) || ("Konto " + uid.slice(0, 6)), at = u.attempts || {};
+    Object.keys(at).forEach(function(id){ var a = at[id]; if (!a || !a.items) return; a.ans = a.ans || {}; out.push({ uid: uid, id: id, name: nm, a: a, p: progress(a) }); }); });
+  return out.sort(function(x, y){ return (y.p.last || 0) - (x.p.last || 0); });
+}
+function viewTeil(){
+  var h = head();
+  if (!DB) { app.innerHTML = h + '<div class="note bad">Keine Verbindung zur Datenbank.</div>'; bindTabs(); return; }
+  if (!USERS) { app.innerHTML = h + '<p class="muted">Lade Teilnahmen ...</p>'; bindTabs(); DB.ref("refi/users").once("value").then(function(s){ USERS = s.val() || {}; viewTeil(); }).catch(function(e){ app.innerHTML = head() + '<div class="note bad">Laden nicht möglich: ' + esc(e.message) + "</div>"; bindTabs(); }); return; }
+  var R = rows(), people = {}; R.forEach(function(r){ people[r.uid] = 1; });
+  var nDone = R.filter(function(r){ return r.a.done; }).length;
+  var F = R.filter(function(r){ return (FILTER.mode === "alle" || (FILTER.mode === "klausur" ? r.a.mode !== "selbst" : r.a.mode === "selbst")) && (!FILTER.open || !r.a.done); });
+  h += '<div class="kpis"><div class="kpi red"><div class="v">' + Object.keys(people).length + '</div><div class="l">Personen mit Versuchen</div></div><div class="kpi"><div class="v">' + Object.keys(USERS).length + '</div><div class="l">Konten</div></div><div class="kpi"><div class="v">' + nDone + '</div><div class="l">abgegeben</div></div><div class="kpi"><div class="v">' + (R.length - nDone) + '</div><div class="l">offen oder abgebrochen</div></div></div>' +
+    '<div class="row" style="margin:12px 0"><select id="fm" style="max-width:220px"><option value="alle">Alle Versuche</option><option value="klausur"' + (FILTER.mode === "klausur" ? " selected" : "") + '>Klausuren</option><option value="selbst"' + (FILTER.mode === "selbst" ? " selected" : "") + '>Selbsttests</option></select><label style="font-weight:400;display:flex;gap:6px;align-items:center"><input type="checkbox" id="fo"' + (FILTER.open ? " checked" : "") + '> nur offene</label><button class="ghost" id="rl">Neu laden</button></div>' +
+    '<p class="small muted">Sichtbar sind nur angemeldete Studierende; Versuche ohne Anmeldung bleiben im Browser der Studierenden. Zeile anklicken für Antworten und Lösungen.</p>' +
+    '<div class="tbl"><table><thead><tr><th>Name</th><th>Art</th><th>Begonnen</th><th>Zuletzt aktiv</th><th>Status</th><th class="r">Bearbeitet</th><th class="r">Ergebnis</th></tr></thead><tbody>' +
+    F.map(function(r, k){ var a = r.a, st = a.done ? '<span class="pill ok">abgegeben</span>' : '<span class="pill part">offen, zuletzt bei Aufgabe ' + (r.p.at + 1) + "</span>";
+      return '<tr class="click" data-k="' + k + '"><td>' + esc(r.name) + "</td><td>" + esc(attTitle(a)) + "</td><td>" + fmtDate(a.started) + "</td><td>" + (r.p.last ? fmtDate(r.p.last) : "") + "</td><td>" + st + '</td><td class="r num">' + r.p.n + " von " + a.items.length + '</td><td class="r num">' + (a.done ? eur(a.score, 1) + " / " + eur(a.max, 1) + " (" + Math.round(a.score / a.max * 100) + " %)" : "") + "</td></tr>"; }).join("") +
+    (F.length ? "" : '<tr><td colspan="7" class="muted">Keine Versuche.</td></tr>') + "</tbody></table></div>";
+  app.innerHTML = h; bindTabs();
+  document.getElementById("fm").onchange = function(){ FILTER.mode = this.value; viewTeil(); };
+  document.getElementById("fo").onchange = function(){ FILTER.open = this.checked; viewTeil(); };
+  document.getElementById("rl").onclick = function(){ USERS = null; viewTeil(); };
+  app.querySelectorAll("tr.click").forEach(function(tr){ tr.onclick = function(){ viewAttempt(F[+tr.dataset.k]); }; });
+}
+function viewAttempt(r){
+  var a = r.a, p = r.p, score = 0, max = 0;
+  a.items.forEach(function(it, k){ max += meta(it).pts; score += grade(it, a.ans[k]); });
+  var h = '<div class="row" style="justify-content:space-between"><h1 style="margin:0">' + esc(r.name) + ": " + esc(attTitle(a)) + '</h1><button class="ghost" id="back">Zurück zur Liste</button></div>' +
+    '<div class="kpis" style="margin-top:12px"><div class="kpi red"><div class="v">' + eur(score, 1) + " / " + eur(max, 1) + '</div><div class="l">Punkte' + (a.done ? "" : " bisher (nicht abgegeben)") + '</div></div><div class="kpi"><div class="v">' + p.n + " von " + a.items.length + '</div><div class="l">Aufgaben bearbeitet</div></div><div class="kpi"><div class="v">' + (a.done ? mmss(a.used || 0) : "Aufgabe " + (p.at + 1)) + '</div><div class="l">' + (a.done ? "Bearbeitungszeit" : "Stelle des Abbruchs") + "</div></div></div>" +
+    '<p class="small muted">Begonnen ' + fmtDate(a.started) + (p.last ? " · zuletzt aktiv " + fmtDate(p.last) : "") + (a.limit ? " · Vorgabe " + a.limit + " Minuten" : "") + "</p>";
+  h += a.items.map(function(it, k){ var m = meta(it), g = grade(it, a.ans[k]), ans = answered(it, a.ans[k]), st = !ans ? "grey" : g >= m.pts - 0.001 ? "ok" : g > 0 ? "part" : "bad";
+    return '<div class="qbox' + (!a.done && k === p.at ? " stop" : "") + '"><div class="qmeta"><span>' + (it.sec ? '<span class="sec">' + esc(it.sec) + "</span> · " : "") + "Aufgabe " + (k + 1) + ' <span class="pill ' + st + '">' + (ans ? eur(g, g % 1 ? 1 : 0) + " von " + eur(m.pts, m.pts % 1 ? 1 : 0) + " P." : "nicht bearbeitet") + "</span>" + (!a.done && k === p.at ? ' <b style="color:var(--red)">Hier abgebrochen</b>' : "") + "</span><span>" + esc(P.CH[m.ch].t) + ", " + esc(m.ref) + "</span></div>" + render(it, a.ans[k], true) + (why(it) ? '<div class="why">' + esc(why(it)) + "</div>" : "") + "</div>"; }).join("");
+  app.innerHTML = h; window.scrollTo(0, 0);
+  document.getElementById("back").onclick = viewTeil;
+}
+
+/* ---------- Aufgabenpool mit Lösungen ---------- */
+function viewPool(){
+  var r = mul(seed()), c = EX.cands(POOLCH), non = c.filter(function(x){ return !x.mc; }), mc = c.filter(function(x){ return x.mc; });
+  var h = head() + '<div class="chips">' + EX.CHS.map(function(ch){ return '<button class="chip' + (ch === POOLCH ? " on" : "") + '" data-ch="' + ch + '">' + esc(P.CH[ch].t) + "</button>"; }).join("") + "</div>" +
+    '<p class="small" style="margin-top:12px">' + non.length + " Klausuraufgaben und " + mc.length + " Multiple-Choice-Fragen, Pool rund " + Math.round(EX.poolMin(POOLCH)) + ' Minuten. Rechenaufgaben erzeugen bei jedem Aufruf neue Zahlen; hier sehen Sie ein Beispiel mit Lösung. <button class="ghost" id="nz">Neue Zahlen</button></p>';
+  function block(x, k){ var its = x.mk(r), m = meta(its[0]), pts = its.reduce(function(s, it){ return s + meta(it).pts; }, 0);
+    return '<div class="qbox"><div class="qmeta"><span><b>' + (k + 1) + ". " + esc(x.kind) + "</b> · " + eur(pts, pts % 1 ? 1 : 0) + " Punkte · rund " + Math.round(x.min) + " Minuten · Kennung " + esc(x.k) + "</span><span>" + esc(m.ref) + "</span></div>" + its.map(function(it){ return render(it, null, true) + (why(it) ? '<div class="why">' + esc(why(it)) + "</div>" : ""); }).join('<hr style="border:0;border-top:1px dashed var(--line)">') + "</div>"; }
+  h += "<h2>Klausuraufgaben</h2>" + non.map(block).join("") +
+    '<details style="margin-top:18px"><summary><b>Multiple-Choice-Fragen (' + mc.length + ")</b>, in Klausuren höchstens zwei je Kapitel</summary>" + mc.map(block).join("") + "</details>";
+  app.innerHTML = h; bindTabs();
+  app.querySelectorAll("[data-ch]").forEach(function(b){ b.onclick = function(){ POOLCH = b.dataset.ch; viewPool(); }; });
+  document.getElementById("nz").onclick = function(){ CACHE = {}; viewPool(); };
+}
+
+/* ---------- Abdeckung ---------- */
+function viewAbd(){
+  var sets = [["ReFi I + II", function(){ return 1; }], ["ReFi I", function(c){ return c[1] === "1" ? 1 : 0; }], ["ReFi II", function(c){ return c[1] === "2" ? 1 : 0; }]], cols = [];
+  sets.forEach(function(s){ [60, 120].forEach(function(d){ var w = {}; EX.CHS.forEach(function(c){ w[c] = s[1](c); }); cols.push({ t: s[0] + ", " + d, plan: EX.plan({ w: w, dur: d }) }); }); });
+  var h = head() + '<p class="lead">So verteilt der Generator die Zeit. Je Kapitel enthält der Pool mindestens 40 Prozent mehr Aufgaben, als gezogen werden; reicht er nicht, wird die Zeit des Kapitels gedeckelt.</p>' +
+    '<div class="tbl"><table><thead><tr><th>Kapitel</th><th class="r">Aufgaben im Pool</th><th class="r">Pool in Min.</th>' + cols.map(function(c){ return '<th class="r">' + esc(c.t) + " Min.</th>"; }).join("") + "</tr></thead><tbody>" +
+    EX.CHS.map(function(ch){ var c = EX.cands(ch), non = c.filter(function(x){ return !x.mc; }).length, mc = c.length - non;
+      return "<tr><td>" + esc(P.CH[ch].t) + '</td><td class="r num">' + non + " + " + mc + ' MC</td><td class="r num">' + Math.round(EX.poolMin(ch)) + "</td>" + cols.map(function(col){ var pc = col.plan.ch[ch]; return '<td class="r num">' + (pc ? Math.round(pc.budget) + ' <span class="small muted">(' + eur(pc.pool / pc.budget, 1) + "×)</span>" : "") + "</td>"; }).join("") + "</tr>"; }).join("") +
+    '<tr><td><b>Summe</b></td><td></td><td></td>' + cols.map(function(col){ return '<td class="r num"><b>' + Math.round(col.plan.total) + "</b></td>"; }).join("") + "</tr></tbody></table></div>" +
+    '<p class="small muted">In Klammern: Pool geteilt durch gezogene Zeit. Schätzwerte für die Bearbeitung: Rechenaufgabe 3 Minuten je Punkt, offene Frage 2,5 Minuten je Punkt, Multiple Choice 1,5 Minuten, Buchungssatz 1,5 Minuten, Buchhaltungsfall 45 Minuten (nur bei Schwerpunkt Kapitel 3 mit 120 Minuten).</p>';
+  app.innerHTML = h; bindTabs();
+}
+view();
+</script>
+</body>
+</html>

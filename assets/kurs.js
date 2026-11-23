@@ -70,7 +70,7 @@ window.KURS = {
             { t: "Übungsaufgaben Kapitel 4 als Excel (D01 bis D08)", href: "unterlagen/ReFi_II_Kap4_Uebungen_Aufgaben.xlsx" },
             { t: "Gesamtfall Küstenwerkstatt (Excel E01, Kapitel 1 bis 4)", href: "unterlagen/ReFi_II_Gesamtfall_Aufgabe.xlsx" },
             { t: "Live-Quiz Kapitel 4", href: "live-quiz.html?set=kap4" },
-            { t: "Probeklausur und Klausur", href: "pruefung.html" }
+            { t: "Klausuren zum Üben, 60 oder 120 Minuten, Kapitel frei wählbar", href: "pruefung.html" }
           ], quiz: "kap4", refs: "kap4" }
       ] }
   ]
