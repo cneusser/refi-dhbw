@@ -34,6 +34,7 @@ main{flex:1;padding:16px;display:flex;flex-direction:column;align-items:center}
 .card{background:#fff;border:1px solid var(--line);border-radius:14px;
   box-shadow:0 6px 18px rgba(26,44,90,.08);padding:20px;width:100%;max-width:560px}
 .center{text-align:center}
+#main .card+.card{margin-top:16px}
 .muted{color:var(--slate)}
 
 input{font-family:inherit;font-size:1.25rem;padding:14px 16px;width:100%;
@@ -101,6 +102,14 @@ button:active{transform:translateY(1px)}
 }
 
 .fxlayer{position:fixed;inset:0;pointer-events:none;z-index:9999}
+.netbar{position:sticky;top:0;z-index:50;background:#7a271a;color:#fff;padding:10px 14px;font-size:.95rem;text-align:center}
+.qtimer{font-weight:700;color:var(--navy);margin-left:8px}
+.tile:disabled{opacity:.55}.tile.picked{opacity:1;outline:4px solid var(--navy)}
+.setlist{display:flex;flex-wrap:wrap;gap:8px}.setbtn{display:inline-block;padding:10px 14px;border:2px solid var(--line);border-radius:10px;text-decoration:none;color:var(--navy);font-weight:700;background:var(--panel)}
+.sopts{margin-top:14px;text-align:left}.sopt{padding:10px 12px;border:1px solid var(--line);border-radius:8px;margin-top:6px}.sopt.ok{border-color:var(--green);background:#E8F3EC;font-weight:700}.sopt.no{border-color:#E3BDB6;background:#F6E7E4}
+.sexpl{margin-top:14px;text-align:left;background:var(--panel);padding:12px;border-radius:8px}
+.miss{padding:10px 0;border-bottom:1px solid var(--line)}
+.center{text-align:center}
 
 .setup{border-left:8px solid var(--gold)}
 .setup h2{color:var(--navy);margin-bottom:10px}
@@ -125,6 +134,7 @@ footer .brandmark{width:22px;height:22px}
   <a class="navlink" href="index.html">Zur Vorlesungsseite</a>
 </header>
 
+<div id="netbar" class="netbar" hidden></div>
 <main id="main"></main>
 
 <footer class="site"><span>Modul T3WIW2003 · DHBW Stuttgart · Dr. Christian Neusser · Live-Quiz</span></footer>
@@ -133,14 +143,16 @@ footer .brandmark{width:22px;height:22px}
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <script src="firebase-config.js"></script>
 <script src="assets/quiz-sets.js"></script>
+<script src="assets/lq.js"></script>
 
 <script>
 /* ===================== Gemeinsame Daten ===================== */
 var SETID = (new URLSearchParams(location.search).get("set")) || "pkr";
-var QUESTIONS = (window.QSETS[SETID]||window.QSETS.pkr).qs;
+if(!window.QSETS[SETID]) SETID="pkr";
+var QUESTIONS = LQ.questions(SETID);
 var DURATION_MS = 25000;
 var NUM_Q = QUESTIONS.length;
-function useSet(id){ if(id && window.QSETS[id]){ SETID=id; QUESTIONS=window.QSETS[id].qs; NUM_Q=QUESTIONS.length; } }
+function useSet(id, extra){ if(id && window.QSETS[id]){ SETID=id; QUESTIONS=LQ.questions(id, extra); NUM_Q=QUESTIONS.length; } }
 var AVATARS = ["🦊","🐯","🐼","🦉","🐧",
   "🦋","🐙","🦄","🐝","🐢","🦎",
   "🐨","🦍","🐬","🦩","🐸","🦆",
@@ -221,194 +233,259 @@ function initFirebase(){ try{ firebase.initializeApp(window.FIREBASE_CONFIG);
   catch(e){ console.error("Firebase init Fehler",e); return false; } }
 
 /* ===================== Zustand ===================== */
+/* Robustheit bei schwacher Verbindung:
+   - Das Handy hört nur auf den Spielstand (state), nicht auf den ganzen Raum. Antworten anderer lösen kein Neuzeichnen aus.
+   - Neu gezeichnet wird nur, wenn sich die Ansicht wirklich ändert. Ein Tipp geht nicht mehr verloren, und das Namensfeld bleibt stehen.
+   - Antworten werden zuerst im Gerät gespeichert und gesendet, sobald die Verbindung steht, auch nach einem Neuladen.
+   - Die Antwortzeit wird mit der Uhr der Datenbank gemessen, nicht mit der Handy-Uhr. */
 var main=document.getElementById("main");
-var roomCode=null, roomRef=null, roomCb=null, currentData=null;
+var roomCode=null, roomRef=null, stateRef=null, stateCb=null, st=null, metaOk=false;
 var playerId=null, myName="", myAvatar="", myFx="confetti";
-var joined=false, answeredQ={}, renderedPhaseKey="", revealFxDone={}, finalFxDone=false;
-var qStartLocal=0, lastQ=-1;
+var joined=false, answeredQ={}, sentQ={}, pend={}, viewKey="", revealFxDone={}, finalFxDone=false;
+var revealData={}, finalData=null, online=true, qTick=null;
 
 function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(m){
   return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]; }); }
-function getRoomFromUrl(){ var m=location.search.match(/[?&]room=([A-Za-z0-9]+)/);
-  return m?m[1].toUpperCase():null; }
+function getParam(k){ return new URLSearchParams(location.search).get(k); }
+function getRoomFromUrl(){ var r=getParam("room"); return r?r.toUpperCase().replace(/[^A-Z0-9]/g,""):null; }
+function show(key, html){ if(key===viewKey) return false; viewKey=key; main.innerHTML=html; return true; }
+function lsGet(k){ try{ return JSON.parse(localStorage.getItem(k)||"null"); }catch(e){ return null; } }
+function lsSet(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} }
 
-function detachRoom(){ if(roomRef&&roomCb) roomRef.off("value",roomCb);
-  roomRef=null;roomCb=null;currentData=null; }
+function detachRoom(){ if(stateRef&&stateCb) stateRef.off("value",stateCb); roomRef=null; stateRef=null; stateCb=null; st=null; }
 
 function attachRoom(code){
-  detachRoom(); roomCode=code;
+  detachRoom(); roomCode=code; viewKey="";
   roomRef=db.ref("refi/rooms/"+code);
-  // Vorhandene Session fuer diesen Raum wiederherstellen
-  try{ var saved=JSON.parse(localStorage.getItem("plv_"+code)||"null");
-    if(saved&&saved.playerId){ playerId=saved.playerId;myName=saved.name;myAvatar=saved.avatar;
-      myFx=saved.fx||"confetti";joined=true; } }catch(e){}
-  roomCb=function(snap){ currentData=snap.val(); if(currentData&&currentData.meta) useSet(currentData.meta.set); render(); };
-  roomRef.on("value",roomCb);
+  var saved=lsGet("plv_"+code);
+  if(saved&&saved.playerId){ playerId=saved.playerId; myName=saved.name; myAvatar=saved.avatar; myFx=saved.fx||"confetti"; joined=true; }
+  pend=lsGet("plp_"+code)||{};
+  show("conn",'<div class="card center"><p class="status">Verbinde mit Raum '+esc(code)+' ...</p></div>');
+  roomRef.child("meta").once("value").then(function(s){
+    var m=s.val();
+    if(!m){ show("nf",'<div class="card center"><p class="status">Raum '+esc(code)+' nicht gefunden. Bitte den Code am Beamer prüfen.</p><button class="btn" id="again">Anderen Code eingeben</button></div>'); document.getElementById("again").onclick=function(){ roomCode=null; viewKey=""; renderCodeEntry(); }; return; }
+    useSet(m.set, m.extra); if(m.dur) DURATION_MS=m.dur*1000; metaOk=true;
+    stateRef=roomRef.child("state");
+    stateCb=function(snap){ st=snap.val(); onState(); };
+    stateRef.on("value",stateCb);
+  }).catch(function(){ show("err",'<div class="card center"><p class="status">Keine Verbindung zur Datenbank. Bitte WLAN oder mobile Daten prüfen und die Seite neu laden.</p></div>'); });
+}
+
+function onState(){
+  if(!st){ render(); return; }
+  var cq=st.currentQ||0, ph=st.phase||"lobby";
+  if(joined && ph==="question"){
+    Object.keys(pend).forEach(function(k){ if(+k!==cq){ delete pend[k]; } }); lsSet("plp_"+roomCode,pend);
+    if(pend[cq]) sendAnswer(cq);
+    else if(answeredQ[cq]===undefined){ roomRef.child("answers/"+cq+"/"+playerId).once("value").then(function(s){ var a=s.val(); if(a&&answeredQ[cq]===undefined){ answeredQ[cq]=a.choice; sentQ[cq]=true; render(); } }); }
+  }
+  if(joined && ph==="reveal" && !revealData[cq]){
+    Promise.all([roomRef.child("players").once("value"), roomRef.child("answers/"+cq).once("value")]).then(function(r){ revealData[cq]={players:r[0].val()||{}, answers:r[1].val()||{}}; render(); });
+  }
+  if(joined && ph==="final" && !finalData){
+    roomRef.child("players").once("value").then(function(s){ finalData=s.val()||{}; render(); });
+  }
+  render();
 }
 
 function join(name){
   if(!roomRef) return;
+  var btn=document.getElementById("joinGo"); if(btn){ btn.disabled=true; btn.textContent="Einen Moment ..."; }
   myName=name; myAvatar=AVATARS[Math.floor(Math.random()*AVATARS.length)];
   myFx=FXSET[Math.floor(Math.random()*FXSET.length)];
   var ref=roomRef.child("players").push();
   playerId=ref.key;
-  ref.set({name:myName,avatar:myAvatar,total:0}).then(function(){
-    joined=true;
-    try{ localStorage.setItem("plv_"+roomCode,JSON.stringify(
-      {playerId:playerId,name:myName,avatar:myAvatar,fx:myFx})); }catch(e){}
-    render();
-  }).catch(function(e){ console.error(e); });
+  lsSet("plv_"+roomCode,{playerId:playerId,name:myName,avatar:myAvatar,fx:myFx});
+  joined=true; viewKey="";
+  ref.set({name:myName,avatar:myAvatar,total:0}).catch(function(e){ console.error(e); });
+  render();   /* die Anmeldung wird gesendet, sobald die Verbindung steht */
 }
 
 function submitAnswer(choice){
-  if(!roomRef||!currentData||!currentData.state) return;
-  var cq=currentData.state.currentQ||0;
-  if(answeredQ[cq]) return;
-  var qOpenAt=currentData.state.qOpenAt||Date.now();
-  var timeMs=Math.max(0, Date.now()-qOpenAt);
-  if(timeMs>DURATION_MS) timeMs=DURATION_MS;
-  answeredQ[cq]=choice;
-  roomRef.child("answers/"+cq+"/"+playerId).set({choice:choice,timeMs:timeMs})
-    .catch(function(e){ console.error(e); answeredQ[cq]=undefined; });
-  render();
+  if(!st||st.phase!=="question") return;
+  var cq=st.currentQ||0;
+  if(answeredQ[cq]!==undefined) return;
+  var timeMs=Math.max(0, Math.min(DURATION_MS, LQ.now()-(st.qOpenAt||LQ.now())));
+  answeredQ[cq]=choice; pend[cq]={choice:choice,timeMs:timeMs}; lsSet("plp_"+roomCode,pend);
+  render(); sendAnswer(cq);
+}
+function sendAnswer(cq){
+  var a=pend[cq]; if(!a) return;
+  answeredQ[cq]=a.choice;
+  roomRef.child("answers/"+cq+"/"+playerId).set(a).then(function(){
+    sentQ[cq]=true; delete pend[cq]; lsSet("plp_"+roomCode,pend); render();
+  }).catch(function(e){ console.error(e); });
 }
 
 /* ===================== Rendering ===================== */
-function playerArray(){ var players=(currentData&&currentData.players)||{};
+function playerArray(players){ players=players||{};
   return Object.keys(players).map(function(id){ var p=players[id]||{};
-    return {id:id,name:p.name||"Gast",avatar:p.avatar||"🎯",
-      total:(typeof p.total==="number"?p.total:0)}; }); }
-
-function myRankInfo(){ var list=playerArray().sort(function(a,b){return b.total-a.total;});
+    return {id:id,name:p.name||"Gast",avatar:p.avatar||"🎯",total:(typeof p.total==="number"?p.total:0)}; }); }
+function rankInfo(players){ var list=playerArray(players).sort(function(a,b){return b.total-a.total;});
   var pos=-1; for(var i=0;i<list.length;i++){ if(list[i].id===playerId){pos=i+1;break;} }
   return {pos:pos,total:list.length,list:list}; }
 
 function render(){
+  if(qTick&&(!st||st.phase!=="question")){ clearInterval(qTick); qTick=null; }
   if(!roomCode){ renderCodeEntry(); return; }
-  if(currentData===null){ renderStatus("Verbinde mit Raum "+esc(roomCode)+" ..."); return; }
-  if(!currentData.state){ renderStatus("Raum "+esc(roomCode)+" nicht gefunden. Code pruefen."); return; }
-  if(!joined || !playerId){ renderJoin(); return; }
-  var phase=currentData.state.phase||"lobby";
-  if(phase==="lobby") renderStatus("Sie sind dabei. Gleich geht es los ...", true);
+  if(!metaOk) return;
+  if(!st){ show("nost",'<div class="card center"><p class="status">Raum '+esc(roomCode)+' nicht gefunden. Code prüfen.</p></div>'); return; }
+  if(!joined||!playerId){ renderJoin(); return; }
+  var phase=st.phase||"lobby";
+  if(phase==="lobby") show("lobby",'<div class="card center">'+youAreBar()+'<p class="status">Sie sind dabei. Gleich geht es los ...</p><div style="font-size:2.4rem;margin-top:14px">⏳</div></div>');
   else if(phase==="question") renderQuestion();
   else if(phase==="reveal") renderReveal();
   else if(phase==="final") renderFinal();
 }
 
-function youAreBar(){
-  return '<div class="youare"><span class="av">'+esc(myAvatar)+'</span><span>'+esc(myName)+'</span></div>';
-}
+function youAreBar(){ return '<div class="youare"><span class="av">'+esc(myAvatar)+'</span><span>'+esc(myName)+'</span></div>'; }
 
 function renderCodeEntry(){
-  main.innerHTML=
+  var keys=Object.keys(window.QSETS);
+  if(!show("code",
     '<div class="card center">'+
       '<h2 class="serif" style="color:var(--navy)">Raumcode eingeben</h2>'+
       '<p class="muted" style="margin-top:6px">Den 4-stelligen Code vom Beamer eintippen.</p>'+
-      '<input id="codeIn" placeholder="z. B. 7K9Q" maxlength="4" autocapitalize="characters" style="text-transform:uppercase;text-align:center;letter-spacing:.3em;font-weight:700">'+
+      '<input id="codeIn" placeholder="z. B. 7K9Q" maxlength="4" autocapitalize="characters" autocomplete="off" style="text-transform:uppercase;text-align:center;letter-spacing:.3em;font-weight:700">'+
       '<button class="btn" id="codeGo">Weiter</button>'+
-      '<p class="muted" style="margin-top:18px;font-size:.9rem">Lehrende: <a href="live-admin.html'+location.search+'">Quiz am Beamer starten (Spielleitung mit QR-Code)</a></p>'+
-    '</div>';
-  document.getElementById("codeGo").onclick=function(){
-    var v=(document.getElementById("codeIn").value||"").toUpperCase().replace(/[^A-Z0-9]/g,"");
-    if(v.length>0){ attachRoom(v); }
-  };
-}
-
-function renderStatus(msg, waiting){
-  main.innerHTML='<div class="card center">'+(joined?youAreBar():"")+
-    '<p class="status">'+msg+'</p>'+
-    (waiting?'<div style="font-size:2.4rem;margin-top:14px">⏳</div>':"")+'</div>';
+    '</div>'+
+    '<div class="card"><h2 class="serif" style="color:var(--navy)">Allein üben</h2><p class="muted" style="margin:6px 0 12px">Dieselben Fragen ohne Raum, im eigenen Tempo, mit Erklärung nach jeder Frage.</p>'+
+      '<div class="setlist">'+keys.map(function(k){ return '<a class="setbtn" href="live-quiz.html?solo='+k+'">'+esc(window.QSETS[k].title)+'</a>'; }).join("")+'</div></div>'+
+    '<p class="muted center" style="margin-top:18px;font-size:.9rem">Lehrende: <a href="live-admin.html'+(getParam("set")?'?set='+encodeURIComponent(getParam("set")):'')+'">Quiz am Beamer starten (Spielleitung mit QR-Code)</a></p>')) return;
+  var go=function(){ var v=(document.getElementById("codeIn").value||"").toUpperCase().replace(/[^A-Z0-9]/g,""); if(v.length>0){ attachRoom(v); } };
+  document.getElementById("codeGo").onclick=go;
+  document.getElementById("codeIn").addEventListener("keydown",function(e){ if(e.key==="Enter") go(); });
 }
 
 function renderJoin(){
-  main.innerHTML=
+  if(!show("join",
     '<div class="card center">'+
       '<h2 class="serif" style="color:var(--navy)">Ihr Spielname</h2>'+
       '<p class="muted" style="margin-top:6px">Wählen Sie einen Fantasienamen, bitte keinen Klarnamen. Das Symbol wird zufällig vergeben.</p>'+
-      '<input id="nameIn" placeholder="z. B. Deckungsbeitrags-Diva" maxlength="22">'+
+      '<input id="nameIn" placeholder="z. B. Deckungsbeitrags-Diva" maxlength="22" autocomplete="off">'+
       '<button class="btn green" id="joinGo">Mitmachen</button>'+
-    '</div>';
+    '</div>')) return;
   var inp=document.getElementById("nameIn");
+  var draft=lsGet("pln_"+roomCode); if(draft) inp.value=draft;
+  inp.addEventListener("input",function(){ lsSet("pln_"+roomCode,inp.value); });
   inp.focus();
-  document.getElementById("joinGo").onclick=function(){
-    var v=(inp.value||"").trim(); if(v.length===0) v="Gast";
-    join(v);
-  };
+  document.getElementById("joinGo").onclick=function(){ var v=(inp.value||"").trim(); if(v.length===0) v="Gast"; join(v); };
   inp.addEventListener("keydown",function(e){ if(e.key==="Enter"){ document.getElementById("joinGo").click(); }});
 }
 
 function renderQuestion(){
-  var cq=currentData.state.currentQ||0; var q=QUESTIONS[cq];
+  var cq=st.currentQ||0; var q=QUESTIONS[cq];
+  if(!q){ show("noq"+cq,'<div class="card center"><p class="status">Frage nicht gefunden. Bitte Seite neu laden.</p></div>'); return; }
   var answered=answeredQ[cq]!==undefined;
-  // falls Firebase bereits eine Antwort kennt (anderes Geraet / reload)
-  var fbAns=currentData.answers && currentData.answers[cq] && currentData.answers[cq][playerId];
-  if(fbAns && answeredQ[cq]===undefined){ answeredQ[cq]=fbAns.choice; answered=true; }
   var shapes=["▲","◆","●","■"];
   if(answered){
-    main.innerHTML='<div class="card center">'+youAreBar()+
-      '<p class="status">Antwort erhalten.<br>Gleich kommt die Auflösung ...</p>'+
-      '<div style="font-size:2.2rem;margin-top:12px">✅</div></div>';
+    var ok=!!sentQ[cq];
+    show("qa"+cq+(ok?"s":"p")+(online?"":"o"),'<div class="card center">'+youAreBar()+
+      (ok?'<p class="status">Antwort angekommen.<br>Gleich kommt die Auflösung ...</p><div style="font-size:2.2rem;margin-top:12px">✅</div>'
+         :'<p class="status">Antwort gespeichert.<br>'+(online?'Wird gesendet ...':'Keine Verbindung: Die Antwort wird gesendet, sobald das Handy wieder Netz hat. Seite bitte offen lassen.')+'</p><div style="font-size:2.2rem;margin-top:12px">📨</div>')+
+      '<p class="muted" style="margin-top:10px">Ihre Wahl: '+shapes[answeredQ[cq]]+' '+esc(q.o[answeredQ[cq]])+'</p></div>');
     return;
   }
   var tiles="";
-  for(var i=0;i<4;i++){
+  for(var i=0;i<q.o.length;i++){
     tiles+='<button class="tile c'+i+'" data-c="'+i+'"><span class="shape">'+shapes[i]+'</span><span class="txt">'+esc(q.o[i])+'</span></button>';
   }
-  main.innerHTML='<div class="card">'+youAreBar()+
-    '<div class="qnum">Frage '+(cq+1)+' von '+NUM_Q+'</div>'+
+  if(!show("q"+cq,'<div class="card">'+youAreBar()+
+    '<div class="qnum">Frage '+(cq+1)+' von '+NUM_Q+' <span class="qtimer" id="qt"></span></div>'+
     '<div class="qtext">'+esc(q.q)+'</div>'+
-    '<div class="opts">'+tiles+'</div></div>';
-  var btns=main.querySelectorAll(".tile");
-  btns.forEach(function(b){ b.onclick=function(){ submitAnswer(parseInt(b.getAttribute("data-c"),10)); }; });
+    '<div class="opts">'+tiles+'</div></div>')) return;
+  main.querySelectorAll(".tile").forEach(function(b){ b.onclick=function(){
+    main.querySelectorAll(".tile").forEach(function(x){ x.disabled=true; }); b.classList.add("picked");
+    submitAnswer(parseInt(b.getAttribute("data-c"),10)); }; });
+  if(qTick) clearInterval(qTick);
+  qTick=setInterval(function(){ var el=document.getElementById("qt"); if(!el||!st) return; var r=Math.max(0,Math.ceil((DURATION_MS-(LQ.now()-(st.qOpenAt||LQ.now())))/1000)); el.textContent=r+" s"; },250);
 }
 
-function renderReveal(){
-  var cq=currentData.state.currentQ||0; var q=QUESTIONS[cq];
-  var ans=(currentData.answers && currentData.answers[cq] && currentData.answers[cq][playerId])||null;
-  var correct = ans && ans.correct===true;
-  var pts = ans && typeof ans.points==="number" ? ans.points : 0;
-  var answered = !!ans;
-  var ri=myRankInfo();
-  var top3=ri.list.slice(0,3);
-  // Rundensieger pruefen
-  var roundAns=(currentData.answers && currentData.answers[cq])||{};
-  var maxPts=0; Object.keys(roundAns).forEach(function(pid){
-    var pp=roundAns[pid]&&typeof roundAns[pid].points==="number"?roundAns[pid].points:0;
-    if(pp>maxPts) maxPts=pp; });
-  var iAmWinner = answered && pts>0 && pts===maxPts;
-  var top3Html="";
-  top3.forEach(function(p,idx){ top3Html+='<div class="rrow"><span class="pos">'+(idx+1)+'.</span>'+
+function top3Html(list){ var h=""; list.slice(0,3).forEach(function(p,idx){ h+='<div class="rrow"><span class="pos">'+(idx+1)+'.</span>'+
     '<span style="font-size:1.4rem">'+esc(p.avatar)+'</span><span class="nm">'+esc(p.name)+'</span>'+
-    '<span class="pt">'+p.total+'</span></div>'; });
-  var head = !answered ? '<div class="big">Keine Antwort</div>'
-    : (correct?'<div class="big ok">Richtig</div>':'<div class="big no">Leider falsch</div>');
-  main.innerHTML='<div class="card result">'+youAreBar()+head+
+    '<span class="pt">'+p.total+'</span></div>'; }); return h||'<p class="muted">Keine Daten</p>'; }
+
+function renderReveal(){
+  var cq=st.currentQ||0; var q=QUESTIONS[cq]; var d=revealData[cq];
+  if(!d){ show("rw"+cq,'<div class="card center">'+youAreBar()+'<p class="status">Auflösung wird geladen ...</p></div>'); return; }
+  var ans=d.answers[playerId]||null;
+  var correct=ans&&ans.correct===true, pts=ans&&typeof ans.points==="number"?ans.points:0, answered=!!ans;
+  var ri=rankInfo(d.players);
+  var maxPts=0; Object.keys(d.answers).forEach(function(pid){ var pp=d.answers[pid]&&typeof d.answers[pid].points==="number"?d.answers[pid].points:0; if(pp>maxPts) maxPts=pp; });
+  var iAmWinner=answered&&pts>0&&pts===maxPts;
+  var head=!answered?'<div class="big">Keine Antwort</div>':(correct?'<div class="big ok">Richtig</div>':'<div class="big no">Leider falsch</div>');
+  show("r"+cq,'<div class="card result">'+youAreBar()+head+
     '<div class="pts">'+pts+' Punkte</div>'+
+    (!correct&&q?'<p class="muted" style="margin-top:6px">Richtig ist: '+esc(q.o[q.a])+'</p>':'')+
     '<div class="rank">Ihr Rang: Platz '+(ri.pos>0?ri.pos:"-")+' von '+ri.total+'</div>'+
     (iAmWinner?'<div style="margin-top:10px;font-weight:700;color:var(--gold2)">Rundensieger dieser Frage</div>':'')+
-    '<div class="top3"><h3 class="serif" style="color:var(--navy);font-size:1.2rem;margin-bottom:8px">Top 3</h3>'+
-      (top3Html||'<p class="muted">Keine Daten</p>')+'</div>'+
-    '</div>';
-  if(iAmWinner && !revealFxDone[cq]){ revealFxDone[cq]=true; launchFx(myFx,3600); }
+    '<div class="top3"><h3 class="serif" style="color:var(--navy);font-size:1.2rem;margin-bottom:8px">Top 3</h3>'+top3Html(ri.list)+'</div></div>');
+  if(iAmWinner&&!revealFxDone[cq]){ revealFxDone[cq]=true; launchFx(myFx,3600); }
 }
 
 function renderFinal(){
-  var ri=myRankInfo();
-  var isFirst = ri.pos===1;
-  var top3=ri.list.slice(0,3);
-  var top3Html="";
-  top3.forEach(function(p,idx){ top3Html+='<div class="rrow"><span class="pos">'+(idx+1)+'.</span>'+
-    '<span style="font-size:1.4rem">'+esc(p.avatar)+'</span><span class="nm">'+esc(p.name)+'</span>'+
-    '<span class="pt">'+p.total+'</span></div>'; });
-  main.innerHTML='<div class="card finalbox">'+youAreBar()+
+  if(!finalData){ show("fw",'<div class="card center">'+youAreBar()+'<p class="status">Endstand wird geladen ...</p></div>'); return; }
+  var ri=rankInfo(finalData), isFirst=ri.pos===1;
+  show("f",'<div class="card finalbox">'+youAreBar()+
     '<h2 class="serif" style="color:var(--navy)">Endstand</h2>'+
     (isFirst?'<div class="dancer">🕺</div><div style="font-weight:700;color:var(--gold2);font-size:1.4rem">Sie sind Gesamtsieger</div>':'')+
     '<div class="rankbig">Platz '+(ri.pos>0?ri.pos:"-")+' von '+ri.total+'</div>'+
-    '<div class="top3"><h3 class="serif" style="color:var(--navy);font-size:1.2rem;margin-bottom:8px">Top 3</h3>'+
-      (top3Html||'<p class="muted">Keine Daten</p>')+'</div>'+
-    '</div>';
-  if(isFirst && !finalFxDone){ finalFxDone=true; launchFx("champagne",6500); launchFx("fireworks",6500); }
-  else if(!isFirst && !finalFxDone){ finalFxDone=true; launchFx(myFx,3000); }
+    '<div class="top3"><h3 class="serif" style="color:var(--navy);font-size:1.2rem;margin-bottom:8px">Top 3</h3>'+top3Html(ri.list)+'</div>'+
+    '<p style="margin-top:16px"><a href="live-quiz.html?solo='+SETID+'">Die Fragen noch einmal allein üben</a></p></div>');
+  if(!finalFxDone){ finalFxDone=true; if(isFirst){ launchFx("champagne",6500); launchFx("fireworks",6500); } else launchFx(myFx,3000); }
+}
+
+/* ===================== Allein üben ===================== */
+var SOLO=null;
+function soloStart(set, timed){
+  useSet(set, []); var base=QUESTIONS.slice();
+  show("sload",'<div class="card center"><p class="status">Fragen werden geladen ...</p></div>');
+  (db?LQ.loadCustom(db,set):Promise.resolve([])).then(function(extra){
+    var qs=base.concat(extra).map(function(q,i){ return {q:q,i:i}; });
+    for(var i=qs.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=qs[i]; qs[i]=qs[j]; qs[j]=t; }
+    SOLO={set:set,qs:qs,k:0,pts:0,right:0,miss:[],timed:timed,dur:LQ.settings().dur*1000,at:0,done:false};
+    soloQ();
+  });
+}
+function soloPick(set){
+  var t=window.QSETS[set]?window.QSETS[set].title:"";
+  show("spick",'<div class="card center"><h2 class="serif" style="color:var(--navy)">Allein üben: '+esc(t)+'</h2><p class="muted" style="margin-top:8px">'+LQ.questions(set).length+' Fragen in zufälliger Reihenfolge. Nach jeder Frage sehen Sie die Erklärung.</p>'+
+    '<button class="btn green" id="sT">Mit Zeitlimit wie im Hörsaal</button><button class="btn" id="sF" style="margin-top:10px;background:var(--navy)">Ohne Zeitlimit</button>'+
+    (lsGet("plb_"+set)?'<p class="muted" style="margin-top:14px">Ihr bestes Ergebnis bisher: '+lsGet("plb_"+set).right+' von '+lsGet("plb_"+set).n+' richtig, '+lsGet("plb_"+set).pts+' Punkte</p>':'')+
+    '<p style="margin-top:14px"><a href="live-quiz.html">Anderes Quiz wählen</a></p></div>');
+  document.getElementById("sT").onclick=function(){ soloStart(set,true); };
+  document.getElementById("sF").onclick=function(){ soloStart(set,false); };
+}
+function soloQ(){
+  var S=SOLO, it=S.qs[S.k], q=it.q, shapes=["▲","◆","●","■"], tiles="";
+  for(var i=0;i<q.o.length;i++) tiles+='<button class="tile c'+i+'" data-c="'+i+'"><span class="shape">'+shapes[i]+'</span><span class="txt">'+esc(q.o[i])+'</span></button>';
+  show("sq"+S.k,'<div class="card"><div class="qnum">Frage '+(S.k+1)+' von '+S.qs.length+(S.timed?' <span class="qtimer" id="qt"></span>':'')+' <span class="qtimer" style="float:right">'+S.pts+' Punkte</span></div>'+
+    '<div class="qtext">'+esc(q.q)+'</div><div class="opts">'+tiles+'</div></div>');
+  S.at=Date.now(); S.done=false;
+  main.querySelectorAll(".tile").forEach(function(b){ b.onclick=function(){ soloAnswer(parseInt(b.getAttribute("data-c"),10)); }; });
+  if(qTick) clearInterval(qTick);
+  if(S.timed) qTick=setInterval(function(){ var r=S.dur-(Date.now()-S.at); var el=document.getElementById("qt"); if(el) el.textContent=Math.max(0,Math.ceil(r/1000))+" s"; if(r<=0) soloAnswer(-1); },250);
+}
+function soloAnswer(c){
+  var S=SOLO; if(S.done) return; S.done=true; if(qTick){ clearInterval(qTick); qTick=null; }
+  var q=S.qs[S.k].q, ok=c===q.a, p=S.timed?LQ.points(ok,Date.now()-S.at,S.dur):(ok?1000:0);
+  S.pts+=p; if(ok) S.right++; else S.miss.push({q:q,c:c});
+  var shapes=["▲","◆","●","■"];
+  show("sr"+S.k,'<div class="card result">'+(c<0?'<div class="big">Zeit abgelaufen</div>':ok?'<div class="big ok">Richtig</div>':'<div class="big no">Leider falsch</div>')+
+    '<div class="pts">'+p+' Punkte</div>'+
+    '<div class="sopts">'+q.o.map(function(x,i){ return '<div class="sopt'+(i===q.a?' ok':i===c?' no':'')+'">'+shapes[i]+' '+esc(x)+(i===q.a?' ✓':'')+'</div>'; }).join("")+'</div>'+
+    (q.e?'<div class="sexpl"><b>Erklärung:</b> '+esc(q.e)+'</div>':'')+
+    '<button class="btn" id="sN" style="margin-top:16px">'+(S.k<S.qs.length-1?'Nächste Frage':'Zum Ergebnis')+'</button></div>');
+  document.getElementById("sN").onclick=function(){ S.k++; if(S.k<S.qs.length) soloQ(); else soloEnd(); };
+}
+function soloEnd(){
+  var S=SOLO, n=S.qs.length, best=lsGet("plb_"+S.set);
+  var rec={right:S.right,n:n,pts:S.pts}; var isBest=!best||S.pts>best.pts; if(isBest) lsSet("plb_"+S.set,rec);
+  show("send",'<div class="card finalbox"><h2 class="serif" style="color:var(--navy)">Ergebnis</h2><div class="rankbig">'+S.right+' von '+n+' richtig</div><div class="pts">'+S.pts+' Punkte'+(isBest?' · neue Bestleistung':'')+'</div>'+
+    (S.miss.length?'<div class="top3" style="text-align:left"><h3 class="serif" style="color:var(--navy);font-size:1.2rem;margin-bottom:8px">Noch einmal ansehen</h3>'+S.miss.map(function(m){ return '<div class="miss"><b>'+esc(m.q.q)+'</b><br>Richtig: '+esc(m.q.o[m.q.a])+(m.q.e?'<br><span class="muted">'+esc(m.q.e)+'</span>':'')+'</div>'; }).join("")+'</div>':'<p style="margin-top:12px">Alles richtig.</p>')+
+    '<button class="btn green" id="sA" style="margin-top:16px">Noch einmal</button><p style="margin-top:12px"><a href="live-quiz.html">Anderes Quiz wählen</a> · <a href="pruefung.html">Selbsttest mit Rechenaufgaben</a></p></div>');
+  if(isBest&&S.right>0) launchFx("confetti",3000);
+  document.getElementById("sA").onclick=function(){ soloPick(S.set); };
 }
 
 /* ===================== Setup / Boot ===================== */
@@ -418,10 +495,21 @@ function renderSetup(){
     '<p>Die Firebase-Konfiguration fehlt. Bitte in der Datei <code>firebase-config.js</code> die Platzhalter durch die echten Projektwerte ersetzen. Die Anleitung steht als Kommentar in dieser Datei.</p>'+
     '<p class="muted" style="margin-top:10px">Danach diese Seite neu laden.</p></div>';
 }
+function netbar(){
+  var b=document.getElementById("netbar"); if(!b) return;
+  b.hidden=online; b.textContent="Verbindung unterbrochen. Ihre Eingaben bleiben gespeichert und werden gesendet, sobald das Netz wieder da ist.";
+}
 
 (function boot(){
-  if(!configOk()){ renderSetup(); return; }
-  if(!initFirebase()){ renderSetup(); return; }
+  var solo=getParam("solo");
+  var fbOk=configOk()&&initFirebase();
+  if(solo && window.QSETS[solo]){ soloPick(solo); return; }
+  if(!fbOk){ renderSetup(); return; }
+  LQ.watchOffset(db);
+  var seen=false;
+  db.ref(".info/connected").on("value",function(s){ var c=s.val()===true; if(c) seen=true; online=c||!seen; netbar();
+    if(c&&st&&st.phase==="question"&&pend[st.currentQ||0]) sendAnswer(st.currentQ||0);
+    if(st&&st.phase==="question") render(); });
   var code=getRoomFromUrl();
   if(code){ attachRoom(code); } else { renderCodeEntry(); }
 })();

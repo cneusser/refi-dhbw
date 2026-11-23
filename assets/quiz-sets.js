@@ -10,7 +10,7 @@ window.QSETS = {
   {q:"Zuschlag: 57,60 €. Grenzplankosten: 61,65 €. Prozesskosten: 90,34 €. Welche Aussage stimmt?",o:["Die Prozesskostenrechnung ist falsch, weil sie am höchsten ist","Grenzplankosten zeigen, ob ein Kleid kurzfristig Fixkosten deckt","Der Zuschlag ist für Sortimentsentscheidungen am genauesten","Alle drei Werte bedeuten dasselbe"],a:1,e:"Teilkosten beantworten kurzfristige Fragen, Prozesskosten langfristige Ressourcenfragen. Der Wertzuschlag verzerrt."},
   {q:"Was schließt die Lücke zwischen 90,34 € Kosten und 71,10 € erlaubten Kosten am stärksten?",o:["Bürokratie halbieren","Verschwendung allein beseitigen","Retourenquote senken und Verschwendung beseitigen","Gemeinkostenzuschlag senken"],a:2,e:"Ohne Verschwendung 81,34 €, erst mit 55 % Retourenquote 70,80 €. Die Ursache liegt bei Passform und Größenangaben."}
  ]},
- kap1: { title: "Kapitel 1 Cashflow und Liquidität", qs: [
+ kap1: { title: "ReFi II, Kapitel 1: Cashflow und Liquidität", qs: [
   {q:"Ein Unternehmen wächst um 30 %, Kunden zahlen nach 90 Tagen. Was passiert typischerweise mit dem operativen Cashflow?",o:["Er steigt wie der Gewinn","Er kann trotz Gewinn stark sinken","Er bleibt unverändert","Er verdoppelt sich"],a:1,e:"Wachstum bindet Working Capital: Forderungen und Vorräte wachsen mit."},
   {q:"Warum wird die Abschreibung zum Jahresüberschuss addiert?",o:["Sie bringt Geld ins Unternehmen","Sie war Aufwand ohne Auszahlung","Sie ist eine Investition","Das Finanzamt verlangt es"],a:1,e:"Die Auszahlung war die Investition; die Abschreibung mindert nur den Gewinn."},
   {q:"Vorräte steigen um 4 Mio. Euro. Wirkung auf den operativen Cashflow?",o:["plus 4 Mio. Euro","minus 4 Mio. Euro","keine Wirkung","nur bei Verkauf"],a:1,e:"Mehr Aktiva binden Cash."},
@@ -24,7 +24,7 @@ window.QSETS = {
   {q:"Warum kann Reverse Factoring den opCF eines Käufers schönen?",o:["Es senkt den Umsatz","Es verlängert faktisch das Lieferantenziel","Es erhöht die Abschreibung","Es senkt die Steuern"],a:1,e:"Seit 2024 verlangt IAS 7 Angaben zu Supplier Finance. Fall Greensill 2021."},
   {q:"Nokia 2011: Verlust, aber positiver opCF. Wichtigster Grund?",o:["Höhere Abschreibungen","Abbau von Working Capital","Steuererstattungen","Kapitalerhöhung"],a:1,e:"Schrumpfung setzt Working Capital frei, nicht nachhaltig."}
  ]},
- kap2: { title: "Kapitel 2 Investitionsrechnung", qs: [
+ kap2: { title: "ReFi II, Kapitel 2: Investitionsrechnung", qs: [
   {q:"Was misst der Kapitalwert?",o:["Die Rendite in Prozent", "Den heutigen Wertbeitrag über die geforderte Verzinsung hinaus", "Die Amortisationsdauer", "Den Umsatz"],a:1,e:"KW > 0: Das Projekt schafft Wert über den Kalkulationszins hinaus."},
   {q:"−100; 5 × 30 bei 10 %: Kapitalwert?",o:["50,0", "13,7", "−13,7", "26,4"],a:1,e:"30 × 3,7908 − 100 = 13,7."},
   {q:"Der Zins steigt. Welcher Kapitalwert fällt stärker?",o:["Projekt mit frühen Rückflüssen", "Projekt mit späten Rückflüssen", "Beide gleich", "Keiner"],a:1,e:"Späte Rückflüsse werden über mehr Perioden abgezinst."},
@@ -36,7 +36,7 @@ window.QSETS = {
   {q:"Degressive statt lineare AfA: Kapitalwert nach Steuern",o:["sinkt", "steigt, weil Steuern später fallen", "bleibt gleich", "wird null"],a:1,e:"Die Steuer wird verschoben, der Zinsvorteil zählt."},
   {q:"Farbpigmentanlage unter Unsicherheit: Was treibt den Kapitalwert am stärksten?",o:["Der Zins", "Die Nutzungsdauer", "Der Marktanteil", "Die Steuer"],a:1,e:"Erwartete 6 statt 10 Jahre senken den erwarteten KW von 9 auf etwa 2 Mio. €."}
  ]},
- kap3: { title: "Kapitel 3 Business Case", qs: [
+ kap3: { title: "ReFi II, Kapitel 3: Business Case", qs: [
   {q:"Was prüft eine Bank vorrangig?",o:["Exit-Perspektive", "Kapitaldienstfähigkeit und Sicherheiten", "Marktanteil weltweit", "Teamgröße"],a:1,e:"Zinsen und Tilgung müssen aus dem Cashflow kommen."},
   {q:"DSCR =",o:["EBIT / Umsatz", "Cashflow vor Kapitaldienst / (Zinsen + Tilgung)", "EK / GK", "Schulden / EBITDA"],a:1,e:"Unter 1 reicht das Geld nicht für den Kapitaldienst."},
   {q:"Wozu dient die Planbilanz im integrierten Plan?",o:["Steuererklärung", "Probe der Konsistenz", "Ersetzt die GuV", "Nur für Investoren"],a:1,e:"Geht sie auf, passen GuV, Kapitalfluss und Bilanz zusammen."},
@@ -48,7 +48,7 @@ window.QSETS = {
   {q:"Wann schreibt man die Executive Summary?",o:["Zuerst", "Zuletzt", "Nie", "Nur für Banken"],a:1,e:"Sie verdichtet den fertigen Plan."},
   {q:"Typisches Warnzeichen im Business Plan?",o:["Quellen je Zahl", "Hockeyschläger ohne Begründung", "Stresstest", "Planbilanz"],a:1,e:"Planungsfehlschluss: Optimismus bei Dauer und Wachstum."}
  ]},
- kap4: { title: "Kapitel 4 Finanzierung", qs: [
+ kap4: { title: "ReFi II, Kapitel 4: Finanzierung", qs: [
   {q:"Pensionsrückstellungen sind",o:["Außen- und Eigenfinanzierung", "Innen- und Fremdfinanzierung", "Außen- und Fremdfinanzierung", "Innen- und Eigenfinanzierung"],a:1,e:"Mittel aus dem Umsatz, Verpflichtung ist Fremdkapital."},
   {q:"GKR 10 %, Zins 8 %, FK 50 %: EKR?",o:["10 %", "12 %", "14 %", "8 %"],a:1,e:"10 + 2 × 50 / 50 = 12 %."},
   {q:"GKR 6 %, Zins 8 %: Was macht mehr Fremdkapital?",o:["EKR steigt", "EKR sinkt", "nichts", "GKR steigt"],a:1,e:"Negativer Hebel."},

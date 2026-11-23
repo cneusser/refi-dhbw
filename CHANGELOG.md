@@ -1,5 +1,15 @@
 # Änderungen
 
+## v0.9.9 (23.11.2026)
+
+Live-Quiz, Rückmeldungen aus dem Einsatz am 23.11.:
+- Kein automatisches Weiter nach 3 Sekunden mehr. Neue Einstellungen auf der Spielleitungsseite (gelten für alle Live-Quiz in diesem Browser): Antwortzeit 15 bis 90 Sekunden, nach der Auflösung von Hand oder automatisch nach 5 bis 20 Sekunden, eigene Fragen ein oder aus.
+- Stabilere Teilnahme bei schwachem Netz: Das Handy lädt nur noch den Spielstand statt des ganzen Raums und zeichnet nur neu, wenn sich die Ansicht ändert. Antworten werden im Gerät zwischengespeichert und gesendet, sobald die Verbindung steht, auch nach einem Neuladen; die Anzeige unterscheidet „gespeichert“ und „angekommen“. Antwortzeit nach der Uhr der Datenbank statt der Handy-Uhr. Hinweisleiste bei Verbindungsabbruch, Restzeit auf dem Handy.
+- Behoben: Das Feld für den Spielnamen wurde geleert, sobald andere beitraten.
+- Fragen verwalten (PIN der Spielleitung): eigene Fragen je Quiz anlegen, bearbeiten, ausblenden, löschen; zwei bis vier Antworten. Sie erscheinen im nächsten Spiel nach den festen Fragen.
+- Allein üben: jedes Live-Quiz ohne Raum, mit oder ohne Zeitlimit, Erklärung nach jeder Frage, Fehlerliste und Bestleistung. Erreichbar über die Teilnahmeseite und in der Vorlesung bei jedem Kapitel.
+- Quiz-Titel für ReFi II mit „ReFi II“ gekennzeichnet.
+
 ## v0.9.8 (23.11.2026)
 
 - Live-Quiz leichter zu starten: In der Vorlesung hat jedes Kapitel mit Quiz den Link „Live-Quiz am Beamer starten“ (Spielleitung mit QR-Code und Raumcode). Auf der Teilnahmeseite führt ein Hinweis für Lehrende zur Spielleitung.

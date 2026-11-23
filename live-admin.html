@@ -57,6 +57,16 @@ button:active{transform:translateY(1px)}
 .btn.green{background:var(--green);color:#fff;box-shadow:0 4px 0 #11593a}
 .btn.ghost{background:var(--panel);color:var(--navy);border:2px solid var(--line);box-shadow:none}
 .btn:disabled{opacity:.45;cursor:not-allowed;box-shadow:none}
+.btn.small{padding:8px 14px;font-size:1rem}
+.settings{max-width:620px;margin:22px auto 0;text-align:left;border:1px solid var(--line);border-radius:10px;padding:14px 18px;background:var(--panel)}
+.setrow{display:flex;gap:12px;align-items:center;justify-content:space-between;margin-top:10px;flex-wrap:wrap}
+.setrow select{font:inherit;font-size:1rem;padding:6px 8px;min-width:260px}
+.editor label{display:block;font-weight:700;margin-top:12px}
+.editor textarea,.editor input:not([type=radio]){font:inherit;font-size:1.05rem;padding:8px 10px;width:100%;border:1px solid var(--line);border-radius:8px}
+.optrow{display:flex;gap:10px;align-items:center;margin-top:8px}.optrow input[type=radio]{width:22px;height:22px;flex:none;accent-color:var(--green)}
+.clist li{margin:10px 0;padding-bottom:10px;border-bottom:1px solid var(--line)}.clist li.off{opacity:.5}.crow{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.baselist li{margin:8px 0}
+.editor h3{margin-top:20px}
 .btnrow{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;margin-top:22px}
 
 /* Setup box */
@@ -182,14 +192,17 @@ footer .brandmark{width:26px;height:26px}
 <!-- Firebase Konfiguration -->
 <script src="firebase-config.js"></script>
 <script src="assets/quiz-sets.js"></script>
+<script src="assets/lq.js"></script>
 
 <script>
 /* ===================== Gemeinsame Daten ===================== */
 var SETID = (new URLSearchParams(location.search).get("set")) || "pkr";
-var QUESTIONS = (window.QSETS[SETID]||window.QSETS.pkr).qs;
-var DURATION_MS = 25000;
+if(!window.QSETS[SETID]) SETID="pkr";
+var QUESTIONS = LQ.questions(SETID);
+var SETTINGS = LQ.settings();
+var DURATION_MS = SETTINGS.dur*1000, ADV_S = SETTINGS.adv;
 var NUM_Q = QUESTIONS.length;
-function useSet(id){ if(id && window.QSETS[id]){ SETID=id; QUESTIONS=window.QSETS[id].qs; NUM_Q=QUESTIONS.length; } } // 7
+function useSet(id, extra){ if(id && window.QSETS[id]){ SETID=id; QUESTIONS=LQ.questions(id, extra); NUM_Q=QUESTIONS.length; } }
 var FXSET = ["confetti","sparks","stars","streamers","champagne","fireworks"];
 var FXPAL = ["#E2001A","#2B3439","#1F7A4D","#7D8990","#D5DADD","#5D6971","#B8000F","#FFFFFF"];
 
@@ -335,7 +348,8 @@ function attachRoom(code){
   roomRef = db.ref("refi/rooms/"+code);
   roomCb = function(snap){
     currentData = snap.val() || {};
-    useSet(currentData.meta && currentData.meta.set);
+    var m=currentData.meta||{}; useSet(m.set, m.extra);
+    if(m.dur) DURATION_MS=m.dur*1000; ADV_S=(typeof m.adv==="number")?m.adv:0;
     render();
   };
   roomRef.on("value", roomCb);
@@ -355,6 +369,7 @@ function newGame(){
   setMsg("Spiel wird angelegt ...","info");
   var ref = db.ref("refi/rooms/"+code);
   var done=false;
+  SETTINGS = LQ.settings();
   var to=setTimeout(function(){
     if(done) return;
     setMsg("<b>Keine Antwort von der Datenbank.</b> Bitte pruefen: "+
@@ -362,10 +377,12 @@ function newGame(){
       "(2) Die <b>databaseURL</b> in firebase-config.js muss exakt zur Datenbank passen (Region europe-west1). "+
       "(3) Die Datenbank-<b>Regeln</b> muessen fuer das Event auf offen stehen: .read und .write auf true, dann veroeffentlichen.","err");
   },7000);
-  ref.set({
-    meta:{ createdAt: firebase.database.ServerValue.TIMESTAMP, set: SETID },
+  (SETTINGS.extra ? LQ.loadCustom(db, SETID) : Promise.resolve([])).then(function(extra){
+    return ref.set({
+    meta:{ createdAt: firebase.database.ServerValue.TIMESTAMP, set: SETID, dur: SETTINGS.dur, adv: SETTINGS.adv,
+      extra: extra.map(function(x){ return {q:x.q,o:x.o,a:x.a,e:x.e}; }) },
     state:{ phase:"lobby", currentQ:0, qOpenAt:0 }
-  }).then(function(){ done=true; clearTimeout(to); attachRoom(code); })
+  }); }).then(function(){ done=true; clearTimeout(to); attachRoom(code); })
     .catch(function(e){ done=true; clearTimeout(to); console.error(e);
       var msg=(e&&e.message)?e.message:String(e);
       setMsg("<b>Fehler beim Anlegen des Spiels:</b> "+esc(msg)+"<br>Haeufigste Ursache: die Datenbank-Regeln sind noch gesperrt. In Firebase unter Realtime Database &gt; Regeln <code>.read</code> und <code>.write</code> auf <code>true</code> setzen und veroeffentlichen. Danach erneut auf Start klicken.","err"); });
@@ -409,8 +426,7 @@ function closeAndResolve(){
     var choice = (typeof ans.choice==="number")?ans.choice:-1;
     var timeMs = (typeof ans.timeMs==="number")?ans.timeMs:DURATION_MS;
     var correct = (choice === q.a);
-    var frac = Math.max(0, Math.min(1, (DURATION_MS - timeMs)/DURATION_MS));
-    var points = correct ? Math.max(300, Math.round(300 + 700*frac)) : 0;
+    var points = LQ.points(correct, timeMs, DURATION_MS);
     updates["answers/"+cq+"/"+pid+"/correct"] = correct;
     updates["answers/"+cq+"/"+pid+"/points"] = points;
     var prev = (players[pid] && typeof players[pid].total==="number") ? players[pid].total : 0;
@@ -510,8 +526,8 @@ function startTicker(){
 function updateTimer(){
   if(!currentData || !currentData.state) return;
   if(currentData.state.phase!=="question"){ return; }
-  var qOpenAt = currentData.state.qOpenAt||Date.now();
-  var remain = Math.max(0, DURATION_MS - (Date.now()-qOpenAt));
+  var qOpenAt = currentData.state.qOpenAt||LQ.now();
+  var remain = Math.max(0, DURATION_MS - (LQ.now()-qOpenAt));
   var secs = Math.ceil(remain/1000);
   var t=document.getElementById("timer");
   var bar=document.getElementById("progbar");
@@ -527,14 +543,14 @@ function renderQuestion(){
   var total=playerArray().length;
   var shapes=["▲","◆","●","■"];
   var optsHtml="";
-  for(var i=0;i<4;i++){
+  for(var i=0;i<q.o.length;i++){
     optsHtml+='<div class="opt c'+i+'"><span class="shape">'+shapes[i]+'</span><span>'+esc(q.o[i])+'</span></div>';
   }
   main.innerHTML=
     '<div class="card">'+
       '<div class="qmeta">'+
         '<span class="qnum">Frage '+(cq+1)+' von '+NUM_Q+'</span>'+
-        '<span class="timer" id="timer">25</span>'+
+        '<span class="timer" id="timer">'+Math.round(DURATION_MS/1000)+'</span>'+
         '<span class="answercount"><span id="acount">'+cnt+'</span> / '+total+' Antworten</span>'+
       '</div>'+
       '<div class="qtext">'+esc(q.q)+'</div>'+
@@ -578,7 +594,7 @@ function renderReveal(){
     .sort(function(a,b){return b.pts-a.pts;});
   var shapes=["▲","◆","●","■"];
   var optsHtml="";
-  for(var i=0;i<4;i++){
+  for(var i=0;i<q.o.length;i++){
     optsHtml+='<div class="opt c'+i+(i===q.a?' correct':' dim')+'">'+
       '<span class="shape">'+shapes[i]+'</span><span>'+esc(q.o[i])+(i===q.a?' ✓':'')+'</span></div>';
   }
@@ -587,12 +603,12 @@ function renderReveal(){
       '<div class="qmeta"><span class="qnum">Auflösung Frage '+(cq+1)+' von '+NUM_Q+'</span></div>'+
       '<div class="qtext">'+esc(q.q)+'</div>'+
       '<div class="opts">'+optsHtml+'</div>'+
-      '<div class="expl"><strong>Erklärung:</strong> '+esc(q.e)+'</div>'+
+      (q.e?'<div class="expl"><strong>Erklärung:</strong> '+esc(q.e)+'</div>':'')+
       '<div class="ranks">'+
         '<div><h3>Rundensieger dieser Frage</h3>'+rankRows(round,true)+'</div>'+
         '<div><h3>Gesamtrangliste</h3>'+rankRows(cum,false)+'</div>'+
       '</div>'+
-      '<p class="muted" style="text-align:center;margin-top:6px;font-size:1rem">'+(cq<NUM_Q-1?'Weiter in 3 Sekunden ...':'Zum Finale in 3 Sekunden ...')+'</p>'+
+      (ADV_S>0?'<p class="muted" style="text-align:center;margin-top:6px;font-size:1rem">'+(cq<NUM_Q-1?'Weiter':'Zum Finale')+' in '+ADV_S+' Sekunden ...</p>':'')+
       '<div class="btnrow">'+
         '<button class="btn navy" id="btnNext">'+(cq<NUM_Q-1?'Jetzt weiter':'Jetzt zum Finale')+'</button>'+
       '</div>'+
@@ -602,10 +618,10 @@ function renderReveal(){
     revealDoneFor=cq;
     if(round.length>0 && round[0].pts>0){ launchFx(FXSET[cq%FXSET.length], 3400); }
   }
-  if(advanceArmedFor!==cq){            // nach 3 Sekunden automatisch weiter
+  if(ADV_S>0 && advanceArmedFor!==cq){   // nur wenn in den Einstellungen gewählt: automatisch weiter
     advanceArmedFor=cq;
     if(advanceTimer) clearTimeout(advanceTimer);
-    advanceTimer=setTimeout(function(){ nextQuestion(); }, 3000);
+    advanceTimer=setTimeout(function(){ nextQuestion(); }, ADV_S*1000);
   }
 }
 
@@ -675,14 +691,88 @@ function renderWelcome(){
   main.innerHTML=
     '<div class="card center">'+
       '<h1 class="serif" style="color:var(--navy);font-size:clamp(2rem,5vw,3.4rem)">Live-Quiz: '+esc(window.QSETS[SETID].title)+'</h1>'+
-      '<p class="muted" style="font-size:1.3rem;margin-top:10px">'+NUM_Q+' Fragen, Echtzeit auf allen Handys. Für den Beamer optimiert.</p>'+
+      '<p class="muted" style="font-size:1.3rem;margin-top:10px">'+NUM_Q+' Fragen<span id="xcount"></span>, Echtzeit auf allen Handys. Für den Beamer optimiert.</p>'+
       '<div class="btnrow">'+Object.keys(window.QSETS).map(function(k){return '<a class="btn ghost" style="text-decoration:none;'+(k===SETID?'outline:3px solid var(--gold)':'')+'" href="live-admin.html?set='+k+'">'+esc(window.QSETS[k].title)+'</a>';}).join('')+'</div>'+
+      settingsHtml()+
       '<div class="btnrow"><button class="btn green" id="btnNew">Neues Spiel starten</button></div>'+
+      '<p style="margin-top:14px"><a href="live-admin.html?set='+SETID+'#fragen">Fragen verwalten (eigene Fragen hinzufügen)</a> · <a href="live-quiz.html?solo='+SETID+'">Allein üben</a></p>'+
       '<div id="conn" class="connbadge">Verbindung wird geprüft ...</div>'+
       '<div id="msg" class="msgbox" style="display:none"></div>'+
     '</div>';
   document.getElementById("btnNew").onclick=newGame;
+  bindSettings();
+  LQ.loadCustom(db, SETID).then(function(x){ var e=document.getElementById("xcount"); if(e&&x.length) e.textContent=" plus "+x.length+" eigene"; });
   probeConnection();
+}
+
+function settingsHtml(){
+  var s=LQ.settings();
+  function opt(v,l,cur){ return '<option value="'+v+'"'+(String(v)===String(cur)?' selected':'')+'>'+l+'</option>'; }
+  return '<div class="settings"><b>Einstellungen</b> <span class="muted">(gelten für alle Live-Quiz in diesem Browser)</span>'+
+    '<div class="setrow"><label for="sDur">Antwortzeit je Frage</label><select id="sDur">'+[15,20,25,30,45,60,90].map(function(v){return opt(v,v+" Sekunden",s.dur);}).join("")+'</select></div>'+
+    '<div class="setrow"><label for="sAdv">Nach der Auflösung</label><select id="sAdv">'+opt(0,"von Hand weiter (Taste Jetzt weiter)",s.adv)+[5,10,15,20].map(function(v){return opt(v,"automatisch nach "+v+" Sekunden",s.adv);}).join("")+'</select></div>'+
+    '<div class="setrow"><label for="sExt">Eigene Fragen</label><select id="sExt">'+opt(1,"einbeziehen (am Ende)",s.extra?1:0)+opt(0,"nicht einbeziehen",s.extra?1:0)+'</select></div></div>';
+}
+function bindSettings(){
+  ["sDur","sAdv","sExt"].forEach(function(id){ var el=document.getElementById(id); if(el) el.onchange=function(){
+    var s={dur:+document.getElementById("sDur").value, adv:+document.getElementById("sAdv").value, extra:document.getElementById("sExt").value==="1"};
+    LQ.saveSettings(s); SETTINGS=s; DURATION_MS=s.dur*1000; ADV_S=s.adv; }; });
+}
+
+/* ===================== Fragen verwalten ===================== */
+var EDIT=null;
+function renderEditor(){
+  var pinOk=false; try{ pinOk=localStorage.getItem("lq_pin")==="ok"||localStorage.getItem("ch_pin")==="ok"; }catch(e){}
+  if(!pinOk){
+    main.innerHTML='<div class="card center"><h2 class="serif" style="color:var(--navy)">Fragen verwalten</h2><p class="muted">Bitte die PIN der Spielleitung eingeben.</p><input id="pin" type="password" inputmode="numeric" style="max-width:220px;margin:14px auto;display:block;font-size:1.3rem;padding:10px;text-align:center"><div class="btnrow"><button class="btn navy" id="pinGo">Weiter</button></div><div id="msg" class="msgbox" style="display:none"></div></div>';
+    var go=function(){ if(document.getElementById("pin").value.trim()==="2311"){ try{ localStorage.setItem("lq_pin","ok"); }catch(e){} renderEditor(); } else setMsg("PIN falsch.","err"); };
+    document.getElementById("pinGo").onclick=go; document.getElementById("pin").onkeydown=function(e){ if(e.key==="Enter") go(); };
+    return;
+  }
+  var base=window.QSETS[SETID].qs;
+  main.innerHTML='<div class="card"><h2 class="serif" style="color:var(--navy)">Fragen verwalten: '+esc(window.QSETS[SETID].title)+'</h2>'+
+    '<div class="btnrow" style="justify-content:flex-start">'+Object.keys(window.QSETS).map(function(k){return '<a class="btn ghost small" style="text-decoration:none;'+(k===SETID?'outline:3px solid var(--gold)':'')+'" href="live-admin.html?set='+k+'#fragen">'+esc(window.QSETS[k].title)+'</a>';}).join('')+'</div>'+
+    '<p class="muted" style="margin-top:14px">Eigene Fragen werden in der Datenbank gespeichert und erscheinen im nächsten neu gestarteten Spiel nach den '+base.length+' festen Fragen, ebenso beim Üben allein. Laufende Spiele bleiben unverändert.</p>'+
+    '<div class="editor" id="form"></div><h3 style="margin-top:22px">Eigene Fragen</h3><div id="clist" class="muted">Lade ...</div>'+
+    '<details style="margin-top:22px"><summary><b>Feste Fragen dieses Satzes ('+base.length+')</b></summary><ol class="baselist">'+base.map(function(q){ return '<li>'+esc(q.q)+'<br><span class="muted">Richtig: '+esc(q.o[q.a])+'</span></li>'; }).join("")+'</ol></details>'+
+    '<div class="btnrow"><a class="btn ghost" style="text-decoration:none" href="live-admin.html?set='+SETID+'">Zurück zur Spielleitung</a></div><div id="msg" class="msgbox" style="display:none"></div></div>';
+  drawForm(); loadList();
+}
+function drawForm(){
+  var q=EDIT||{q:"",o:["","","",""],a:0,e:""};
+  var f=document.getElementById("form");
+  f.innerHTML='<h3>'+(EDIT&&EDIT.id?'Frage bearbeiten':'Neue Frage')+'</h3>'+
+    '<label for="eq">Frage</label><textarea id="eq" rows="2">'+esc(q.q)+'</textarea>'+
+    [0,1,2,3].map(function(i){ return '<div class="optrow"><input type="radio" name="ea" id="ea'+i+'" value="'+i+'"'+(q.a===i?' checked':'')+' aria-label="Antwort '+(i+1)+' ist richtig"><input id="eo'+i+'" placeholder="Antwort '+(i+1)+(i>1?' (optional)':'')+'" value="'+esc(q.o[i]||"")+'"></div>'; }).join("")+
+    '<p class="muted small">Kreis links markiert die richtige Antwort. Zwei bis vier Antworten.</p>'+
+    '<label for="ee">Erklärung für die Auflösung</label><textarea id="ee" rows="2">'+esc(q.e||"")+'</textarea>'+
+    '<div class="btnrow" style="justify-content:flex-start"><button class="btn green small" id="eSave">'+(EDIT&&EDIT.id?'Änderung speichern':'Frage speichern')+'</button>'+(EDIT?'<button class="btn ghost small" id="eCancel">Abbrechen</button>':'')+'</div>';
+  document.getElementById("eSave").onclick=saveQ;
+  if(EDIT) document.getElementById("eCancel").onclick=function(){ EDIT=null; drawForm(); };
+}
+function saveQ(){
+  var o=[0,1,2,3].map(function(i){ return document.getElementById("eo"+i).value.trim(); });
+  var a=+((document.querySelector('input[name=ea]:checked')||{}).value||0);
+  var keep=[], newA=-1; o.forEach(function(x,i){ if(x){ if(i===a) newA=keep.length; keep.push(x); } });
+  var q={q:document.getElementById("eq").value.trim(), o:keep, a:newA, e:document.getElementById("ee").value.trim(), on:true, at:firebase.database.ServerValue.TIMESTAMP};
+  if(!q.q){ setMsg("Bitte eine Frage eingeben.","err"); return; }
+  if(keep.length<2){ setMsg("Bitte mindestens zwei Antworten eingeben.","err"); return; }
+  if(newA<0){ setMsg("Die markierte richtige Antwort ist leer.","err"); return; }
+  var ref=EDIT&&EDIT.id?db.ref("refi/quizCustom/"+SETID+"/"+EDIT.id):db.ref("refi/quizCustom/"+SETID).push();
+  if(EDIT&&EDIT.id) q.on=EDIT.on!==false;
+  ref.set(q).then(function(){ EDIT=null; drawForm(); loadList(); setMsg("Gespeichert.","info"); }).catch(function(e){ setMsg("Speichern nicht möglich: "+esc(e.message||e)+". Prüfen Sie die Datenbank-Regeln für refi/quizCustom.","err"); });
+}
+function loadList(){
+  LQ.loadCustom(db, SETID, true).then(function(list){
+    var el=document.getElementById("clist"); if(!el) return;
+    if(!list.length){ el.innerHTML='<p class="muted">Noch keine eigenen Fragen.</p>'; return; }
+    el.innerHTML='<ol class="clist">'+list.map(function(q){ return '<li'+(q.on?'':' class="off"')+'><b>'+esc(q.q)+'</b><br>'+q.o.map(function(x,i){ return (i===q.a?'✓ ':'')+esc(x); }).join(" · ")+
+      '<div class="crow"><button class="btn ghost small" data-ed="'+q.id+'">Bearbeiten</button><button class="btn ghost small" data-tg="'+q.id+'">'+(q.on?'Ausblenden':'Wieder einblenden')+'</button><button class="btn ghost small" data-rm="'+q.id+'">Löschen</button></div></li>'; }).join("")+'</ol>';
+    var by={}; list.forEach(function(q){ by[q.id]=q; });
+    el.querySelectorAll("[data-ed]").forEach(function(b){ b.onclick=function(){ EDIT=JSON.parse(JSON.stringify(by[b.dataset.ed])); while(EDIT.o.length<4) EDIT.o.push(""); drawForm(); window.scrollTo(0,0); }; });
+    el.querySelectorAll("[data-tg]").forEach(function(b){ b.onclick=function(){ db.ref("refi/quizCustom/"+SETID+"/"+b.dataset.tg+"/on").set(!by[b.dataset.tg].on).then(loadList); }; });
+    el.querySelectorAll("[data-rm]").forEach(function(b){ b.onclick=function(){ if(!b.dataset.c){ b.dataset.c=1; b.textContent="Wirklich löschen?"; return; } db.ref("refi/quizCustom/"+SETID+"/"+b.dataset.rm).remove().then(loadList); }; });
+  });
 }
 
 function probeConnection(){
@@ -705,7 +795,9 @@ function probeConnection(){
 (function boot(){
   if(!configOk()){ renderSetup(); return; }
   if(!initFirebase()){ renderSetup(); return; }
-  renderWelcome();
+  LQ.watchOffset(db);
+  if(location.hash==="#fragen") renderEditor(); else renderWelcome();
+  window.addEventListener("hashchange",function(){ if(roomRef) return; if(location.hash==="#fragen") renderEditor(); else renderWelcome(); });
 })();
 </script>
 </body>
