@@ -43,6 +43,7 @@ window.KURS = {
         { id: "r2k1", nr: "1", titel: "Cashflow und Liquidität", leit: "Warum kann ein wachsendes Unternehmen mit Gewinn zahlungsunfähig werden?", inhalt: ["Cash Conversion Cycle und Working Capital", "Kapitalflussrechnung", "EBITDA, IFRS 16, Supplier Finance", "Fälle Nokia, Siemens, Telekom"], status: "behandelt",
           material: [
             { t: "Einstieg und Kapitel 1 (Folien, PDF ohne Lösungsfolien)", href: "unterlagen/261123_REFI_II_Einstieg_Kap1.pdf" },
+            { t: "Fallaufgabe Cash-Flow-Statement zum Ausfüllen (Excel)", href: "unterlagen/I_34_CashFlowStatement_leer.xlsx" },
             { t: "Working-Capital-Rechner (Tool)", href: "tools.html#wc" },
             { t: "Leasing nach IFRS 16 (Tool)", href: "tools.html#ifrs16" }
           ], quiz: "kap1", refs: "kap1" },

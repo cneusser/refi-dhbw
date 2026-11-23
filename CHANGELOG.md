@@ -1,5 +1,9 @@
 # Änderungen
 
+## v0.9.5 (23.11.2026)
+
+- ReFi II Kapitel 1: Fallaufgabe Cash-Flow-Statement (I_34_CashFlowStatement_leer.xlsx) zum Herunterladen in der Vorlesung. Zinsen in der GuV als Zahl (vorher Text, daher Fehler in Steuern und Gewinn), operativer Cashflow in Spalte (b) summiert jetzt die eigene Spalte.
+
 ## v0.9.4 (23.11.2026)
 
 Challenge Nordstil, Rückmeldungen aus dem Durchlauf am 23.11.:
