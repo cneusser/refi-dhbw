@@ -1,5 +1,9 @@
 # Änderungen
 
+## v0.9.6 (23.11.2026)
+
+- Kapitel 1, Fallaufgabe Cash-Flow-Statement: Stufe (b) sagt jetzt, dass die Dividende von 1,0 eine Vorabausschüttung aus dem Jahresüberschuss von Jahr 2 ist. Lösungsfolie: Grundstücke 5,0 in der Bilanz ergänzt; Eigenkapital als 43,5 ausgewiesen (Kapital 41,5, Gewinn 2,0).
+
 ## v0.9.5 (23.11.2026)
 
 - ReFi II Kapitel 1: Fallaufgabe Cash-Flow-Statement (I_34_CashFlowStatement_leer.xlsx) zum Herunterladen in der Vorlesung. Zinsen in der GuV als Zahl (vorher Text, daher Fehler in Steuern und Gewinn), operativer Cashflow in Spalte (b) summiert jetzt die eigene Spalte.
