@@ -1,5 +1,9 @@
 # Änderungen
 
+## v0.9.8 (23.11.2026)
+
+- Live-Quiz leichter zu starten: In der Vorlesung hat jedes Kapitel mit Quiz den Link „Live-Quiz am Beamer starten“ (Spielleitung mit QR-Code und Raumcode). Auf der Teilnahmeseite führt ein Hinweis für Lehrende zur Spielleitung.
+
 ## v0.9.7 (23.11.2026)
 
 - Neue Seite fallaufgabe-cfs.html: Lösungsweg zur Fallaufgabe Cash-Flow-Statement in neun Schritten, Lösungen zum Aufklappen, Bilanzkontrollen nach (a) und (c), elf Fallstricke. Verlinkt in der Vorlesung bei Kapitel 1.

@@ -306,6 +306,7 @@ function renderCodeEntry(){
       '<p class="muted" style="margin-top:6px">Den 4-stelligen Code vom Beamer eintippen.</p>'+
       '<input id="codeIn" placeholder="z. B. 7K9Q" maxlength="4" autocapitalize="characters" style="text-transform:uppercase;text-align:center;letter-spacing:.3em;font-weight:700">'+
       '<button class="btn" id="codeGo">Weiter</button>'+
+      '<p class="muted" style="margin-top:18px;font-size:.9rem">Lehrende: <a href="live-admin.html'+location.search+'">Quiz am Beamer starten (Spielleitung mit QR-Code)</a></p>'+
     '</div>';
   document.getElementById("codeGo").onclick=function(){
     var v=(document.getElementById("codeIn").value||"").toUpperCase().replace(/[^A-Z0-9]/g,"");
