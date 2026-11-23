@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Lösungsweg Cash-Flow-Statement</title>
+<link rel="stylesheet" href="assets/site.css">
+<style>
+.step{border-top:1px solid var(--line);padding:14px 0}
+.step h3{margin:0 0 6px}
+.step p,.step ul,.step ol{max-width:80ch}
+details.sol{border:1px solid var(--line);padding:8px 12px;margin-top:10px;background:#fff}
+details.sol summary{cursor:pointer;font-weight:700;color:var(--red)}
+.f{font-family:Consolas,Menlo,monospace;background:var(--panel);padding:2px 6px;white-space:nowrap}
+.trap{border-left:0;background:var(--panel);padding:10px 14px;margin:8px 0;max-width:80ch}
+.trap b{display:block;margin-bottom:2px}
+td.r,th.r{text-align:right}
+tr.sum td{font-weight:700}
+tr.neg td.v{color:var(--red);font-weight:700}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>Fallaufgabe Cash-Flow-Statement: Lösungsweg Schritt für Schritt</h1>
+  <p class="lead">ReFi II, Kapitel 1. Versuchen Sie jeden Schritt zuerst selbst mit der Excel-Vorlage. Die Lösung zu jedem Schritt klappen Sie erst danach auf. Alle Beträge in Mio. Euro.</p>
+  <p class="small"><a href="unterlagen/I_34_CashFlowStatement_leer.xlsx">Excel-Vorlage I_34_CashFlowStatement_leer.xlsx herunterladen</a> · Aufgabe und Lösung auch im Foliensatz <a href="unterlagen/261123_REFI_II_Einstieg_Kap1.pdf">Einstieg und Kapitel 1</a>, Folien 14 bis 16</p>
+
+  <h2>Die Ausgangslage</h2>
+  <div class="grid2">
+    <div class="tbl"><table><thead><tr><th>Bilanz Jahr 1</th><th class="r">Aktiva</th><th></th><th class="r">Passiva</th></tr></thead><tbody>
+      <tr><td>Grundstücke</td><td class="r">5</td><td>Eigenkapital (gez. Kapital, Rücklagen)</td><td class="r">40</td></tr>
+      <tr><td>Gebäude</td><td class="r">5</td><td>Gewinn</td><td class="r">0</td></tr>
+      <tr><td>Maschinen</td><td class="r">25</td><td>Kredite</td><td class="r">50</td></tr>
+      <tr><td>Roh-, Hilfs-, Betriebsstoffe (RHB)</td><td class="r">25</td><td>Verbindlichkeiten LuL</td><td class="r">10</td></tr>
+      <tr><td>Fertigerzeugnisse (FE)</td><td class="r">10</td><td></td><td></td></tr>
+      <tr><td>Forderungen LuL</td><td class="r">20</td><td></td><td></td></tr>
+      <tr><td>Zahlungsmittel</td><td class="r">10</td><td></td><td></td></tr>
+      <tr class="sum"><td>Summe</td><td class="r">100</td><td>Summe</td><td class="r">100</td></tr>
+    </tbody></table></div>
+    <div>
+      <div class="tbl"><table><thead><tr><th>Geplante GuV Jahr 2</th><th class="r"></th></tr></thead><tbody>
+        <tr><td>Umsatzerlöse</td><td class="r">100,0</td></tr>
+        <tr><td>− Herstellungskosten</td><td class="r">70,0</td></tr>
+        <tr><td>− Funktionskosten</td><td class="r">20,0</td></tr>
+        <tr class="sum"><td>= EBIT</td><td class="r">10,0</td></tr>
+        <tr><td>− Zinsen (10 % auf 40)</td><td class="r">4,0</td></tr>
+        <tr><td>− Steuern (50 % auf 6,0)</td><td class="r">3,0</td></tr>
+        <tr class="sum"><td>= Jahresüberschuss</td><td class="r">3,0</td></tr>
+      </tbody></table></div>
+      <p class="small">Geplante Abschreibungen Jahr 2: Gebäude 0,5 und Maschinen 5,0. Sie stecken schon in Herstell- und Funktionskosten.</p>
+    </div>
+  </div>
+  <div class="note info"><b>Die eine Regel für die indirekte Methode:</b> Sie starten beim Gewinn und korrigieren alles, was Gewinn und Zahlung auseinanderlaufen lässt. Steigt ein Aktivposten, ist Geld gebunden: minus. Steigt ein Passivposten, ist Geld hereingekommen oder nicht abgeflossen: plus. Bei sinkenden Posten dreht sich das Vorzeichen.</div>
+
+  <h2>Stufe (a): das normale Geschäft</h2>
+  <p>Veränderungen in Jahr 2: RHB +5,5; Fertigerzeugnisse +2,0; Forderungen +5,0; Verbindlichkeiten LuL +7,5; Kredite −10,0 (Tilgung).</p>
+
+  <div class="step"><h3>Schritt 1: Mit dem Jahresüberschuss beginnen</h3>
+    <p>Rechnen Sie die GuV durch: EBIT 10,0 minus Zinsen 4,0 ergibt 6,0 vor Steuern; davon 50 % Steuern sind 3,0. Der Jahresüberschuss von 3,0 ist die erste Zeile der Kapitalflussrechnung.</p>
+    <p class="small muted">Excel: Das Blatt GuV ist für Spalte (a) vorbelegt; den Gewinn übertragen Sie ins Blatt CFS, Zeile Gewinn.</p>
+    <details class="sol"><summary>Lösung</summary><p>Jahresüberschuss <b>3,0</b></p></details>
+  </div>
+
+  <div class="step"><h3>Schritt 2: Abschreibungen addieren</h3>
+    <p>Abschreibungen haben den Gewinn gemindert, aber kein Geld gekostet. Deshalb kommen sie wieder dazu. Beide Abschreibungen zählen, die auf das Gebäude und die auf die Maschinen.</p>
+    <details class="sol"><summary>Lösung</summary><p><span class="f">0,5 + 5,0 = 5,5</span>, also <b>+5,5</b></p></details>
+  </div>
+
+  <div class="step"><h3>Schritt 3: Working Capital berücksichtigen</h3>
+    <p>Gehen Sie jede Veränderung im Umlaufvermögen und bei den Lieferantenverbindlichkeiten durch und wenden Sie die Vorzeichenregel an. Vorräte sind RHB und Fertigerzeugnisse zusammen.</p>
+    <details class="sol"><summary>Lösung</summary>
+      <ul>
+        <li>Verbindlichkeiten LuL steigen um 7,5: Lieferanten finanzieren mit, <b>+7,5</b></li>
+        <li>Forderungen steigen um 5,0: Kunden haben noch nicht bezahlt, <b>−5,0</b></li>
+        <li>Vorräte steigen um <span class="f">5,5 + 2,0 = 7,5</span>: Geld liegt im Lager, <b>−7,5</b></li>
+      </ul>
+      <p>Operativer Cashflow (A): <span class="f">3,0 + 5,5 + 7,5 − 5,0 − 7,5 = 3,5</span></p>
+    </details>
+  </div>
+
+  <div class="step"><h3>Schritt 4: Investitionen und Finanzierung</h3>
+    <p>In Stufe (a) gibt es keine Investition. Die Tilgung von 10,0 ist ein Finanzierungsvorgang und gehört nach (C), nicht in den operativen Cashflow.</p>
+    <details class="sol"><summary>Lösung</summary><p>(B) Investitionen <b>0,0</b>; Free Cashflow <b>3,5</b>; (C) Finanzierung <b>−10,0</b></p></details>
+  </div>
+
+  <div class="step"><h3>Schritt 5: Kassenbestand fortschreiben und deuten</h3>
+    <p>Veränderung der Zahlungsmittel ist A + B + C. Den Anfangsbestand von 10,0 tragen Sie in der Excel-Vorlage in jede Spalte ein. Formulieren Sie einen Satz: Reicht das Geld, und warum?</p>
+    <details class="sol"><summary>Lösung</summary>
+      <p>Veränderung <span class="f">3,5 + 0,0 − 10,0 = −6,5</span>; Endbestand <span class="f">10,0 − 6,5 = 3,5</span>.</p>
+      <p><b>Aussage:</b> Das Unternehmen verdient 3,0, und trotzdem sinkt die Kasse um 6,5. Das Wachstum bindet 5,0 im Working Capital (7,5 + 5,0 − 7,5), und die Tilgung frisst mehr als den gesamten operativen Cashflow. Es reicht knapp, aber mit nur 3,5 in der Kasse.</p>
+      <p class="small muted">Kontrolle mit der Bilanz Jahr 2 nach (a): Aktiva 5 + 4,5 + 20 + 30,5 + 12 + 25 + 3,5 = 100,5; Passiva 40 + 3,0 + 40 + 17,5 = 100,5.</p>
+    </details>
+  </div>
+
+  <h2>Stufe (b): weitere Vorfälle</h2>
+  <p>Zusätzlich zu (a): Dividende 1,0, gezahlt als Vorabausschüttung aus dem Jahresüberschuss von Jahr 2; Investition in Maschinen 5,0 im Dezember, in Jahr 2 noch ohne Abschreibung; Kapitalerhöhung 1,5.</p>
+
+  <div class="step"><h3>Schritt 6: Jeden Vorfall dem richtigen Bereich zuordnen</h3>
+    <p>Fragen Sie bei jedem Vorfall: Ändert er den Gewinn? Und in welchen Bereich gehört die Zahlung, A, B oder C?</p>
+    <details class="sol"><summary>Lösung</summary>
+      <ul>
+        <li>Investition 5,0: Bereich (B), <b>−5,0</b>. Der Gewinn bleibt 3,0, weil die Maschine erst im Dezember kommt und noch nicht abgeschrieben wird.</li>
+        <li>Dividende 1,0: Bereich (C), <b>−1,0</b>. Sie ist Gewinnverwendung, kein Aufwand. Der Jahresüberschuss bleibt 3,0.</li>
+        <li>Kapitalerhöhung 1,5: Bereich (C), <b>+1,5</b>. Sie ist kein Ertrag, sondern neues Eigenkapital.</li>
+      </ul>
+      <p>Operativer Cashflow unverändert <b>3,5</b>; Free Cashflow <span class="f">3,5 − 5,0 = −1,5</span>; Finanzierung <span class="f">−10,0 − 1,0 + 1,5 = −9,5</span></p>
+    </details>
+  </div>
+
+  <div class="step"><h3>Schritt 7: Kassenbestand prüfen</h3>
+    <details class="sol"><summary>Lösung</summary>
+      <p>Veränderung <span class="f">3,5 − 5,0 − 9,5 = −11,0</span>; Endbestand <span class="f">10,0 − 11,0 = −1,0</span>.</p>
+      <p><b>Aussage:</b> Ein negativer Kassenbestand ist nicht möglich. Mit Investition, Tilgung und Dividende fehlt 1,0. Das Unternehmen ist profitabel und trotzdem nicht durchfinanziert.</p>
+    </details>
+  </div>
+
+  <h2>Stufe (c): Finanzierung schließen</h2>
+  <p>Fehlender Cash wird als Kredit aufgenommen. Am Jahresende sollen mindestens 5,0 in der Kasse liegen.</p>
+
+  <div class="step"><h3>Schritt 8: Den neuen Kredit bemessen</h3>
+    <p>Der Kredit muss nicht nur das Loch stopfen, sondern auch den Mindestbestand herstellen.</p>
+    <details class="sol"><summary>Lösung</summary>
+      <p>Neuer Kredit <span class="f">5,0 − (−1,0) = 6,0</span>. Finanzierung <span class="f">−9,5 + 6,0 = −3,5</span>; Veränderung <span class="f">3,5 − 5,0 − 3,5 = −5,0</span>; Endbestand <b>5,0</b>.</p>
+    </details>
+  </div>
+
+  <div class="step"><h3>Schritt 9: Bilanz Jahr 2 aufstellen und abstimmen</h3>
+    <p>Schreiben Sie jeden Posten von Jahr 1 fort. Die Kasse muss dem Endbestand der Kapitalflussrechnung entsprechen, und Aktiva müssen gleich Passiva sein.</p>
+    <details class="sol"><summary>Lösung</summary>
+      <div class="tbl"><table><thead><tr><th>Aktiva</th><th class="r">Jahr 2</th><th>Passiva</th><th class="r">Jahr 2</th></tr></thead><tbody>
+        <tr><td>Grundstücke (unverändert, keine AfA)</td><td class="r">5,0</td><td>Gez. Kapital, Rücklagen 40,0 + 1,5</td><td class="r">41,5</td></tr>
+        <tr><td>Gebäude 5,0 − 0,5</td><td class="r">4,5</td><td>Gewinn 3,0 − Dividende 1,0</td><td class="r">2,0</td></tr>
+        <tr><td>Maschinen 25,0 − 5,0 + 5,0</td><td class="r">25,0</td><td>Kredite 50,0 − 10,0 + 6,0</td><td class="r">46,0</td></tr>
+        <tr><td>RHB 25,0 + 5,5</td><td class="r">30,5</td><td>Verbindlichkeiten LuL 10,0 + 7,5</td><td class="r">17,5</td></tr>
+        <tr><td>Fertigerzeugnisse 10,0 + 2,0</td><td class="r">12,0</td><td></td><td></td></tr>
+        <tr><td>Forderungen 20,0 + 5,0</td><td class="r">25,0</td><td></td><td></td></tr>
+        <tr><td>Zahlungsmittel</td><td class="r">5,0</td><td></td><td></td></tr>
+        <tr class="sum"><td>Summe</td><td class="r">107,0</td><td>Summe</td><td class="r">107,0</td></tr>
+      </tbody></table></div>
+      <p>Das Eigenkapital steigt insgesamt um 3,5 auf 43,5: Jahresüberschuss +3,0, Dividende −1,0, Kapitalerhöhung +1,5. Die Vorlage zeigt es auf zwei Zeilen, Kapital 41,5 und Gewinn 2,0.</p>
+    </details>
+  </div>
+
+  <h2>Gesamtlösung</h2>
+  <details class="sol"><summary>Kapitalflussrechnung (a) bis (c) anzeigen</summary>
+    <div class="tbl"><table><thead><tr><th></th><th class="r">(a)</th><th class="r">(b)</th><th class="r">(c)</th></tr></thead><tbody>
+      <tr><td>Jahresüberschuss</td><td class="r">3,0</td><td class="r">3,0</td><td class="r">3,0</td></tr>
+      <tr><td>+ Abschreibungen</td><td class="r">5,5</td><td class="r">5,5</td><td class="r">5,5</td></tr>
+      <tr><td>+ Zunahme Verbindlichkeiten LuL</td><td class="r">7,5</td><td class="r">7,5</td><td class="r">7,5</td></tr>
+      <tr><td>− Zunahme Forderungen</td><td class="r">−5,0</td><td class="r">−5,0</td><td class="r">−5,0</td></tr>
+      <tr><td>− Zunahme Vorräte</td><td class="r">−7,5</td><td class="r">−7,5</td><td class="r">−7,5</td></tr>
+      <tr class="sum"><td>= (A) Operativer Cashflow</td><td class="r">3,5</td><td class="r">3,5</td><td class="r">3,5</td></tr>
+      <tr><td>(B) Investitionen</td><td class="r">0,0</td><td class="r">−5,0</td><td class="r">−5,0</td></tr>
+      <tr class="sum"><td>Free Cashflow</td><td class="r">3,5</td><td class="r">−1,5</td><td class="r">−1,5</td></tr>
+      <tr><td>Tilgung Kredite</td><td class="r">−10,0</td><td class="r">−10,0</td><td class="r">−10,0</td></tr>
+      <tr><td>Dividende</td><td class="r"></td><td class="r">−1,0</td><td class="r">−1,0</td></tr>
+      <tr><td>Kapitalerhöhung</td><td class="r"></td><td class="r">+1,5</td><td class="r">+1,5</td></tr>
+      <tr><td>Neuer Kredit</td><td class="r"></td><td class="r"></td><td class="r">+6,0</td></tr>
+      <tr class="sum"><td>= (C) Finanzierung</td><td class="r">−10,0</td><td class="r">−9,5</td><td class="r">−3,5</td></tr>
+      <tr><td>Veränderung Zahlungsmittel</td><td class="r">−6,5</td><td class="r">−11,0</td><td class="r">−5,0</td></tr>
+      <tr class="sum neg"><td>Zahlungsmittel Ende Jahr 2 (Anfang 10,0)</td><td class="r">3,5</td><td class="r v">−1,0</td><td class="r">5,0</td></tr>
+    </tbody></table></div>
+  </details>
+
+  <h2>Fallstricke</h2>
+  <div class="trap"><b>Kredite im operativen Cashflow</b>Tilgung und Neuaufnahme sind Finanzierung (C). Im operativen Teil stehen nur die Verbindlichkeiten aus Lieferungen und Leistungen.</div>
+  <div class="trap"><b>Vorzeichen bei Forderungen und Vorräten</b>Steigen sie, kostet das Geld: minus. Wer hier addiert, kommt auf einen operativen Cashflow von 28,5 statt 3,5.</div>
+  <div class="trap"><b>Nur die Maschinen abschreiben</b>Die Abschreibungen sind 0,5 auf Gebäude plus 5,0 auf Maschinen, zusammen 5,5. Grundstücke werden nicht abgeschrieben.</div>
+  <div class="trap"><b>Die neue Maschine abschreiben</b>Sie kommt im Dezember. Die Aufgabe rechnet vereinfacht ohne Abschreibung in Jahr 2; Gewinn und Abschreibungen bleiben deshalb in allen Stufen gleich.</div>
+  <div class="trap"><b>Dividende als Aufwand</b>Die Dividende mindert nicht den Jahresüberschuss. Sie verteilt ihn: Zahlung in (C), in der Bilanz bleibt vom Gewinn 3,0 noch 2,0 übrig. Weil der Gewinn von Jahr 1 null ist, wird sie hier als Vorabausschüttung aus dem Jahresüberschuss von Jahr 2 gezahlt.</div>
+  <div class="trap"><b>Kapitalerhöhung als Ertrag</b>Neues Eigenkapital ist kein Gewinn. Es erhöht in der Bilanz das gezeichnete Kapital und die Rücklagen und steht in der Kapitalflussrechnung unter (C).</div>
+  <div class="trap"><b>Nur das Loch stopfen</b>In (c) reicht ein Kredit über 1,0 nicht. Erst 6,0 bringen die Kasse auf den Mindestbestand von 5,0.</div>
+  <div class="trap"><b>Grundstücke in der Bilanz Jahr 2 vergessen</b>Sie bleiben mit 5,0 stehen. Wer sie vergisst, kommt auf 102,0 statt 107,0 Aktiva.</div>
+  <div class="trap"><b>Eigenkapital nur mit 41,5 ablesen</b>Das Eigenkapital steht auf zwei Zeilen. Zusammen sind es 43,5.</div>
+  <div class="trap"><b>Zinsen anpassen</b>Eigentlich sinken die Zinsen, wenn der Kreditbestand fällt. Die Aufgabe hält Zinsen und Steuern vereinfacht bei 4,0 und 3,0. Wer anpasst, erhält einen etwas anderen Gewinn; das ist kein Fehler, muss aber begründet sein.</div>
+  <div class="trap"><b>Excel-Vorlage</b>In der GuV die Spalten (b) und (c) ebenfalls füllen, sonst steht dort ein Gewinn von 0. Den Anfangsbestand 10 in jeder Spalte eintragen. Zahlen mit Vorzeichen eingeben, etwa −5 bei den Forderungen. Zum Schluss prüfen: Endbestand gleich Kasse in der Bilanz, Aktiva gleich Passiva.</div>
+
+  <h2>Zum Nachdenken</h2>
+  <p>Wie hoch sollte eine Liquiditätsreserve sein? Die Aufgabe setzt 5,0 an, rund 5 % vom Umsatz, also knapp drei Wochen Umsatz. Überlegen Sie, was die Höhe treibt: Schwankung der Zahlungseingänge, zugesagte, aber nicht genutzte Kreditlinien, Saisonalität und Abhängigkeit von wenigen Kunden.</p>
+  <p class="small muted" style="margin-top:20px">Entwurf, Stand 23.11.2026. Fallaufgabe aus dem Foliensatz Fehling und Neusser; indirekte Methode nach IAS 7.18(b) und DRS 21.</p>
+</main>
+<script src="assets/site.js"></script>
+</body>
+</html>

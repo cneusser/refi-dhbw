@@ -44,6 +44,7 @@ window.KURS = {
           material: [
             { t: "Einstieg und Kapitel 1 (Folien, PDF ohne Lösungsfolien)", href: "unterlagen/261123_REFI_II_Einstieg_Kap1.pdf" },
             { t: "Fallaufgabe Cash-Flow-Statement zum Ausfüllen (Excel)", href: "unterlagen/I_34_CashFlowStatement_leer.xlsx" },
+            { t: "Fallaufgabe Cash-Flow-Statement: Lösungsweg und Fallstricke", href: "fallaufgabe-cfs.html" },
             { t: "Working-Capital-Rechner (Tool)", href: "tools.html#wc" },
             { t: "Leasing nach IFRS 16 (Tool)", href: "tools.html#ifrs16" }
           ], quiz: "kap1", refs: "kap1" },

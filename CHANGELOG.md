@@ -1,5 +1,9 @@
 # Änderungen
 
+## v0.9.7 (23.11.2026)
+
+- Neue Seite fallaufgabe-cfs.html: Lösungsweg zur Fallaufgabe Cash-Flow-Statement in neun Schritten, Lösungen zum Aufklappen, Bilanzkontrollen nach (a) und (c), elf Fallstricke. Verlinkt in der Vorlesung bei Kapitel 1.
+
 ## v0.9.6 (23.11.2026)
 
 - Kapitel 1, Fallaufgabe Cash-Flow-Statement: Stufe (b) sagt jetzt, dass die Dividende von 1,0 eine Vorabausschüttung aus dem Jahresüberschuss von Jahr 2 ist. Lösungsfolie: Grundstücke 5,0 in der Bilanz ergänzt; Eigenkapital als 43,5 ausgewiesen (Kapital 41,5, Gewinn 2,0).
