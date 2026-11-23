@@ -1,5 +1,16 @@
 # Änderungen
 
+## v0.9.4 (23.11.2026)
+
+Challenge Nordstil, Rückmeldungen aus dem Durchlauf am 23.11.:
+- Zahleneingabe: Komma und Punkt sind beide erlaubt; bei den Leerkosten zählen Tausenderpunkte (66.000 = 66000). Unter jedem Feld steht, welche Zahl gelesen wurde. Bisher wurde 66.000 als 66 gelesen; das verzerrte Mittelwert und Streuung.
+- Spielleitung: Gesamtzahl der Angemeldeten groß im Reiter Beitritt und in der Kopfzeile.
+- Neuer Reiter Teilnehmende: Stand je Person, doppelte Namen markiert, Entfernen und Wieder aufnehmen, ein Klick entfernt alle ohne Eingabe. Entfernte Personen zählen nicht für Gruppengröße, Mittelwert, Streuung, Einzelbonus und Archiv.
+- Beitritt: Hinweis gegen doppelte Anmeldung, bereits vergebene Namen werden abgefangen, „Schon beigetreten?“ deutlicher.
+- Laufendes Spiel öffnen: per Spielcode oder aus der Liste der letzten Spiele, auch im zweiten Browser (PIN). Der Leitungslink steht im Reiter Beitritt zum Kopieren.
+- Gruppenphase: Gruppenmitglieder groß oben, damit sich die Gruppe findet. „Abweichung“ heißt jetzt Streuung σ (Standardabweichung) mit Prozentwert und Erklärung. Die Punktgrafik zeigt gleiche Werte als einen Punkt mit Anzahl; fast gleiche Werte liegen nicht mehr an beiden Rändern.
+- Live-Stand zeigt, wer zu welcher Gruppe gehört. Zeitbedarf auf der Spielleitungsseite und im Regieplan (Impuls 30 Minuten, 10 Minuten Puffer).
+
 ## v0.9 (22.11.2026)
 
 - ReFi I, Kapitel 1 bis 3 überarbeitet: drei neue Foliensätze im DHBW-Layout (Begriffe und Fallstudie Supercomputer AG, Systematik, Externes Rechnungswesen) mit Übungen, Peer Instruction, kritischen Folien, Selbstlernfragen und Lösungen im Anhang. PDFs ohne Lösungsfolien unter unterlagen/.
