@@ -1,5 +1,12 @@
 # Änderungen
 
+## v0.11 (28.11.2026)
+
+- Live-Quiz: Die Antworten werden je Raum gemischt (Beamer und Handys zeigen dieselbe Reihenfolge), beim Üben allein bei jedem Durchgang neu. Bisher stand die richtige Antwort fast immer an zweiter Stelle (Raute). Hinweis von Janko Petzold.
+- Prüfungsbereich: Jede Aufgabe ist als leicht, mittel oder schwer eingestuft (Abzeichen bei jeder Aufgabe und in der Auswertung). Neue Wahl beim Zusammenstellen: gemischt wie in der Klausur, Grundlagen sichern oder anspruchsvoll. Gemischt ergibt im Schnitt rund 40 % leichte, 50 % mittlere und 10 % schwere Punkte.
+- Acht neue Rechenaufgaben in Richtung der Klausurthemen, mit anderen Zahlen und anderem Schwerpunkt: Preisuntergrenze bei Engpass, Leerkosten und Stellenabbau, Aktivierung selbst geschaffener Software mit latenten Steuern und Ausschüttungssperre, Kapitalwert gegen internen Zinsfuß bei sich ausschließenden Anlagen, höchste tragbare Tilgung bei DSCR 1,2, Leverage im Plan und in der Krise, Skonto über Kontokorrent in Euro, Kennzahlen des Working Capital aus der Bilanz. Dazu drei offene Fragen (Finanzierungsmaßnahmen einordnen, Aktivierungsverbote, Hebel bei zu niedrigem DSCR).
+- Verwaltung: Stufe bei jeder Aufgabe, Zählung leicht, mittel, schwer je Kapitel.
+
 ## v0.10 (23.11.2026)
 
 Prüfungsbereich:

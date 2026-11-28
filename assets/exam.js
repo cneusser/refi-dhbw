@@ -35,15 +35,17 @@ function makeSelbst(ch){
    zum Auffüllen und höchstens zwei je Kapitel. Ein Kapitel bekommt höchstens so viel Zeit, dass der Pool mindestens 40 Prozent mehr
    Aufgaben enthält als gezogen werden. */
 var EX = window.EX = { CHS: ["r1k1", "r1k2", "r1k3", "r1k4", "r2k1", "r2k2", "r2k3", "r2k4"], RESERVE: 1.4, MC_MAX: 2 };
+function lvBadge(lv){ return '<span class="lv lv' + lv + '">' + (P.LV ? P.LV[lv] : lv) + "</span>"; }
+EX.DIFF = { mix: "gemischt wie in der Klausur", basis: "Grundlagen sichern (leicht und mittel)", hoch: "anspruchsvoll (mittel und schwer)" };
 function txtPts(i){ return P.TXT[i].k.reduce(function(a, k){ return a + k[1]; }, 0); }
 EX.cands = function(ch){
   var c = [];
-  genIdx(ch).forEach(function(g){ c.push({ k: "gen:" + g, kind: "Rechenaufgabe", min: P.GEN[g].pts * 3, mk: function(){ return [itGen(g)]; } }); });
-  txtIdx(ch).forEach(function(i){ c.push({ k: "txt:" + i, kind: "Offene Frage", min: txtPts(i) * 2.5, mk: function(){ return [itTxt(i)]; } }); });
-  if (ch === "r1k2") { c.push({ k: "mx8", kind: "Zuordnung", grp: "mx", min: 8, mk: function(r){ return [itMx(8, r)]; } }); c.push({ k: "mx4", kind: "Zuordnung", grp: "mx", min: 4, mk: function(r){ return [itMx(4, r)]; } }); }
-  if (ch === "r1k3") { c.push({ k: "bl6", kind: "Buchungssätze", min: 9, mk: function(r){ var s = seed(); return pick([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17], 6, r).map(function(l){ return itBl(s, l); }); } });
-    c.push({ k: "book", kind: "Buchhaltungsfall", min: 45, mk: function(){ return [itBook()]; } }); }
-  mcIdx(ch).forEach(function(i){ c.push({ k: "mc:" + i, kind: "Multiple Choice", mc: true, min: 1.5, mk: function(r){ return [itMC(i, r)]; } }); });
+  genIdx(ch).forEach(function(g){ c.push({ k: "gen:" + g, kind: "Rechenaufgabe", lv: P.GEN[g].lv || 2, min: P.GEN[g].pts * 3, mk: function(){ return [itGen(g)]; } }); });
+  txtIdx(ch).forEach(function(i){ c.push({ k: "txt:" + i, kind: "Offene Frage", lv: P.TXT[i].lv || 2, min: txtPts(i) * 2.5, mk: function(){ return [itTxt(i)]; } }); });
+  if (ch === "r1k2") { c.push({ k: "mx8", kind: "Zuordnung", lv: 2, grp: "mx", min: 8, mk: function(r){ return [itMx(8, r)]; } }); c.push({ k: "mx4", kind: "Zuordnung", lv: 1, grp: "mx", min: 4, mk: function(r){ return [itMx(4, r)]; } }); }
+  if (ch === "r1k3") { c.push({ k: "bl6", kind: "Buchungssätze", lv: 2, min: 9, mk: function(r){ var s = seed(); return pick([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17], 6, r).map(function(l){ return itBl(s, l); }); } });
+    c.push({ k: "book", kind: "Buchhaltungsfall", lv: 3, min: 45, mk: function(){ return [itBook()]; } }); }
+  mcIdx(ch).forEach(function(i){ c.push({ k: "mc:" + i, kind: "Multiple Choice", lv: P.MC[i].lv || 1, mc: true, min: 1.5, mk: function(r){ return [itMC(i, r)]; } }); });
   return c;
 };
 EX.poolMin = function(ch){ var c = EX.cands(ch), g = {}, m = 0, n = 0;
@@ -61,13 +63,18 @@ EX.title = function(cfg){
   var on = EX.CHS.filter(function(c){ return cfg.w[c]; }), r1 = on.filter(function(c){ return c[1] === "1"; }).length, r2 = on.length - r1;
   var heavy = on.some(function(c){ return cfg.w[c] === 2; });
   var t = r1 === 4 && r2 === 4 ? "ReFi I + II" : r1 === 4 && !r2 ? "ReFi I" : r2 === 4 && !r1 ? "ReFi II" : "Kapitelauswahl";
-  return "Klausur " + t + (heavy ? " mit Schwerpunkt" : "") + ", " + cfg.dur + " Minuten";
+  return "Klausur " + t + (heavy ? " mit Schwerpunkt" : "") + ", " + cfg.dur + " Minuten" + (cfg.diff === "basis" ? ", Grundlagen" : cfg.diff === "hoch" ? ", anspruchsvoll" : "");
 };
 function makeExam(cfg){
   var r = mul(seed()), plan = EX.plan(cfg), items = [], k = 0;
   EX.CHS.forEach(function(ch){ var pc = plan.ch[ch]; if (!pc) return;
     var B = pc.budget, used = 0, grp = {}, mcN = 0, got = [];
-    var c = shuffle(EX.cands(ch), r), non = c.filter(function(x){ return !x.mc; }), mc = c.filter(function(x){ return x.mc; });
+    var c = shuffle(EX.cands(ch), r), d = cfg.diff || "mix";
+    /* Schwierigkeit: bevorzugte Stufen zuerst ziehen, andere nur zum Auffüllen. Bei "gemischt" zuerst je eine leichte, mittlere und schwere Aufgabe, dann Zufall. */
+    function pref(x){ return d === "basis" ? (x.lv <= 2 ? 0 : 1) : d === "hoch" ? (x.lv >= 2 ? 0 : 1) : 0; }
+    c.sort(function(a, b){ return pref(a) - pref(b); });
+    if (d === "mix") { var firsts = []; [3, 1, 2].forEach(function(l){ var j = c.findIndex(function(x){ return !x.mc && x.lv === l && firsts.indexOf(x) < 0; }); if (j > -1) firsts.push(c[j]); }); c = firsts.concat(c.filter(function(x){ return firsts.indexOf(x) < 0; })); }
+    var non = c.filter(function(x){ return !x.mc; }), mc = c.filter(function(x){ return x.mc; });
     non.forEach(function(x){ if (x.grp && grp[x.grp]) return; if (used + x.min <= B + 2) { got.push(x); used += x.min; if (x.grp) grp[x.grp] = 1; } });
     mc.forEach(function(x){ if (mcN < EX.MC_MAX && used + x.min <= B + 1) { got.push(x); used += x.min; mcN++; } });
     if (!got.length) return;
@@ -81,12 +88,12 @@ var CACHE = {};
 function genOf(it){ var k = it.g + ":" + it.s; if (!CACHE[k]) CACHE[k] = P.GEN[it.g].make(mul(it.s)); return CACHE[k]; }
 function bookOf(s){ var k = "b:" + s; if (!CACHE[k]) CACHE[k] = P.bookCase(mul(s)); return CACHE[k]; }
 function meta(it){
-  if (it.t === "mc") { var q = P.MC[it.i]; return { ch: q.ch, ref: q.ref, pts: 1 }; }
-  if (it.t === "gen") { var g = P.GEN[it.g]; return { ch: g.ch, ref: g.ref, pts: g.pts }; }
-  if (it.t === "mx") return { ch: "r1k2", ref: "2.3 Grundbegriffe", pts: it.rows.length * 0.5 };
-  if (it.t === "book") return { ch: "r1k3", ref: "3.2 Buchführung", pts: 18 * 1.5 + 6 };
-  if (it.t === "bl") return { ch: "r1k3", ref: "3.2 Buchführung", pts: 1 };
-  if (it.t === "txt") { var t = P.TXT[it.i]; return { ch: t.ch, ref: t.ref, pts: t.k.reduce(function(a, k){ return a + k[1]; }, 0) }; }
+  if (it.t === "mc") { var q = P.MC[it.i]; return { ch: q.ch, ref: q.ref, pts: 1, lv: q.lv || 1 }; }
+  if (it.t === "gen") { var g = P.GEN[it.g]; return { ch: g.ch, ref: g.ref, pts: g.pts, lv: g.lv || 2 }; }
+  if (it.t === "mx") return { ch: "r1k2", ref: "2.3 Grundbegriffe", pts: it.rows.length * 0.5, lv: it.rows.length > 4 ? 2 : 1 };
+  if (it.t === "book") return { ch: "r1k3", ref: "3.2 Buchführung", pts: 18 * 1.5 + 6, lv: 3 };
+  if (it.t === "bl") return { ch: "r1k3", ref: "3.2 Buchführung", pts: 1, lv: 2 };
+  if (it.t === "txt") { var t = P.TXT[it.i]; return { ch: t.ch, ref: t.ref, pts: t.k.reduce(function(a, k){ return a + k[1]; }, 0), lv: t.lv || 2 }; }
 }
 function acc(sel, v){ return '<option value="">wählen</option>' + P.KONTEN.map(function(k, i){ return '<option value="' + i + '"' + (String(v) === String(i) ? " selected" : "") + ">" + esc(k) + "</option>"; }).join(""); }
 function eurIn(x){ return x == null ? "" : x; }

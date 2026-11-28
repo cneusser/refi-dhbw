@@ -20,5 +20,13 @@
   };
   LQ.timeout = function(p, ms, fallback){ return Promise.race([p, new Promise(function(r){ setTimeout(function(){ r(fallback); }, ms); })]); };
   LQ.points = function(correct, timeMs, durMs){ if (!correct) return 0; var f = Math.max(0, Math.min(1, (durMs - timeMs) / durMs)); return Math.max(300, Math.round(300 + 700 * f)); };
+  /* Antworten mischen: In den Quellfragen steht die richtige Antwort oft an zweiter Stelle (Raute).
+     Gemischt wird je Raum mit demselben Startwert, damit Beamer und alle Handys dieselbe Reihenfolge zeigen. */
+  LQ.mix = function(qs, key){
+    function h(s){ var x = 2166136261; for (var i = 0; i < s.length; i++){ x ^= s.charCodeAt(i); x = Math.imul(x, 16777619); } return x >>> 0; }
+    return qs.map(function(q, n){ var st = h(String(key) + ":" + n + ":" + q.q), p = q.o.map(function(_, i){ return i; });
+      for (var i = p.length - 1; i > 0; i--){ st = Math.imul(st ^ (st >>> 15), 2246822519) >>> 0; var j = st % (i + 1); var t = p[i]; p[i] = p[j]; p[j] = t; }
+      return { q: q.q, o: p.map(function(i){ return q.o[i]; }), a: p.indexOf(q.a), e: q.e }; });
+  };
   LQ.questions = function(set, extra){ var b = (window.QSETS[set] || window.QSETS.pkr).qs; return b.concat((extra || []).filter(LQ.valid)); };
 })();

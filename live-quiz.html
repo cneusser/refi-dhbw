@@ -264,7 +264,7 @@ function attachRoom(code){
   roomRef.child("meta").once("value").then(function(s){
     var m=s.val();
     if(!m){ show("nf",'<div class="card center"><p class="status">Raum '+esc(code)+' nicht gefunden. Bitte den Code am Beamer prüfen.</p><button class="btn" id="again">Anderen Code eingeben</button></div>'); document.getElementById("again").onclick=function(){ roomCode=null; viewKey=""; renderCodeEntry(); }; return; }
-    useSet(m.set, m.extra); if(m.dur) DURATION_MS=m.dur*1000; metaOk=true;
+    useSet(m.set, m.extra); QUESTIONS=LQ.mix(QUESTIONS, code); if(m.dur) DURATION_MS=m.dur*1000; metaOk=true;
     stateRef=roomRef.child("state");
     stateCb=function(snap){ st=snap.val(); onState(); };
     stateRef.on("value",stateCb);
@@ -441,7 +441,7 @@ function soloStart(set, timed){
   useSet(set, []); var base=QUESTIONS.slice();
   show("sload",'<div class="card center"><p class="status">Fragen werden geladen ...</p></div>');
   (db?LQ.loadCustom(db,set):Promise.resolve([])).then(function(extra){
-    var qs=base.concat(extra).map(function(q,i){ return {q:q,i:i}; });
+    var qs=LQ.mix(base.concat(extra), Math.random()).map(function(q,i){ return {q:q,i:i}; });
     for(var i=qs.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=qs[i]; qs[i]=qs[j]; qs[j]=t; }
     SOLO={set:set,qs:qs,k:0,pts:0,right:0,miss:[],timed:timed,dur:LQ.settings().dur*1000,at:0,done:false};
     soloQ();

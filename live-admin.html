@@ -348,7 +348,7 @@ function attachRoom(code){
   roomRef = db.ref("refi/rooms/"+code);
   roomCb = function(snap){
     currentData = snap.val() || {};
-    var m=currentData.meta||{}; useSet(m.set, m.extra);
+    var m=currentData.meta||{}; useSet(m.set, m.extra); QUESTIONS=LQ.mix(QUESTIONS, roomCode);
     if(m.dur) DURATION_MS=m.dur*1000; ADV_S=(typeof m.adv==="number")?m.adv:0;
     render();
   };

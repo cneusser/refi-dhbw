@@ -271,6 +271,60 @@ var GEN = {
    return { q: "Jahresüberschuss " + eur(ju,1) + " Mio. €, Abschreibungen " + eur(afa,1) + " Mio. €. Veränderungen im Jahr: " + [chg(df,"Forderungen LuL"), chg(dv,"Vorräte"), chg(dl,"Verbindlichkeiten LuL")].join(", ") + ". Investitionen " + eur(inv,1) + " Mio. €, Kredittilgung " + eur(til,1) + " Mio. €, Dividende " + eur(div,1) + " Mio. €. Ermitteln Sie mit der indirekten Methode:",
      ans: [{ l: "Operativer Cashflow in Mio. €", v: ocf, tol: 0.05 }, { l: "Free Cashflow in Mio. €", v: fcf, tol: 0.05 }, { l: "Veränderung der Zahlungsmittel in Mio. €", v: dz, tol: 0.05 }],
      e: "Operativer Cashflow = JÜ + AfA − Δ Forderungen − Δ Vorräte + Δ Verbindlichkeiten = " + eur(ocf,1) + ". Free Cashflow = operativer Cashflow − Investitionen = " + eur(fcf,1) + ". Veränderung Zahlungsmittel = Free Cashflow − Tilgung − Dividende = " + eur(dz,1) + " Mio. €. Tilgung und Dividende gehören in den Finanzierungsbereich, nicht in den operativen Cashflow." }; } },
+ zusatz: { ch: "r1k4", ref: "4.3.4 Programmplanung", pts: 3, lv: 3, make: function(r){
+   var H = 4000, n = rnd(r,1000,3000,500), t = rnd(r,0.3,0.6,0.1), kv = rnd(r,60,90,2), d = rnd(r,15,40,5), u = rnd(r,0.2,0.5,0.05);
+   var N = +(n*t).toFixed(4), B = Math.min(H - 100, H - Math.round(N*rnd(r,0.3,0.7,0.1)/100)*100), F = H - B, M = Math.max(0, N - F), V = M/u, O = V*d, pug = kv + O/n;
+   return { q: "Eine Engpassmaschine hat " + H + " Stunden Kapazität im Jahr, davon sind " + B + " Stunden verplant. Ein Kunde fragt einmalig " + n + " Stück an; je Stück braucht die Maschine " + eur(t,1) + " Stunden, die variablen Stückkosten betragen " + eur(kv,2) + " €. Für fehlende Stunden müsste Produkt K weichen (Deckungsbeitrag " + eur(d,2) + " € je Stück, " + eur(u,2) + " Stunden je Stück). Ermitteln Sie:",
+     ans: [{ l: "Fehlende Maschinenstunden", v: M, tol: 0.5 }, { l: "Entgangener Deckungsbeitrag von K in €", v: O, tol: 1 }, { l: "Preisuntergrenze je Stück in €", v: pug, tol: 0.01 }],
+     e: "Bedarf " + n + " × " + eur(t,1) + " = " + eur(N,0) + " h, frei " + F + " h, es fehlen " + eur(M,0) + " h. Dafür entfallen " + eur(M,0) + " / " + eur(u,2) + " = " + eur(V,0) + " Stück K mit je " + eur(d,2) + " € Deckungsbeitrag, zusammen " + eur(O,0) + " €. Preisuntergrenze = variable Stückkosten + Opportunitätskosten je Stück = " + eur(kv,2) + " + " + eur(O,0) + " / " + n + " = " + eur(pug,2) + " €. Fixkosten spielen keine Rolle, sie fallen ohnehin an." }; } },
+ leer: { ch: "r1k4", ref: "4.4.4 Prozesskostenrechnung", pts: 3, lv: 3, make: function(r){
+   var f = [90000, 96000, 100000][Math.floor(r()*3)], st = rnd(r,4,8,1), c = rnd(r,60000,75000,2500), m = rnd(r,3,12,1), v = rnd(r,8000,30000,1000), T = rnd(r,20000,50000,5000);
+   var s = c/f, S = m*v, R = S*s, k = Math.floor(S/f), net = k*c - T;
+   return { q: "Eine Kostenstelle mit " + st + " Vollzeitkräften kostet " + eur(st*c,0) + " € im Jahr; eine Vollzeitkraft hat eine praktische Kapazität von " + eur(f,0) + " Minuten und kostet " + eur(c,0) + " €. Ein neues Programm für " + eur(T,0) + " € im Jahr spart je Vorgang " + m + " Minuten, bei " + eur(v,0) + " Vorgängen im Jahr. Ermitteln Sie:",
+     ans: [{ l: "Rechnerische Einsparung (Minuten × Kostensatz) in €", v: R, tol: 1 }, { l: "Ganze Stellen, die abgebaut werden könnten", v: k, tol: 0 }, { l: "Ergebnisverbesserung bei Abbau dieser Stellen, nach Programmkosten, in €", v: net, tol: 1 }],
+     e: "Kostensatz " + eur(c,0) + " / " + eur(f,0) + " = " + eur(s,4) + " € je Minute. Frei werden " + m + " × " + eur(v,0) + " = " + eur(S,0) + " Minuten, rechnerisch " + eur(R,0) + " €. Gespart ist das nur, wenn Kapazität abgebaut wird: " + eur(S,0) + " / " + eur(f,0) + " ergibt " + k + " ganze Stelle(n). Ergebnis " + k + " × " + eur(c,0) + " − " + eur(T,0) + " = " + eur(net,0) + " €. Ohne Abbau entstehen nur Leerkosten, und das Programm kostet zusätzlich." }; } },
+ aktiv: { ch: "r1k3", ref: "3.1 Grundsätze", pts: 3, lv: 3, make: function(r){
+   var E = rnd(r,80,400,20)*1000, Fo = rnd(r,20,120,10)*1000, s = rnd(r,0.28,0.32,0.01);
+   var lat = E*s, sperre = E - lat;
+   return { q: "Eine GmbH hat eine Software für die eigene Fertigungssteuerung selbst entwickelt. Angefallen sind " + eur(Fo,0) + " € in der Forschungsphase und " + eur(E,0) + " € in der Entwicklungsphase; beide Phasen sind verlässlich getrennt. Die GmbH nutzt das Aktivierungswahlrecht so weit wie möglich und bildet latente Steuern (Steuersatz " + eur(s*100,0) + " %). Ermitteln Sie:",
+     ans: [{ l: "Aktivierungsfähiger Betrag in der Handelsbilanz in €", v: E, tol: 1 }, { l: "Passive latente Steuern in €", v: lat, tol: 1 }, { l: "Ausschüttungsgesperrter Betrag in €", v: sperre, tol: 1 }],
+     e: "Nach § 248 Abs. 2 und § 255 Abs. 2a HGB dürfen nur Entwicklungskosten aktiviert werden, Forschungskosten nie: " + eur(E,0) + " €. Steuerlich gilt ein Aktivierungsverbot (§ 5 Abs. 2 EStG). Die Handelsbilanz zeigt deshalb mehr Vermögen als die Steuerbilanz; passive latente Steuern " + eur(E,0) + " × " + eur(s*100,0) + " % = " + eur(lat,0) + " €. Nach § 268 Abs. 8 HGB darf der aktivierte Betrag abzüglich der passiven latenten Steuern nicht ausgeschüttet werden: " + eur(sperre,0) + " €." }; } },
+ excl: { ch: "r2k2", ref: "2.3 Interner Zinsfuß", pts: 3, lv: 3, make: function(r){
+   var i = rnd(r,0.06,0.10,0.01), A, B, kA, kB, irA, irB, tries = 0;
+   function kw(z, x){ var s = 0; z.forEach(function(c, t){ s += c/Math.pow(1+x, t); }); return s; }
+   function irr(z){ var lo = -0.9, hi = 3; for (var k = 0; k < 100; k++){ var m = (lo+hi)/2; if (kw(z, m) > 0) lo = m; else hi = m; } return (lo+hi)/2; }
+   do { var a0 = rnd(r,80,150,10), b0 = rnd(r,300,500,50);
+     A = [-a0, Math.round(a0*rnd(r,0.45,0.6,0.05)), Math.round(a0*rnd(r,0.45,0.6,0.05)), Math.round(a0*rnd(r,0.2,0.35,0.05))];
+     B = [-b0, Math.round(b0*rnd(r,0.3,0.4,0.02)), Math.round(b0*rnd(r,0.4,0.48,0.02)), Math.round(b0*rnd(r,0.35,0.45,0.02))];
+     kA = kw(A, i); kB = kw(B, i); irA = irr(A); irB = irr(B); tries++; } while (!(irA > irB && kB > kA && kA > 0) && tries < 60);
+   var f = [1, 2, 3].map(function(t){ return 1/Math.pow(1+i, t); });
+   return { q: "Zwei Anlagen schließen sich aus (TEUR, Zahlungen am Jahresende). A: " + A.join("; ") + ". B: " + B.join("; ") + ". Kalkulationszins " + eur(i*100,0) + " %, Abzinsungsfaktoren " + f.map(function(x){ return eur(x,4); }).join("; ") + ". Der interne Zinsfuß beträgt bei A " + eur(irA*100,1) + " %, bei B " + eur(irB*100,1) + " %. Ermitteln Sie:",
+     ans: [{ l: "Kapitalwert A in TEUR", v: kA, tol: 0.6 }, { l: "Kapitalwert B in TEUR", v: kB, tol: 0.6 }, { l: "Mehrwert der richtigen Wahl gegenüber der anderen Anlage in TEUR", v: Math.abs(kB - kA), tol: 1 }],
+     e: "KW A = " + eur(kA,1) + ", KW B = " + eur(kB,1) + " TEUR. " + (kB > kA && irA > irB ? "Obwohl A den höheren internen Zinsfuß hat, schafft B " + eur(kB - kA,1) + " TEUR mehr Vermögen." : "Gewählt wird die Anlage mit dem höheren Kapitalwert, hier " + (kB > kA ? "B" : "A") + ".") + " Bei sich ausschließenden Projekten unterschiedlicher Größe entscheidet der Kapitalwert; der interne Zinsfuß unterstellt die Wiederanlage zum eigenen Zins und ignoriert die Projektgröße." }; } },
+ dscr3: { ch: "r2k3", ref: "3.2 Bankensicht", pts: 3, lv: 3, make: function(r){
+   var E = rnd(r,200,500,10), T = rnd(r,10,40,5), W = rnd(r,0,60,10), D = rnd(r,600,1200,100), z = rnd(r,0.04,0.07,0.005), t = rnd(r,100,250,10);
+   var cf = E - T - W, kd = D*z + t, ds = cf/kd, max = cf/1.2, tmax = max - D*z;
+   return { q: "Planjahr 1 (TEUR): EBITDA " + eur(E,0) + ", gezahlte Ertragsteuern " + eur(T,0) + ", Zunahme Working Capital " + eur(W,0) + ". Darlehen " + eur(D,0) + " zu " + eur(z*100,1) + " %, geplante Tilgung " + eur(t,0) + " p. a. Die Bank verlangt einen DSCR von mindestens 1,2. Ermitteln Sie:",
+     ans: [{ l: "DSCR im Jahr 1", v: ds, tol: 0.01 }, { l: "Höchster tragbarer Kapitaldienst in TEUR", v: max, tol: 0.5 }, { l: "Höchste Tilgung im Jahr 1 bei DSCR 1,2 in TEUR", v: tmax, tol: 0.5 }],
+     e: "Cashflow für den Schuldendienst = " + eur(E,0) + " − " + eur(T,0) + " − " + eur(W,0) + " = " + eur(cf,0) + " TEUR. Kapitaldienst = Zins " + eur(D*z,1) + " + Tilgung " + eur(t,0) + " = " + eur(kd,1) + "; DSCR = " + eur(ds,2) + ". Tragbar sind " + eur(cf,0) + " / 1,2 = " + eur(max,1) + " TEUR; nach Zins bleiben " + eur(tmax,1) + " TEUR für die Tilgung. Liegt die geplante Tilgung darüber, helfen tilgungsfreie Anlaufjahre, längere Laufzeit oder mehr Eigenkapital." }; } },
+ lev2: { ch: "r2k4", ref: "4.1 Leverage", pts: 3, lv: 2, make: function(r){
+   var q1 = rnd(r,0.4,0.6,0.05), q2 = rnd(r,0.2,0.3,0.05), p = rnd(r,0.08,0.12,0.005), c = rnd(r,0.02,0.045,0.005), z = rnd(r,0.05,0.07,0.005);
+   function ekr(g, q){ return g + (g - z)*(1 - q)/q; }
+   return { q: "Gesamtkapitalrendite im Plan " + eur(p*100,1) + " %, in einer Krise " + eur(c*100,1) + " %. Fremdkapitalzins " + eur(z*100,1) + " %. Heute beträgt die Eigenkapitalquote " + eur(q1*100,0) + " %, ein Investor schlägt " + eur(q2*100,0) + " % vor. Ermitteln Sie die Eigenkapitalrendite vor Steuern in Prozent:",
+     ans: [{ l: "EK-Quote " + eur(q2*100,0) + " %, Plan", v: ekr(p,q2)*100, tol: 0.05 }, { l: "EK-Quote " + eur(q2*100,0) + " %, Krise", v: ekr(c,q2)*100, tol: 0.05 }, { l: "EK-Quote " + eur(q1*100,0) + " %, Krise", v: ekr(c,q1)*100, tol: 0.05 }],
+     e: "rEK = rGK + (rGK − i) × FK/EK. Bei " + eur(q2*100,0) + " % EK ist FK/EK = " + eur((1-q2)/q2,2) + ": Plan " + eur(ekr(p,q2)*100,1) + " %, Krise " + eur(ekr(c,q2)*100,1) + " %. Bei " + eur(q1*100,0) + " % EK in der Krise " + eur(ekr(c,q1)*100,1) + " %. Mehr Fremdkapital hebt die Rendite im Plan und vertieft den Einbruch in der Krise." }; } },
+ skkk: { ch: "r2k1", ref: "Kap. 1 Working Capital", pts: 3, lv: 2, make: function(r){
+   var V = rnd(r,1500,5000,100)*1000, s = rnd(r,0.01,0.03,0.005), t1 = [7, 10, 14][Math.floor(r()*3)], t2 = rnd(r,30,60,10), k = rnd(r,0.07,0.11,0.005);
+   var er = V*s, bed = V*(1 - s)*(t2 - t1)/360, zi = bed*k, net = er - zi;
+   return { q: "Materialeinkauf " + eur(V,0) + " € im Jahr. Der Lieferant bietet " + eur(s*100,1) + " % Skonto bei Zahlung innerhalb von " + t1 + " Tagen, sonst netto " + t2 + " Tage. Das Skonto müsste über den Kontokorrentkredit zu " + eur(k*100,1) + " % finanziert werden (Jahr mit 360 Tagen). Ermitteln Sie:",
+     ans: [{ l: "Skontoertrag im Jahr in €", v: er, tol: 1 }, { l: "Durchschnittlich zusätzlich finanzierter Betrag in €", v: bed, tol: 5 }, { l: "Vorteil der Skontonutzung nach Zinsen in €", v: net, tol: 5 }],
+     e: "Skonto " + eur(V,0) + " × " + eur(s*100,1) + " % = " + eur(er,0) + " €. Wer früher zahlt, finanziert im Schnitt " + eur(V*(1-s),0) + " × " + (t2 - t1) + " / 360 = " + eur(bed,0) + " € länger; Zinsen " + eur(zi,0) + " €. Vorteil " + eur(net,0) + " €. Der Jahreszins des Skontoverzichts liegt bei rund " + eur(s/(1-s)*360/(t2-t1)*100,1) + " % und damit " + (s/(1-s)*360/(t2-t1) > k ? "über" : "unter") + " dem Kontokorrentzins von " + eur(k*100,1) + " %. " + (net > 0 ? "Skonto nutzen." : "Hier lohnt das Skonto nicht.") }; } },
+ wcdays: { ch: "r2k1", ref: "Kap. 1 Working Capital", pts: 3, lv: 2, make: function(r){
+   var U = rnd(r,8000,30000,500), M = Math.round(U*rnd(r,0.3,0.5,0.05)), F = Math.round(U*rnd(r,40,75,5)/365), Vo = Math.round(M*rnd(r,45,100,5)/365), L = Math.round(M*rnd(r,20,45,5)/365), x = rnd(r,10,20,5);
+   var dso = F/U*365, dio = Vo/M*365, dpo = L/M*365, ccc = dso + dio - dpo, frei = U/365*x;
+   return { q: "Bilanz zum 31.12. (TEUR): Forderungen LuL " + eur(F,0) + ", Vorräte " + eur(Vo,0) + ", Verbindlichkeiten LuL " + eur(L,0) + ". Umsatz " + eur(U,0) + " TEUR, Materialaufwand " + eur(M,0) + " TEUR (Vorräte und Lieferantenziel auf den Materialaufwand beziehen, Jahr mit 365 Tagen). Ermitteln Sie:",
+     ans: [{ l: "DSO in Tagen", v: dso, tol: 0.6 }, { l: "Cash Conversion Cycle in Tagen", v: ccc, tol: 1.5 }, { l: "Freigesetzte Liquidität, wenn die Kunden " + x + " Tage schneller zahlen, in TEUR", v: frei, tol: 2 }],
+     e: "DSO = " + eur(F,0) + " / " + eur(U,0) + " × 365 = " + eur(dso,1) + " Tage; DIO = " + eur(dio,1) + "; DPO = " + eur(dpo,1) + "; CCC = " + eur(ccc,1) + " Tage. " + x + " Tage schneller: " + eur(U,0) + " / 365 × " + x + " = " + eur(frei,0) + " TEUR werden einmalig frei." }; } },
  ifrs: { ch: "r2k1", ref: "Kap. 1 IFRS 16", pts: 2, make: function(r){
    var R = rnd(r,2,20,1), n = rnd(r,3,10,1), i = rnd(r,0.03,0.07,0.005), pv = R*(1-Math.pow(1+i,-n))/i;
    return { q: "Leasingvertrag: jährliche Rate " + eur(R,0) + " Mio. € nachschüssig, Laufzeit " + n + " Jahre, Grenzfremdkapitalzins " + eur(i*100,1) + " %. Wie hoch ist die Leasingverbindlichkeit bei Zugang, und um wie viel steigt das EBITDA im ersten Jahr?",
@@ -489,6 +543,30 @@ var TXT = [
  ,{ ch: "r2k4", ref: "4.3 Factoring", q: "Vergleichen Sie Bankdarlehen und echtes Factoring zur Finanzierung des Working Capital: Wirkung auf die Bilanz, Kosten und Risiken.",
    m: "Bankdarlehen: Bilanzverlängerung, Zins, Sicherheiten und Covenants; das Ausfallrisiko der Kunden bleibt im Unternehmen. Echtes Factoring: Verkauf der Forderungen, Bilanzverkürzung und sofortige Liquidität; Kosten aus Factoringgebühr, Zins und Delkredere; das Ausfallrisiko geht auf den Factor über; die Finanzierung wächst mit dem Umsatz; Kunden merken unter Umständen den Forderungsverkauf.",
    k: [["Bilanzwirkung beider Formen", 2], ["Kosten verglichen", 1], ["Risiko und Abhängigkeit", 1]] }
+ ,{ ch: "r2k4", ref: "4.1 Finanzierungsarten", lv: 2, q: "Ordnen Sie die Maßnahmen nach Mittelherkunft (Außen- oder Innenfinanzierung) und Rechtsstellung des Kapitals (Eigen- oder Fremdkapital) ein: a) Gesellschafterdarlehen, b) Kapitalerhöhung durch einen neuen Gesellschafter, c) Finanzierung aus Abschreibungsgegenwerten, d) Lieferantenkredit. Begründen Sie kurz.",
+   m: "a) Außenfinanzierung, Fremdkapital: Der Gesellschafter gibt Geld als Darlehen mit Rückzahlungsanspruch (in der Krise nachrangig nach § 39 InsO). b) Außenfinanzierung, Eigenkapital: Einlage von außen mit Haftung und Gewinnbeteiligung. c) Innenfinanzierung, keine Kapitalzuführung von außen; die Mittel stammen aus den Umsatzerlösen, die Abschreibungen sind nicht auszahlungswirksam (Vermögensumschichtung). d) Außenfinanzierung, Fremdkapital: kurzfristiger Kredit des Lieferanten über das Zahlungsziel.",
+   k: [["a) richtig mit Begründung", 1], ["b) richtig mit Begründung", 1], ["c) richtig mit Begründung", 1], ["d) richtig mit Begründung", 1]] }
+ ,{ ch: "r1k3", ref: "3.1 Grundsätze", lv: 3, q: "Eine GmbH will drei selbst geschaffene Werte in der Handelsbilanz aktivieren: eine selbst entwickelte Konstruktionssoftware, eine selbst aufgebaute Kundenliste und die Kosten einer Grundlagenstudie zu neuen Werkstoffen. Beurteilen Sie jeden Fall und nennen Sie die Folge einer Aktivierung für die Gewinnausschüttung.",
+   m: "Software: Wahlrecht nach § 248 Abs. 2 Satz 1 HGB, aktivierbar sind nur die Kosten der Entwicklungsphase (§ 255 Abs. 2a HGB), wenn Forschung und Entwicklung verlässlich getrennt werden. Kundenliste: Aktivierungsverbot für selbst geschaffene Kundenlisten, Marken und Drucktitel (§ 248 Abs. 2 Satz 2 HGB). Grundlagenstudie: Forschung, Aktivierungsverbot. Folge einer Aktivierung: Ausschüttungssperre in Höhe des aktivierten Betrags abzüglich passiver latenter Steuern (§ 268 Abs. 8 HGB); steuerlich besteht ein Aktivierungsverbot, daher latente Steuern.",
+   k: [["Software: Wahlrecht, nur Entwicklungsphase", 1], ["Kundenliste: Verbot", 1], ["Grundlagenstudie: Forschung, Verbot", 1], ["Ausschüttungssperre und latente Steuern", 1]] }
+ ,{ ch: "r2k3", ref: "3.2 Bankensicht", lv: 2, q: "Ein Vorhaben erreicht im ersten Planjahr nur einen DSCR von 0,9, ab dem dritten Jahr 1,6. Nennen und begründen Sie vier Möglichkeiten, das Vorhaben trotzdem bankfähig zu machen.",
+   m: "Tilgungsfreie Anlaufjahre oder eine Tilgung, die mit dem Cashflow wächst; längere Laufzeit oder Annuität statt Ratentilgung; mehr Eigenkapital oder Nachrangkapital, damit das Darlehen kleiner wird; Working Capital senken oder separat über Factoring oder Betriebsmittellinie finanzieren; Investition strecken oder Leasing; zusätzliche Sicherheiten oder Bürgschaftsbank. Begründung jeweils: Der Kapitaldienst muss im schwachen Jahr zum Cashflow passen.",
+   k: [["Erste Möglichkeit mit Begründung", 1], ["Zweite Möglichkeit mit Begründung", 1], ["Dritte Möglichkeit mit Begründung", 1], ["Vierte Möglichkeit mit Begründung", 1]] }
 ];
 window.POOL.TXT = TXT;
+})();
+
+/* Schwierigkeit: 1 leicht (Grundlagen, sichert das Bestehen), 2 mittel (Anwendung, Rechnung mit mehreren Schritten),
+   3 schwer (Transfer zwischen Gebieten, typische Fallstricke). Einordnung als Entwurf; neue Fragen tragen lv direkt. */
+(function(){
+  var P = window.POOL;
+  var MC3 = [37,41,46,48,49,54,69,70,71,72,74,75,76,78,86,89,91,100,101,118,128,138,154,157];
+  var MC2 = [1,2,3,4,6,10,11,12,14,16,19,20,23,26,27,28,30,31,33,34,35,36,38,40,42,43,44,45,47,50,51,53,55,56,58,59,60,61,62,63,64,65,66,67,68,73,77,79,80,81,85,88,90,92,93,96,97,98,99,103,106,107,108,110,111,114,115,116,117,122,123,124,125,127,133,134,135,136,137,139,142,143,145,147,148,149,150,151,152,153];
+  P.MC.forEach(function(q, i){ if (q.lv == null) q.lv = MC3.indexOf(i) > -1 ? 3 : MC2.indexOf(i) > -1 ? 2 : 1; });
+  var G = { ueber: 2, skal: 1, abgr: 3, durch: 2, gkv: 2, rst: 2, aequi: 1, mss: 2, zuschlag: 1, bem: 2, bep: 1, krit: 1, mob: 3, prog: 3, tco: 2, abw: 3, zki: 2, pkr: 2,
+    ccc: 2, ocf: 1, kfr: 2, ifrs: 3, kw: 1, irr2: 3, wacc: 2, amo: 2, ewig: 2, stx: 3, dscr: 2, fcf: 3, lev: 1, ann: 2, bond: 2, skonto: 1, sfin: 2 };
+  Object.keys(P.GEN).forEach(function(k){ if (P.GEN[k].lv == null) P.GEN[k].lv = G[k] || 2; });
+  var T = [2,3,2,1,3,1,2,2,2,2,3,1,2,1,2,1,2,3,2,2,3,3,2];
+  P.TXT.forEach(function(t, i){ if (t.lv == null) t.lv = T[i] || 2; });
+  P.LV = { 1: "leicht", 2: "mittel", 3: "schwer" };
 })();
