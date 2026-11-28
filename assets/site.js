@@ -1,4 +1,4 @@
-window.REFI_VERSION='v0.11'; window.REFI_STAND='28.11.2026';
+window.REFI_VERSION='v0.12'; window.REFI_STAND='28.11.2026';
 /* Kopf, Navigation und Fuß für alle Seiten */
 (function(){
   var NAV=[["index.html","Start"],["vorlesung.html","Vorlesung"],["organizer.html","Advance Organizer"],["live-quiz.html","Live-Quiz"],["challenge.html","Challenge"],["tools.html","Tools"],["pruefung.html","Prüfung"],["glossar.html","Glossar"],["fragen.html","Fragen"],["links.html","Links"]];

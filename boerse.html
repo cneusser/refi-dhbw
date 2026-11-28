@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Kapitalwert-Börse</title>
+<link rel="stylesheet" href="assets/site.css">
+<style>
+.tabs{display:flex;gap:4px;flex-wrap:wrap;border-bottom:1px solid var(--line);margin-top:8px}
+.tabs button{background:#fff;color:var(--ink);border:none;border-bottom:3px solid transparent;padding:10px 14px}
+.tabs button.on{border-bottom-color:var(--red)}
+.codebig{font-size:64px;font-weight:700;letter-spacing:6px;color:var(--red);line-height:1}
+.qr{background:#fff;padding:10px;display:inline-block;border:1px solid var(--line)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--line);padding:3px 8px;font-size:13px;background:#fff}
+.chip.me{background:var(--red);color:#fff;border-color:var(--red)}.chip.ok{border-color:#1F7A4D}
+.teambar{border:2px solid var(--red)}.teambar h2{margin:0 0 8px}.teambar .chip{font-size:16px;padding:6px 12px}
+.bigcount{font-size:40px;font-weight:700;line-height:1.1}
+.who{background:var(--panel);padding:10px 14px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between}
+.timer{font-weight:700;font-variant-numeric:tabular-nums;font-size:18px}
+.timer.over{color:var(--red)}
+.btimer{font-size:40px;font-weight:700;font-variant-numeric:tabular-nums}.btimer.over{color:var(--red)}
+.ctrl{display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap;background:var(--panel);padding:10px 14px;margin-top:10px}
+.phases{display:flex;gap:4px;flex-wrap:wrap}.phases span{padding:4px 10px;border:1px solid var(--line);background:#fff;font-size:13px}.phases span.on{background:var(--red);color:#fff;border-color:var(--red)}
+.cards{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
+.card{border:1px solid var(--line);background:#fff;padding:12px 14px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.card.sel{border:2px solid var(--red);padding:11px 13px}
+.card h3{margin:0;font-size:16px}.card .id{display:inline-block;background:var(--ink);color:#fff;font-weight:700;padding:0 7px;margin-right:6px}
+.zr{font-size:13px;font-variant-numeric:tabular-nums;color:var(--ink);word-break:break-word}
+.claim{font-size:12px;color:var(--grey)}
+.card label.pick{display:flex;gap:8px;align-items:center;font-weight:700;cursor:pointer;margin-top:auto}
+.card input[type=text]{width:100%;font-size:16px;padding:6px 8px}
+.kwnow{font-size:13px;font-weight:700}
+.budget{position:sticky;top:0;z-index:5;background:#fff;border-bottom:1px solid var(--line);padding:10px 0;margin-top:10px}
+.bar{height:12px;background:var(--panel);position:relative}.bar i{position:absolute;left:0;top:0;bottom:0;background:var(--ink)}.bar i.over{background:var(--red)}
+.fac{border-collapse:collapse;font-size:13px;font-variant-numeric:tabular-nums}.fac td,.fac th{border:1px solid var(--line);padding:4px 7px;text-align:right}
+.hint{font-size:12px;color:var(--grey);min-height:15px}
+.pts{font-size:22px;font-weight:700}
+.demo{background:#FFF4D6;padding:6px 12px;font-size:13px}
+.win{border:2px solid var(--red);padding:14px;background:#fff}
+.rate{font-size:56px;font-weight:700;color:var(--red);line-height:1;font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--red)}
+.mgmt tr.off td{color:#9AA4AA;text-decoration:line-through}.mgmt tr.off td:last-child{text-decoration:none}
+@media (max-width:640px){.codebig{font-size:44px}.rate{font-size:40px}}
+</style>
+</head>
+<body>
+<main class="wrap" id="app"><p class="muted">Lade ...</p></main>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="firebase-config.js"></script>
+<script src="assets/boerse-data.js"></script>
+<script src="assets/site.js"></script>
+<script>
+var B = window.BOERSE, PIN = "2311", app = document.getElementById("app");
+var params = new URLSearchParams(location.search);
+var CODE = (params.get("code") || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
+var DEMO = params.get("demo") === "1";
+var STATE = {}, store = null, me = null, OFF = 0, boardTab = "beitritt", viewKey = "";
+var PH = { lobby: "Beitritt", bauch: "Bauchgefühl", rechnen: "Rechnen und Auswahl", schock: "Zinsschock", aufl: "Auflösung" };
+var DUR = { bauch: 5, rechnen: 15, schock: 5 };
+
+/* ---------- Hilfen ---------- */
+function lsGet(k){ try { return JSON.parse(localStorage.getItem(k) || "null"); } catch (e) { return null; } }
+function lsSet(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+function f1(x){ return eur(x, 1); }
+function randCode(){ var c = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789", s = ""; for (var i = 0; i < 4; i++) s += c[Math.floor(Math.random() * c.length)]; return s; }
+var ADJ = ["Flinker", "Kluger", "Ruhiger", "Mutiger", "Wacher", "Heller", "Stiller", "Kühner", "Schlauer", "Treuer", "Fixer", "Klarer"];
+var ANI = ["Luchs", "Fuchs", "Kranich", "Biber", "Falke", "Dachs", "Otter", "Steinbock", "Uhu", "Hirsch", "Wiesel", "Marder"];
+function randName(){ return ADJ[Math.floor(Math.random() * ADJ.length)] + " " + ANI[Math.floor(Math.random() * ANI.length)] + " " + (10 + Math.floor(Math.random() * 90)); }
+/* Komma und Punkt erlaubt; Tausenderpunkte bei Beträgen ab 1.000 */
+function parseNum(s){ if (s == null) return NaN; s = String(s).trim().replace(/[\s €%']/g, "").replace(/^\+/, "").replace(/^−/, "-"); if (!s) return NaN;
+  var c = s.lastIndexOf(","), p = s.lastIndexOf(".");
+  if (c > -1 && p > -1) { var dec = c > p ? "," : ".", th = dec === "," ? "." : ","; s = s.split(th).join("").replace(dec, "."); }
+  else if (c > -1 || p > -1) { var sep = c > -1 ? "," : ".", parts = s.split(sep); if (parts.length > 2 || /^-?\d{1,3}[.,]\d{3}$/.test(s) && sep === ".") s = parts.join(""); else s = parts.join("."); }
+  if (!/^-?(\d+\.?\d*|\.\d+)$/.test(s)) return NaN; return parseFloat(s); }
+function act(st){ var pl = st.players || {}, o = {}; Object.keys(pl).forEach(function(k){ if (!pl[k].off) o[k] = pl[k]; }); return o; }
+function nG(st){ return (st.meta && st.meta.nG) || 6; }
+function gName(g){ return "Ausschuss " + g; }
+function now(){ return Date.now() + OFF; }
+
+/* ---------- Rechenkern ---------- */
+function KW(z, i){ var s = 0; z.forEach(function(c, t){ s += c / Math.pow(1 + i / 100, t); }); return s; }
+function IRR(z){ var lo = -90, hi = 200; for (var k = 0; k < 200; k++){ var m = (lo + hi) / 2; if (KW(z, m) > 0) lo = m; else hi = m; } return (lo + hi) / 2; }
+function AMO(z){ var s = 0; for (var t = 0; t < z.length; t++){ var prev = s; s += z[t]; if (t > 0 && s >= 0) return t - 1 + (-prev) / z[t]; } return 99; }
+function card(id){ return B.cards.filter(function(c){ return c.id === id; })[0]; }
+function inv(id){ return -card(id).z[0]; }
+function pfList(pf){ return B.cards.map(function(c){ return c.id; }).filter(function(k){ return pf && pf[k]; }); }
+function pfInv(list){ return list.reduce(function(s, k){ return s + inv(k); }, 0); }
+function pfVal(list, i){ return list.reduce(function(s, k){ return s + KW(card(k).z, i); }, 0); }
+function best(i){ var ids = B.cards.map(function(c){ return c.id; }), b = null;
+  for (var m = 1; m < (1 << ids.length); m++){ var l = ids.filter(function(_, j){ return m & (1 << j); }); if (pfInv(l) > B.budget) continue; var v = pfVal(l, i); if (!b || v > b.v) b = { l: l, v: v }; } return b; }
+function greedy(key){ var l = [], u = 0; B.cards.slice().sort(function(a, b){ return key(a) - key(b); }).forEach(function(c){ if (u + inv(c.id) <= B.budget) { l.push(c.id); u += inv(c.id); } }); return l.sort(); }
+var STRAT = { irr: greedy(function(c){ return -IRR(c.z); }), amo: greedy(function(c){ return AMO(c.z); }) };
+function curRate(st){ var m = st.meta || {}; return m.rate == null ? B.rate0 : m.rate; }
+function score(st){
+  var r = curRate(st), opt = best(r), out = {};
+  for (var g = 1; g <= nG(st); g++){
+    var gs = (st.groups && st.groups[g]) || {}, kw = gs.kw || {}, ok = 0;
+    B.cards.forEach(function(c){ var v = parseNum(kw[c.id]); if (!isNaN(v) && Math.abs(v - KW(c.z, B.rate0)) <= Math.max(1, Math.abs(KW(c.z, B.rate0)) * 0.01)) ok++; });
+    var l = pfList(gs.pf), V = pfVal(l, r), pp = Math.round(60 * Math.max(0, V) / opt.v);
+    out[g] = { ok: ok, kwPts: ok * 5, l: l, V: V, pfPts: pp, total: ok * 5 + pp, l1: pfList(gs.pf1), n: Object.keys(kw).filter(function(k){ return String(kw[k]).trim(); }).length };
+  }
+  return out;
+}
+function bauchAvg(st, i){ var b = st.bauch || {}, pl = act(st), vs = Object.keys(b).filter(function(k){ return pl[k] || DEMO; }).map(function(k){ return pfVal(pfList(b[k].pf), i); }); return vs.length ? { v: vs.reduce(function(a, x){ return a + x; }, 0) / vs.length, n: vs.length, max: Math.max.apply(null, vs) } : null; }
+
+/* ---------- Speicher ---------- */
+function getDb(){ try { if (!window.FIREBASE_CONFIG) return null; if (!firebase.apps.length) firebase.initializeApp(window.FIREBASE_CONFIG); return firebase.database(); } catch (e) { return null; } }
+function localStore(seed){
+  var data = seed || {}, cbs = []; function fire(){ cbs.forEach(function(cb){ cb(JSON.parse(JSON.stringify(data))); }); }
+  function setP(p, v){ var ks = p.split("/").filter(Boolean), o = data; for (var i = 0; i < ks.length - 1; i++){ o[ks[i]] = o[ks[i]] || {}; o = o[ks[i]]; } if (v === null) delete o[ks[ks.length - 1]]; else o[ks[ks.length - 1]] = v; }
+  return { on: function(cb){ cbs.push(cb); setTimeout(fire, 0); }, set: function(p, v){ setP(p, v); fire(); return Promise.resolve(); },
+    update: function(p, obj){ Object.keys(obj).forEach(function(k){ setP(p + "/" + k, obj[k]); }); fire(); return Promise.resolve(); },
+    push: function(p, v){ var k = "k" + Math.random().toString(36).slice(2, 9); setP(p + "/" + k, v); fire(); return k; }, ts: function(){ return Date.now(); } };
+}
+function fbStore(db, code){
+  var base = db.ref("refi/boerse/" + code);
+  return { on: function(cb){ base.on("value", function(s){ cb(s.val() || {}); }); }, set: function(p, v){ return base.child(p).set(v); },
+    update: function(p, obj){ return base.child(p).update(obj); }, push: function(p, v){ var r = base.child(p).push(); r.set(v); return r.key; },
+    ts: function(){ return firebase.database.ServerValue.TIMESTAMP; } };
+}
+function demoSeed(){
+  var pl = {}, bauch = {}, groups = {}, names = ["Flinker Luchs 12", "Kluger Fuchs 31", "Ruhiger Biber 44", "Mutiger Falke 58", "Wacher Dachs 63", "Heller Otter 71", "Stiller Uhu 25", "Kühner Hirsch 82", "Schlauer Marder 19", "Treuer Kranich 37", "Fixer Wiesel 66", "Klarer Steinbock 90"];
+  var gut = ["ACG", "CEGH", "ABE", "ABCE", "AEH", "CG", "ABEH", "BCE", "ACH", "BEG", "ABDE", "CEH"];
+  names.forEach(function(n, i){ pl["p" + i] = { name: n, group: 1 + (i % 6), at: Date.now() }; bauch["p" + i] = { pf: gut[i].split("").reduce(function(o, k){ o[k] = true; return o; }, {}) }; });
+  var picks = ["ADF", "ABD", "ABEGH", "ADF", "BDG", "ABDE"];
+  for (var g = 1; g <= 6; g++){ var kw = {}; B.cards.forEach(function(c, j){ if ((g + j) % 4) kw[c.id] = f1(KW(c.z, 5) + ((g + j) % 5 === 0 ? 7 : 0)); }); groups[g] = { kw: kw, pf: picks[g - 1].split("").reduce(function(o, k){ o[k] = true; return o; }, {}) }; }
+  return { meta: { createdAt: Date.now(), kurs: "Demo", nG: 6, phase: params.get("phase") || "rechnen", phaseAt: Date.now() - 4 * 60000, rate: 5 }, players: pl, bauch: bauch, groups: groups };
+}
+
+/* ---------- Bausteine ---------- */
+function caseHTML(){
+  return '<div class="panel grey"><h2 style="margin-top:0">Fall: ' + esc(B.firm) + '</h2><p>Die Talheimer Kunststofftechnik GmbH aus dem Raum Heilbronn fertigt mit 140 Beschäftigten Spritzgussteile für Hausgeräte, Automobil und Medizintechnik. Für 2027 hat die Geschäftsführung ein Investitionsbudget von <b>' + eur(B.budget, 0) + ' TEUR</b> freigegeben. Acht Anträge liegen vor, zusammen über 2.250 TEUR. Jeder Antrag nennt den internen Zinsfuß und die Amortisationsdauer, die der Antragsteller selbst gerechnet hat.</p><p style="margin-bottom:0"><b>Ihre Aufgabe als Investitionsausschuss:</b> Wählen Sie die Projekte, die innerhalb des Budgets das Vermögen des Unternehmens am stärksten erhöhen. Der Kalkulationszins beträgt heute ' + B.rate0 + ' %. Die Firma ist erfunden.</p></div>';
+}
+function facTable(i){ var n = 8, f = []; for (var t = 1; t <= n; t++) f.push(1 / Math.pow(1 + i / 100, t)); var rbf = []; var s = 0; f.forEach(function(x){ s += x; rbf.push(s); });
+  return '<div style="overflow-x:auto"><table class="fac"><tr><th>Jahr</th>' + f.map(function(_, t){ return "<th>" + (t + 1) + "</th>"; }).join("") + '</tr><tr><th>Abzinsungsfaktor ' + eur(i, i % 1 ? 1 : 0) + ' %</th>' + f.map(function(x){ return "<td>" + eur(x, 4) + "</td>"; }).join("") + '</tr><tr><th>Rentenbarwertfaktor</th>' + rbf.map(function(x){ return "<td>" + eur(x, 4) + "</td>"; }).join("") + "</tr></table></div>"; }
+function cardHead(c){ return '<h3><span class="id">' + c.id + "</span>" + esc(c.name) + '</h3><div class="claim">' + esc(c.text) + '</div><div class="zr"><b>Investition ' + eur(-c.z[0], 0) + " TEUR</b>, Rückflüsse Jahr 1 bis " + (c.z.length - 1) + ": " + c.z.slice(1).join("; ") + '</div><div class="claim">Laut Antrag: interner Zinsfuß ' + f1(IRR(c.z)) + " %, Amortisation " + f1(AMO(c.z)) + " Jahre</div>"; }
+function timerHTML(st, big){ var m = st.meta || {}, d = DUR[m.phase]; if (!d || !m.phaseAt) return ""; return '<span class="' + (big ? "btimer" : "timer") + '" data-end="' + (m.phaseAt + d * 60000) + '"></span>'; }
+var tickH = null;
+function tick(){ document.querySelectorAll("[data-end]").forEach(function(el){ var r = Math.round((+el.dataset.end - now()) / 1000), a = Math.abs(r); el.textContent = (r < 0 ? "−" : "") + Math.floor(a / 60) + ":" + ("0" + a % 60).slice(-2); el.classList.toggle("over", r < 0); }); }
+function startTick(){ if (!tickH) tickH = setInterval(tick, 500); tick(); }
+function show(key, html){ if (key === viewKey) return false; viewKey = key; app.innerHTML = html; return true; }
+
+/* ---------- Teilnahme ---------- */
+function viewEntry(){
+  show("entry", '<h1>Kapitalwert-Börse</h1><p class="lead">Gruppenspiel zur Investitionsrechnung, ReFi II Kapitel 2. Wählen Sie im Investitionsausschuss die besten Projekte für ein knappes Budget und erleben Sie, was ein Zinsschock mit Ihrer Auswahl macht.</p>' + caseHTML() +
+    '<div class="panel"><label for="c">Spielcode vom Beamer</label><div class="row"><input id="c" maxlength="6" style="max-width:160px;text-transform:uppercase"><button class="red" id="go">Beitreten</button></div></div><p class="small muted">Lehrende: <a href="boerse.html#leitung">Spielleitung</a> · <a href="boerse.html?demo=1#leitung">Demo</a></p>');
+  var go = function(){ var c = document.getElementById("c").value.trim().toUpperCase().replace(/[^A-Z0-9]/g, ""); if (c) location.href = "boerse.html?code=" + c; };
+  document.getElementById("go").onclick = go; document.getElementById("c").onkeydown = function(e){ if (e.key === "Enter") go(); };
+}
+function viewJoin(msg){
+  var players = act(STATE), n = nG(STATE), names = Object.keys(players).map(function(k){ return players[k].name; }).sort();
+  if (!show("join", (msg ? '<div class="note bad">' + esc(msg) + "</div>" : "") + "<h1>Kapitalwert-Börse, Spiel " + esc(CODE) + '</h1><p class="lead">Wählen Sie einen Spielnamen. Sie werden automatisch einem von ' + n + ' Ausschüssen zugeordnet. Bitte nur einmal beitreten.</p>' +
+    '<div class="panel"><h3 style="margin-top:0">Neu beitreten</h3><label for="nm">Spielname (bitte keinen Klarnamen)</label><div class="row"><input id="nm" maxlength="30" style="max-width:320px"><button class="ghost" id="nn">Neuer Vorschlag</button><button class="red" id="join">Beitreten</button></div><div class="fb" id="jfb"></div></div>' +
+    (names.length ? '<div class="panel grey"><h3 style="margin-top:0">Schon beigetreten?</h3><label for="back">Anderes Gerät oder Seite geschlossen: Spielnamen wählen</label><div class="row"><select id="back" style="max-width:320px"><option value="">wählen</option>' + Object.keys(players).sort(function(a, b){ return players[a].name < players[b].name ? -1 : 1; }).map(function(k){ return '<option value="' + k + '">' + esc(players[k].name) + "</option>"; }).join("") + '</select><button class="ghost" id="rc">Weiter</button></div></div>' : "") +
+    '<p class="small muted">Bisher beigetreten: <b>' + names.length + " Personen</b>.</p>")) return;
+  var nm = document.getElementById("nm"), d = lsGet("bx_draft_" + CODE); nm.value = d || randName(); nm.oninput = function(){ lsSet("bx_draft_" + CODE, nm.value); };
+  document.getElementById("nn").onclick = function(){ nm.value = randName(); lsSet("bx_draft_" + CODE, nm.value); };
+  document.getElementById("join").onclick = function(){
+    var name = nm.value.trim() || randName(), pl = act(STATE);
+    if (Object.keys(pl).some(function(k){ return pl[k].name.toLowerCase() === name.toLowerCase(); })) { var f = document.getElementById("jfb"); f.className = "fb bad"; f.textContent = "Diesen Namen gibt es schon. Sind Sie das? Dann unten wählen, sonst einen anderen Namen."; return; }
+    var cnt = {}; for (var g = 1; g <= nG(STATE); g++) cnt[g] = 0; Object.keys(pl).forEach(function(k){ cnt[pl[k].group] = (cnt[pl[k].group] || 0) + 1; });
+    var gmin = 1; for (g = 1; g <= nG(STATE); g++) if (cnt[g] < cnt[gmin]) gmin = g;
+    var pid = store.push("players", { name: name, group: gmin, at: store.ts() }); me = { pid: pid, name: name, group: gmin }; lsSet("bx_" + CODE, me); viewKey = ""; render(); };
+  var rc = document.getElementById("rc"); if (rc) rc.onclick = function(){ var k = document.getElementById("back").value; if (!k) return; var p = STATE.players[k]; me = { pid: k, name: p.name, group: p.group }; lsSet("bx_" + CODE, me); viewKey = ""; render(); };
+}
+function teamBar(st){ var pl = act(st), g = me.group, mates = Object.keys(pl).filter(function(k){ return pl[k].group === g; });
+  return '<div class="panel teambar"><h2>' + gName(g) + '</h2><div class="chips">' + mates.map(function(k){ return '<span class="chip' + (k === me.pid ? " me" : "") + '">' + esc(pl[k].name) + (k === me.pid ? " (Sie)" : "") + "</span>"; }).join("") + "</div></div>"; }
+function whoBar(st){ var ph = (st.meta || {}).phase || "lobby"; return '<div class="who"><span><b>' + esc(me.name) + "</b> · " + gName(me.group) + "</span><span>" + PH[ph] + " " + timerHTML(st) + "</span></div>"; }
+
+function viewPlayer(){
+  var st = STATE, ph = (st.meta || {}).phase || "lobby", g = me.group, mine = (st.bauch || {})[me.pid];
+  var mk = JSON.stringify(Object.keys(act(st)).filter(function(k){ return act(st)[k].group === g; }));
+  if (ph === "lobby") { show("lobby" + mk, whoBar(st) + teamBar(st) + caseHTML() + '<p class="lead" style="margin-top:14px">Gleich geht es los. Setzen Sie sich schon mit Ihrem Ausschuss zusammen.</p>'); return; }
+  if (ph === "bauch") { if (mine) { show("bauchdone" + mk, whoBar(st) + '<div class="note ok">Ihr Bauchgefühl ist gespeichert: Projekte ' + pfList(mine.pf).join(", ") + ". Gleich rechnen Sie im Ausschuss nach.</div>" + teamBar(st)); startTick(); return; } return viewBauch(); }
+  if (ph === "rechnen" || ph === "schock") return viewGroup();
+  if (ph === "aufl") return viewResult();
+}
+function viewBauch(){
+  if (!show("bauch", whoBar(STATE) + "<h1>Runde 1: Bauchgefühl</h1><p class=\"lead\">Ohne Taschenrechner: Welche Projekte würden Sie spontan genehmigen? Sie haben " + eur(B.budget, 0) + " TEUR. Jede Person entscheidet allein.</p>" +
+    '<div class="budget"><div class="row" style="justify-content:space-between"><span>Budget: <b id="used">0</b> von ' + eur(B.budget, 0) + ' TEUR</span><button class="red" id="send">Bauchgefühl abgeben</button></div><div class="bar"><i id="bar"></i></div></div>' +
+    '<div class="cards">' + B.cards.map(function(c){ return '<div class="card" data-c="' + c.id + '">' + cardHead(c) + '<label class="pick"><input type="checkbox" data-pick="' + c.id + '"> genehmigen</label></div>'; }).join("") + "</div>")) return;
+  startTick();
+  function upd(){ var l = []; app.querySelectorAll("[data-pick]").forEach(function(x){ if (x.checked) l.push(x.dataset.pick); x.closest(".card").classList.toggle("sel", x.checked); }); var u = pfInv(l); document.getElementById("used").textContent = eur(u, 0); var b = document.getElementById("bar"); b.style.width = Math.min(100, u / B.budget * 100) + "%"; b.classList.toggle("over", u > B.budget); document.getElementById("send").disabled = u > B.budget || !l.length; return l; }
+  app.querySelectorAll("[data-pick]").forEach(function(x){ x.onchange = upd; }); upd();
+  document.getElementById("send").onclick = function(){ var l = upd(); if (pfInv(l) > B.budget) return; var pf = {}; l.forEach(function(k){ pf[k] = true; }); store.set("bauch/" + me.pid, { pf: pf, at: store.ts() }); };
+}
+function viewGroup(){
+  var st = STATE, ph = st.meta.phase, g = me.group, r = curRate(st);
+  var key = "grp" + ph + (ph === "schock" ? "" : "");
+  if (show(key, whoBar(st) + teamBar(st) + (ph === "rechnen" ?
+      '<h1>Runde 2: Rechnen und auswählen</h1><p class="lead">Teilen Sie die Karten im Ausschuss auf. Rechnen Sie für jede Karte den Kapitalwert bei ' + B.rate0 + ' % und wählen Sie dann gemeinsam das Portfolio. Alle im Ausschuss sehen dieselben Eingaben. Je richtiger Kapitalwert gibt es 5 Punkte, für das Portfolio bis zu 60 Punkte.</p>' + facTable(B.rate0) :
+      '<h1>Zinsschock</h1><div class="note bad"><b>Die Hausbank und die Gesellschafter heben den Kalkulationszins an.</b> Er steht jetzt bei <b id="rnow">' + f1(r) + ' %</b>. Unter jeder Karte sehen Sie den Kapitalwert beim neuen Zins. Passen Sie Ihr Portfolio an, solange die Spielleitung die Runde offen lässt. Gewertet wird beim Schlusszins.</div>') +
+    '<div class="budget"><div class="row" style="justify-content:space-between"><span>Portfolio des Ausschusses: <b id="pfl">keine Auswahl</b> · Budget <b id="used">0</b> von ' + eur(B.budget, 0) + ' TEUR</span><span id="pfv" class="small"></span></div><div class="bar"><i id="bar"></i></div><div class="fb bad" id="bfb"></div></div>' +
+    '<div class="cards">' + B.cards.map(function(c){ return '<div class="card" data-c="' + c.id + '">' + cardHead(c) +
+      '<label for="kw' + c.id + '" class="small">Kapitalwert bei ' + B.rate0 + ' % in TEUR</label><input type="text" inputmode="decimal" id="kw' + c.id + '" data-kw="' + c.id + '"' + (ph === "schock" ? " disabled" : "") + '><div class="hint" id="h' + c.id + '"></div>' +
+      (ph === "schock" ? '<div class="kwnow" id="now' + c.id + '"></div>' : "") +
+      '<label class="pick"><input type="checkbox" data-pick="' + c.id + '"> ins Portfolio</label></div>'; }).join("") + "</div>")) {
+    app.querySelectorAll("[data-kw]").forEach(function(x){ var t; x.oninput = function(){ hint(x.dataset.kw, x.value); clearTimeout(t); t = setTimeout(function(){ store.set("groups/" + g + "/kw/" + x.dataset.kw, x.value.trim() || null); }, 400); }; });
+    app.querySelectorAll("[data-pick]").forEach(function(x){ x.onchange = function(){
+      var gs = (STATE.groups && STATE.groups[g]) || {}, pf = JSON.parse(JSON.stringify(gs.pf || {})); if (x.checked) pf[x.dataset.pick] = true; else delete pf[x.dataset.pick];
+      if (pfInv(pfList(pf)) > B.budget) { x.checked = false; document.getElementById("bfb").textContent = "Das sprengt das Budget. Nehmen Sie erst ein anderes Projekt heraus."; return; }
+      document.getElementById("bfb").textContent = ""; store.set("groups/" + g + "/pf/" + x.dataset.pick, x.checked ? true : null); }; });
+  }
+  startTick(); syncGroup();
+}
+function hint(id, v){ var h = document.getElementById("h" + id); if (!h) return; var n = parseNum(v); h.textContent = String(v || "").trim() ? (isNaN(n) ? "Keine Zahl erkannt" : "gelesen als " + n.toLocaleString("de-DE", { maximumFractionDigits: 2 }) + " TEUR") : ""; }
+function syncGroup(){
+  var st = STATE, g = me.group, gs = (st.groups && st.groups[g]) || {}, kw = gs.kw || {}, pf = gs.pf || {}, r = curRate(st), a = document.activeElement;
+  B.cards.forEach(function(c){
+    var i = document.getElementById("kw" + c.id); if (i && i !== a) { i.value = kw[c.id] || ""; hint(c.id, i.value); }
+    var p = app.querySelector('[data-pick="' + c.id + '"]'); if (p) { p.checked = !!pf[c.id]; p.closest(".card").classList.toggle("sel", !!pf[c.id]); }
+    var n = document.getElementById("now" + c.id); if (n) { var v = KW(c.z, r); n.textContent = "Kapitalwert bei " + f1(r) + " %: " + f1(v) + " TEUR"; n.style.color = v < 0 ? "var(--red)" : ""; }
+  });
+  var l = pfList(pf), u = pfInv(l), e = document.getElementById("used"); if (!e) return;
+  e.textContent = eur(u, 0); document.getElementById("pfl").textContent = l.length ? l.join(", ") : "keine Auswahl";
+  var b = document.getElementById("bar"); b.style.width = Math.min(100, u / B.budget * 100) + "%"; b.classList.toggle("over", u > B.budget);
+  var rn = document.getElementById("rnow"); if (rn) rn.textContent = f1(r) + " %";
+  var pv = document.getElementById("pfv"); if (pv && st.meta.phase === "schock") pv.textContent = l.length ? "Kapitalwert des Portfolios bei " + f1(r) + " %: " + f1(pfVal(l, r)) + " TEUR" : "";
+}
+function viewResult(){
+  var st = STATE, sc = score(st), s = sc[me.group], r = curRate(st), opt = best(r), rank = Object.keys(sc).sort(function(a, b){ return sc[b].total - sc[a].total; }).indexOf(String(me.group)) + 1, mine = (st.bauch || {})[me.pid];
+  show("res", whoBar(st) + "<h1>Auflösung</h1>" + '<div class="kpis"><div class="kpi red"><div class="v">' + s.total + ' Punkte</div><div class="l">' + gName(me.group) + ", Platz " + rank + " von " + nG(st) + '</div></div><div class="kpi"><div class="v">' + s.ok + ' von 8</div><div class="l">Kapitalwerte richtig (' + s.kwPts + ' P.)</div></div><div class="kpi"><div class="v">' + f1(s.V) + ' TEUR</div><div class="l">Portfolio ' + (s.l.join(", ") || "leer") + " bei " + f1(r) + " % (" + s.pfPts + " P.)</div></div></div>" +
+    '<div class="panel"><p style="margin-top:0">Bestes Portfolio bei ' + f1(r) + " %: <b>" + opt.l.join(", ") + "</b> mit " + f1(opt.v) + " TEUR." + (mine ? " Ihr Bauchgefühl (" + pfList(mine.pf).join(", ") + ") hätte " + f1(pfVal(pfList(mine.pf), r)) + " TEUR gebracht." : "") + "</p>" + resultTable(r) + "</div>");
+}
+function resultTable(r){
+  return '<div class="tbl"><table><thead><tr><th>Karte</th><th class="r">Investition</th><th class="r">Zinsfuß</th><th class="r">Amortisation</th><th class="r">KW bei ' + B.rate0 + ' %</th><th class="r">KW bei ' + f1(r) + " %</th></tr></thead><tbody>" +
+    B.cards.map(function(c){ var v = KW(c.z, r); return "<tr><td><b>" + c.id + "</b> " + esc(c.name) + '</td><td class="r num">' + eur(-c.z[0], 0) + '</td><td class="r num">' + f1(IRR(c.z)) + ' %</td><td class="r num">' + f1(AMO(c.z)) + ' J.</td><td class="r num">' + f1(KW(c.z, B.rate0)) + '</td><td class="r num"' + (v < 0 ? ' style="color:var(--red)"' : "") + ">" + f1(v) + "</td></tr>"; }).join("") + "</tbody></table></div>";
+}
+
+/* ---------- Spielleitung ---------- */
+function viewBoardGate(){
+  if (lsGet("ch_pin") === true || lsGet("lq_pin") === "ok" || DEMO) return viewBoard();
+  show("gate", '<h1>Kapitalwert-Börse: Spielleitung</h1><div class="row"><input id="pin" type="password" inputmode="numeric" style="max-width:160px" aria-label="PIN"><button id="ok">Öffnen</button></div><div class="fb bad" id="pfb"></div>');
+  document.getElementById("ok").onclick = function(){ if (document.getElementById("pin").value.trim() === PIN) { lsSet("ch_pin", true); viewKey = ""; viewBoard(); } else document.getElementById("pfb").textContent = "PIN stimmt nicht."; };
+}
+function viewNew(){
+  var list = (lsGet("bx_games") || []).slice().reverse().slice(0, 8);
+  show("new", "<h1>Kapitalwert-Börse: neues Spiel</h1>" + caseHTML() +
+    '<div class="panel"><div class="grid2"><div><label for="kurs">Kurs</label><input id="kurs" value="TWIE25A"></div><div><label for="ng">Zahl der Ausschüsse (Gruppen)</label><select id="ng">' + [3, 4, 5, 6, 7, 8].map(function(n){ return '<option' + (n === 6 ? " selected" : "") + ">" + n + "</option>"; }).join("") + '</select></div></div><div class="row" style="margin-top:12px"><button class="red" id="mk">Spiel anlegen</button><a class="btn ghost" href="boerse.html?demo=1#leitung">Demo mit Beispieldaten</a></div>' +
+    '<p class="small muted">Zeitbedarf rund 45 Minuten: Beitritt 5, Bauchgefühl 5, Rechnen und Auswahl 15, Zinsschock 5, Auflösung und Siegerehrung 15.</p></div>' +
+    '<div class="panel grey"><h3 style="margin-top:0">Laufendes Spiel öffnen</h3><div class="row"><input id="oc" maxlength="6" style="max-width:160px;text-transform:uppercase" placeholder="Spielcode"><button class="ghost" id="op">Öffnen</button></div>' + (list.length ? '<p class="small">Zuletzt: ' + list.map(function(x){ return '<a href="boerse.html?code=' + x.code + '#leitung">' + x.code + "</a> (" + esc(x.kurs || "") + ")"; }).join(" · ") + "</p>" : "") + "</div>");
+  document.getElementById("op").onclick = function(){ var c = document.getElementById("oc").value.trim().toUpperCase(); if (c) location.href = "boerse.html?code=" + c + "#leitung"; };
+  document.getElementById("mk").onclick = function(){ var db = getDb(); if (!db) { alertMsg("Keine Datenbank erreichbar."); return; } var c = randCode(), k = document.getElementById("kurs").value.trim().slice(0, 20), n = +document.getElementById("ng").value;
+    db.ref("refi/boerse/" + c + "/meta").set({ createdAt: firebase.database.ServerValue.TIMESTAMP, kurs: k, nG: n, phase: "lobby", rate: B.rate0 }).then(function(){ var gl = lsGet("bx_games") || []; gl.push({ code: c, kurs: k, at: Date.now() }); lsSet("bx_games", gl.slice(-20)); location.href = "boerse.html?code=" + c + "#leitung"; }); };
+}
+function alertMsg(t){ var d = document.createElement("div"); d.className = "note bad"; d.textContent = t; app.prepend(d); }
+function setPhase(ph){ var u = { phase: ph, phaseAt: store.ts() }; var p = Promise.resolve();
+  if (ph === "schock") { var gr = STATE.groups || {}, w = {}; for (var g = 1; g <= nG(STATE); g++) w[g + "/pf1"] = (gr[g] && gr[g].pf) || null; p = store.update("groups", w); u.rate = B.shock; }
+  return p.then(function(){ return store.update("meta", u); }).then(function(){ if (ph === "aufl") return archive(); }); }
+function archive(){ if (DEMO) return; var st = STATE, sc = score(st), m = st.meta || {}, o = { kurs: m.kurs || "", date: new Date(m.createdAt || Date.now()).toISOString().slice(0, 10), rate: curRate(st), groups: {} };
+  Object.keys(sc).forEach(function(g){ o.groups[g] = { total: sc[g].total, ok: sc[g].ok, V: +sc[g].V.toFixed(1), pf: sc[g].l.join("") }; }); return getDb().ref("refi/boerseArchiv/" + CODE).set(o); }
+var ARCH = null;
+function viewBoard(){
+  if (!CODE) return viewNew();
+  var st = STATE, m = st.meta || {}, ph = m.phase || "lobby", pl = act(st), all = st.players || {}, n = nG(st), r = curRate(st);
+  var url = location.origin + location.pathname + "?code=" + CODE;
+  var order = ["lobby", "bauch", "rechnen", "schock", "aufl"], nx = order[order.indexOf(ph) + 1];
+  var nextLbl = { bauch: "Runde 1 starten: Bauchgefühl", rechnen: "Runde 2 starten: Rechnen", schock: "Zinsschock auslösen", aufl: "Auflösen" }[nx];
+  var h = (DEMO ? '<div class="demo">Demo mit Beispieldaten. Nichts wird gespeichert.</div>' : "") +
+    '<div class="row" style="justify-content:space-between"><h1 style="margin:0">Kapitalwert-Börse · ' + esc(CODE) + '</h1><span><b>' + Object.keys(pl).length + " Personen</b> · " + esc(m.kurs || "") + "</span></div>" +
+    '<div class="ctrl"><div class="phases">' + order.map(function(p){ return '<span class="' + (p === ph ? "on" : "") + '">' + PH[p] + "</span>"; }).join("") + "</div><div>" + timerHTML(st, true) + "</div><div>" + (nx ? '<button class="red" id="nx">' + nextLbl + "</button>" : '<a class="btn ghost" href="boerse.html#leitung">Neues Spiel</a>') + "</div></div>" +
+    '<div class="tabs">' + [["beitritt", "Beitritt"], ["live", "Live-Stand"], ["schock", "Zinsschock"], ["aufl", "Auflösung"], ["leute", "Teilnehmende"], ["rang", "Ewige Rangliste"]].map(function(t){ return '<button data-t="' + t[0] + '" class="' + (boardTab === t[0] ? "on" : "") + '">' + t[1] + "</button>"; }).join("") + '</div><div id="T"></div>';
+  app.innerHTML = h; viewKey = "board";
+  app.querySelectorAll("[data-t]").forEach(function(b){ b.onclick = function(){ boardTab = b.dataset.t; viewBoard(); }; });
+  var nb = document.getElementById("nx"); if (nb) nb.onclick = function(){ nb.disabled = true; boardTab = { bauch: "live", rechnen: "live", schock: "schock", aufl: "aufl" }[nx]; setPhase(nx); };
+  var T = document.getElementById("T"), byG = {}; Object.keys(pl).forEach(function(k){ (byG[pl[k].group] = byG[pl[k].group] || []).push(pl[k].name); });
+  function groupsGrid(){ var h = ""; for (var g = 1; g <= n; g++) h += '<div class="panel" style="margin-top:0"><h3 style="margin:0 0 6px">' + gName(g) + ' <span class="muted small">(' + (byG[g] || []).length + ')</span></h3><div class="chips">' + (byG[g] || []).map(function(x){ return '<span class="chip">' + esc(x) + "</span>"; }).join("") + "</div></div>"; return '<div class="grid3">' + h + "</div>"; }
+  if (boardTab === "beitritt") {
+    T.innerHTML = '<div class="grid2" style="margin-top:14px"><div class="panel" style="text-align:center"><div class="muted">Spielcode</div><div class="codebig">' + esc(CODE) + '</div><div class="qr" id="qr" style="margin-top:12px"></div><p class="small" style="word-break:break-all">' + esc(url) + '</p><div class="muted">Angemeldet</div><div class="bigcount">' + Object.keys(pl).length + '</div><p class="small muted">Zweiter Browser für die Spielleitung: ' + esc(url) + "#leitung (PIN)</p></div><div>" + caseHTML() + groupsGrid() + "</div></div>";
+    try { new QRCode(document.getElementById("qr"), { text: url, width: 220, height: 220 }); } catch (e) {}
+  }
+  if (boardTab === "live") {
+    var sc = score(st), nb2 = Object.keys(st.bauch || {}).length, ba = bauchAvg(st, B.rate0);
+    var rows = ""; for (var g = 1; g <= n; g++){ var s = sc[g]; rows += "<tr><td><b>" + gName(g) + '</b></td><td class="r num">' + (byG[g] || []).length + '</td><td class="r num">' + s.n + ' von 8</td><td>' + (s.l.join(", ") || "") + '</td><td class="r num">' + eur(pfInv(s.l), 0) + "</td></tr>"; }
+    T.innerHTML = '<div class="kpis" style="margin-top:14px"><div class="kpi red"><div class="v">' + nb2 + " von " + Object.keys(pl).length + '</div><div class="l">Bauchgefühl abgegeben</div></div><div class="kpi"><div class="v">' + (ba ? f1(ba.v) + " TEUR" : "noch keine") + '</div><div class="l">Ø Kapitalwert der Bauch-Portfolios bei ' + B.rate0 + ' % (bleibt geheim bis zur Auflösung)</div></div></div>' +
+      '<div class="tbl panel"><table><thead><tr><th>Ausschuss</th><th class="r">Personen</th><th class="r">Kapitalwerte eingetragen</th><th>Portfolio</th><th class="r">Budget TEUR</th></tr></thead><tbody>' + rows + "</tbody></table></div>" + groupsGrid();
+  }
+  if (boardTab === "schock") drawShock(T, r);
+  if (boardTab === "aufl") drawAufl(T, r);
+  if (boardTab === "leute") {
+    var ids = Object.keys(all).sort(function(a, b){ return (all[a].group - all[b].group) || (all[a].name < all[b].name ? -1 : 1); });
+    T.innerHTML = '<div class="tbl panel"><table class="mgmt"><thead><tr><th>Ausschuss</th><th>Spielname</th><th>Bauchgefühl</th><th></th></tr></thead><tbody>' + ids.map(function(k){ var p = all[k], b = (st.bauch || {})[k]; return '<tr class="' + (p.off ? "off" : "") + '"><td>' + gName(p.group) + "</td><td>" + esc(p.name) + "</td><td>" + (b ? pfList(b.pf).join(", ") : "") + "</td><td>" + (p.off ? '<button class="ghost" data-on="' + k + '">Wieder aufnehmen</button>' : '<button class="ghost" data-off="' + k + '">Entfernen</button>') + "</td></tr>"; }).join("") + "</tbody></table></div>";
+    T.querySelectorAll("[data-off]").forEach(function(b){ b.onclick = function(){ if (!b.dataset.c) { b.dataset.c = 1; b.textContent = "Wirklich entfernen?"; return; } store.update("players/" + b.dataset.off, { off: true }); }; });
+    T.querySelectorAll("[data-on]").forEach(function(b){ b.onclick = function(){ store.update("players/" + b.dataset.on, { off: null }); }; });
+  }
+  if (boardTab === "rang") drawRang(T);
+  startTick();
+}
+function curves(r){
+  var W = 760, H = 330, L = 50, R = 185, T0 = 14, Bm = 36, xs = function(i){ return L + i / 12 * (W - L - R); }, vmax = 300, vmin = -150, ys = function(v){ return T0 + (vmax - v) / (vmax - vmin) * (H - T0 - Bm); };
+  var s = '<svg viewBox="0 0 ' + W + " " + H + '" width="100%" style="min-width:520px" role="img" aria-label="Kapitalwert je Projekt in Abhängigkeit vom Zins">';
+  [-100, 0, 100, 200, 300].forEach(function(v){ s += '<line x1="' + L + '" x2="' + (W - R) + '" y1="' + ys(v) + '" y2="' + ys(v) + '" stroke="' + (v === 0 ? "#2B3439" : "#E3E6E8") + '"/><text x="' + (L - 6) + '" y="' + (ys(v) + 4) + '" font-size="11" text-anchor="end">' + v + "</text>"; });
+  for (var i = 0; i <= 12; i += 2) s += '<text x="' + xs(i) + '" y="' + (H - 14) + '" font-size="11" text-anchor="middle">' + i + " %</text>";
+  var ends = [];
+  B.cards.forEach(function(c){ var hi = c.id === "F" || c.id === "C", col = c.id === "F" ? "#E2001A" : c.id === "C" ? "#B07A00" : "#9AA4AA", d = "";
+    for (var i = 0; i <= 12; i += 0.25) d += (i ? "L" : "M") + xs(i).toFixed(1) + " " + ys(KW(c.z, i)).toFixed(1);
+    s += '<path d="' + d + '" fill="none" stroke="' + col + '" stroke-width="' + (hi ? 3 : 1.6) + '"/>'; ends.push({ id: c.id, y: ys(KW(c.z, 12)), col: col, name: c.name }); });
+  ends.sort(function(a, b){ return a.y - b.y; }); for (var k = 1; k < ends.length; k++) if (ends[k].y - ends[k - 1].y < 13) ends[k].y = ends[k - 1].y + 13;
+  ends.forEach(function(e){ s += '<text x="' + (W - R + 6) + '" y="' + (e.y + 4) + '" font-size="11" fill="' + (e.col === "#9AA4AA" ? "#5D6971" : e.col) + '">' + e.id + " " + esc(e.name.split(" ")[0]) + "</text>"; });
+  s += '<line x1="' + xs(r) + '" x2="' + xs(r) + '" y1="' + T0 + '" y2="' + (H - Bm) + '" stroke="#E2001A" stroke-dasharray="5 4"/><text x="' + xs(r) + '" y="' + (T0 + 2) + '" font-size="12" font-weight="700" fill="#E2001A" text-anchor="middle">' + f1(r) + " %</text>";
+  return s + "</svg>";
+}
+function drawShock(T, r){
+  var sc = score(STATE), n = nG(STATE), rk = Object.keys(sc).sort(function(a, b){ return sc[b].V - sc[a].V; }), opt = best(r);
+  T.innerHTML = '<div class="grid2" style="margin-top:14px"><div class="panel"><div class="muted">Kalkulationszins</div><div class="rate" id="rv">' + f1(r) + ' %</div><input type="range" min="2" max="12" step="0.5" value="' + r + '" id="rs" aria-label="Kalkulationszins"><p class="small muted">Ziehen Sie den Regler: Alle Handys sehen den neuen Zins. Rot ist F (Werkzeugbau, späte Rückflüsse), ocker C (Photovoltaik).</p><div style="overflow-x:auto" id="cv">' + curves(r) + "</div></div>" +
+    '<div class="panel"><h3 style="margin-top:0">Wert der Portfolios beim aktuellen Zins</h3><div class="tbl"><table><thead><tr><th>Ausschuss</th><th>Portfolio</th><th class="r">Kapitalwert TEUR</th></tr></thead><tbody id="rk">' + rk.map(function(g){ return "<tr><td>" + gName(g) + "</td><td>" + (sc[g].l.join(", ") || "") + '</td><td class="r num">' + f1(sc[g].V) + "</td></tr>"; }).join("") + '</tbody></table></div><p class="small" id="opt">Bestes Portfolio bei ' + f1(r) + " %: <b>" + opt.l.join(", ") + "</b>, " + f1(opt.v) + " TEUR</p></div></div>";
+  var rs = document.getElementById("rs"), t = null;
+  rs.oninput = function(){ var v = +rs.value; document.getElementById("rv").textContent = f1(v) + " %"; document.getElementById("cv").innerHTML = curves(v); var o = best(v); document.getElementById("opt").innerHTML = "Bestes Portfolio bei " + f1(v) + " %: <b>" + o.l.join(", ") + "</b>, " + f1(o.v) + " TEUR";
+    var sc2 = score({ meta: { rate: v, nG: n }, groups: STATE.groups }); document.getElementById("rk").innerHTML = Object.keys(sc2).sort(function(a, b){ return sc2[b].V - sc2[a].V; }).map(function(g){ return "<tr><td>" + gName(g) + "</td><td>" + (sc2[g].l.join(", ") || "") + '</td><td class="r num">' + f1(sc2[g].V) + "</td></tr>"; }).join("");
+    clearTimeout(t); t = setTimeout(function(){ store.update("meta", { rate: v }); }, 150); };
+}
+function hbars(items){ var W = 760, L = 300, bh = 24, gap = 8, max = Math.max.apply(null, items.map(function(x){ return Math.abs(x.v); })) * 1.15 || 1, H = items.length * (bh + gap) + 6, sx = (W - L - 90) / max;
+  return '<svg viewBox="0 0 ' + W + " " + H + '" width="100%" style="min-width:520px" role="img" aria-label="Kapitalwert der Strategien">' + items.map(function(it, i){ var y = 3 + i * (bh + gap), w = Math.max(1, Math.abs(it.v) * sx); return '<text x="' + (L - 8) + '" y="' + (y + bh * 0.68) + '" font-size="13" text-anchor="end"' + (it.b ? ' font-weight="700"' : "") + ">" + esc(it.l) + '</text><rect x="' + L + '" y="' + y + '" width="' + w + '" height="' + bh + '" fill="' + (it.c || "#9AA4AA") + '"/><text x="' + (L + w + 6) + '" y="' + (y + bh * 0.68) + '" font-size="13" font-weight="700">' + f1(it.v) + "</text>"; }).join("") + "</svg>"; }
+function drawAufl(T, r){
+  var st = STATE, sc = score(st), n = nG(st), o5 = best(B.rate0), orr = best(r), ba = bauchAvg(st, r), rk = Object.keys(sc).sort(function(a, b){ return sc[b].total - sc[a].total; });
+  var items = [{ l: "Bauchgefühl (Ø der Einzelnen)", v: ba ? ba.v : 0, c: "#C9A227" }, { l: "Nach Amortisation (" + STRAT.amo.join("") + ")", v: pfVal(STRAT.amo, r) }, { l: "Nach Zinsfuß (" + STRAT.irr.join("") + ")", v: pfVal(STRAT.irr, r) }, { l: "KW-Optimum bei " + B.rate0 + " % (" + o5.l.join("") + ")", v: pfVal(o5.l, r), c: "#5D6971" }, { l: "KW-Optimum bei " + f1(r) + " % (" + orr.l.join("") + ")", v: orr.v, c: "#2B3439", b: true }];
+  rk.forEach(function(g){ items.push({ l: gName(g) + " (" + (sc[g].l.join("") || "leer") + ")", v: sc[g].V, c: "#E2001A", b: true }); });
+  T.innerHTML = '<div class="win" style="margin-top:14px"><div class="muted">Sieger</div><div class="pts">' + gName(rk[0]) + " mit " + sc[rk[0]].total + ' Punkten</div><div class="chips" style="margin-top:6px">' + Object.keys(act(st)).filter(function(k){ return String(st.players[k].group) === String(rk[0]); }).map(function(k){ return '<span class="chip me">' + esc(st.players[k].name) + "</span>"; }).join("") + "</div></div>" +
+    '<div class="panel"><h3 style="margin-top:0">Was jede Strategie beim Schlusszins von ' + f1(r) + ' % wert ist (Kapitalwert in TEUR)</h3><div style="overflow-x:auto">' + hbars(items) + '</div><p class="small">Drei Lehren: Der höchste Zinsfuß führt zu A, B, D und lässt F liegen. Die schnellste Amortisation füllt das Budget mit kleinen, schwachen Projekten. Und wer bei ' + B.rate0 + ' % optimal gewählt hat, verliert beim Zinsschock am meisten, weil F erst spät zahlt.</p></div>' +
+    '<div class="tbl panel"><table><thead><tr><th>Platz</th><th>Ausschuss</th><th class="r">Kapitalwerte richtig</th><th>Portfolio vor dem Schock</th><th>Portfolio am Ende</th><th class="r">Wert TEUR</th><th class="r">Punkte</th></tr></thead><tbody>' + rk.map(function(g, i){ var s = sc[g]; return "<tr" + (i === 0 ? ' style="font-weight:700"' : "") + "><td>" + (i + 1) + "</td><td>" + gName(g) + '</td><td class="r num">' + s.ok + " × 5 = " + s.kwPts + "</td><td>" + (s.l1.join(", ") || "") + "</td><td>" + (s.l.join(", ") || "") + '</td><td class="r num">' + f1(s.V) + '</td><td class="r num">' + s.total + "</td></tr>"; }).join("") + "</tbody></table></div>" +
+    '<div class="panel"><h3 style="margin-top:0">Die Karten im Überblick</h3>' + resultTable(r) + "</div>";
+}
+function drawRang(T){
+  if (ARCH === null) { ARCH = {}; var db = getDb(); if (db && !DEMO) db.ref("refi/boerseArchiv").once("value").then(function(s){ ARCH = s.val() || {}; if (boardTab === "rang") viewBoard(); }); }
+  var rows = []; Object.keys(ARCH).forEach(function(c){ var a = ARCH[c]; Object.keys(a.groups || {}).forEach(function(g){ rows.push({ k: a.kurs, d: a.date, g: g, t: a.groups[g].total, pf: a.groups[g].pf, V: a.groups[g].V }); }); });
+  rows.sort(function(a, b){ return b.t - a.t; });
+  T.innerHTML = '<div class="tbl panel"><table><thead><tr><th>Platz</th><th>Kurs</th><th>Datum</th><th>Ausschuss</th><th>Portfolio</th><th class="r">Punkte</th></tr></thead><tbody>' + (rows.length ? rows.slice(0, 20).map(function(x, i){ return "<tr><td>" + (i + 1) + "</td><td>" + esc(x.k) + "</td><td>" + esc(x.d) + "</td><td>" + gName(x.g) + "</td><td>" + esc(x.pf) + '</td><td class="r num">' + x.t + "</td></tr>"; }).join("") : '<tr><td colspan="6" class="muted">Noch keine abgeschlossenen Spiele.</td></tr>') + "</tbody></table></div>";
+}
+
+/* ---------- Steuerung ---------- */
+function render(){
+  if (location.hash === "#leitung") return viewBoardGate();
+  if (!CODE) return viewEntry();
+  if (!STATE.meta) { show("nf", '<h1>Spiel ' + esc(CODE) + ' nicht gefunden</h1><p><a href="boerse.html">Anderen Code eingeben</a></p>'); return; }
+  me = lsGet("bx_" + CODE); var p = me && (STATE.players || {})[me.pid];
+  if (me && p && p.off) { lsSet("bx_" + CODE, null); me = null; return viewJoin("Die Spielleitung hat diesen Spielnamen aus dem Spiel genommen. Bitte neu beitreten oder Ihren anderen Namen wählen."); }
+  if (!me || (!DEMO && !p)) { me = null; return viewJoin(); }
+  me.group = p ? p.group : me.group;
+  viewPlayer();
+}
+function boot(){
+  if (DEMO) { CODE = CODE || "DEMO"; store = localStore(demoSeed()); if (location.hash !== "#leitung") lsSet("bx_DEMO", { pid: "p0", name: "Flinker Luchs 12", group: 1 }); }
+  else if (CODE) { var db = getDb(); if (!db) { app.innerHTML = "<h1>Keine Verbindung</h1><p>Die Datenbank ist nicht erreichbar. Bitte WLAN prüfen.</p>"; return; } store = fbStore(db, CODE); db.ref(".info/serverTimeOffset").on("value", function(s){ OFF = s.val() || 0; }); }
+  if (store) store.on(function(v){ STATE = v;
+    if (location.hash === "#leitung") { var a = document.activeElement; if (a && a.type === "range") { a.oninput && a.oninput(); return; } viewBoard(); return; }
+    render(); if (me && STATE.meta && (STATE.meta.phase === "rechnen" || STATE.meta.phase === "schock")) syncGroup(); });
+  else render();
+}
+window.addEventListener("hashchange", function(){ viewKey = ""; render(); });
+boot();
+</script>
+</body>
+</html>

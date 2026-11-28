@@ -51,6 +51,7 @@ window.KURS = {
         { id: "r2k2", nr: "2", titel: "Investitionsrechnung", leit: "Wann lohnt sich eine Investition, und welcher Methode trauen Sie?", inhalt: ["2.1 Statische Verfahren und ROI", "2.2 Kapitalwert, Annuität, Kalkulationszins", "2.3 Zinsfuß, Amortisation und ihre Fallen", "2.4 Nutzungsdauer, Steuern, vollständiger Finanzplan", "2.5 Unsicherheit, Nutzwert, Controlling"], status: "fertig",
           material: [
             { t: "Kapitel 2 Investitionsrechnung (Folien, PDF)", href: "unterlagen/261130_REFI_II_Kap2_Investitionsrechnung.pdf" },
+            { t: "Gruppenspiel Kapitalwert-Börse (Zinsfuß, Amortisation oder Kapitalwert? Mit Zinsschock)", href: "boerse.html" },
             { t: "Tools Kapitel 2 und 3: Kapitalwertprofil, WACC, IRR-Fallen, Nutzungsdauer, Steuern, VoFi, Monte-Carlo, Nutzwert", href: "tools-k2.html" },
             { t: "Übungsaufgaben Kapitel 2 und 3 als Excel (B01 bis B17, C01)", href: "unterlagen/ReFi_II_Kap2_3_Uebungen_Aufgaben.xlsx" },
             { t: "Live-Quiz Kapitel 2", href: "live-quiz.html?set=kap2" },

@@ -1,5 +1,10 @@
 # Änderungen
 
+## v0.12 (28.11.2026)
+
+- Neues Gruppenspiel Kapitalwert-Börse (boerse.html) für ReFi II Kapitel 2: Talheimer Kunststofftechnik GmbH (erfunden), acht Investitionsanträge, 1.000 TEUR Budget. Runden Bauchgefühl, Rechnen und Auswahl im Ausschuss (Eingaben live für alle Mitglieder), Zinsschock mit Regler am Beamer und Kapitalwertkurven, Auflösung mit Vergleich der Strategien Bauch, Amortisation, Zinsfuß und Kapitalwert, Punkte, Siegerehrung, ewige Rangliste. Spielleitung mit PIN, Demo-Modus, Spiel per Code wieder öffnen, Teilnehmende entfernen.
+- Kapitel 2: Folie 40 erklärt die Kapitalwert-Börse (Ablauf und Lehren in den Notizen); PDF aktualisiert. Verlinkt in der Vorlesung bei Kapitel 2 und auf der Challenge-Seite.
+
 ## v0.11 (28.11.2026)
 
 - Live-Quiz: Die Antworten werden je Raum gemischt (Beamer und Handys zeigen dieselbe Reihenfolge), beim Üben allein bei jedem Durchgang neu. Bisher stand die richtige Antwort fast immer an zweiter Stelle (Raute). Hinweis von Janko Petzold.
